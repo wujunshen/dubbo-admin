@@ -21,6 +21,9 @@ import org.apache.dubbo.admin.model.domain.Tag;
 
 import java.util.List;
 
+/**
+ * @author wujunshen
+ */
 public class TagRoute {
     private Integer priority;
     private Boolean enabled;

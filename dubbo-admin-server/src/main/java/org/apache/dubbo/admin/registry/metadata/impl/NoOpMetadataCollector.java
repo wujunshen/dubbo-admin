@@ -21,6 +21,9 @@ import org.apache.dubbo.admin.registry.metadata.MetaDataCollector;
 import org.apache.dubbo.common.URL;
 import org.apache.dubbo.metadata.identifier.MetadataIdentifier;
 
+/**
+ * @author wujunshen
+ */
 public class NoOpMetadataCollector implements MetaDataCollector {
 
     @Override

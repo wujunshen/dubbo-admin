@@ -38,6 +38,9 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.atomic.AtomicLong;
 
+/**
+ * @author wujunshen
+ */
 @Slf4j
 @Component
 public class RegistryServerSync implements InitializingBean, DisposableBean, NotifyListener {

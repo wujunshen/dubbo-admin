@@ -20,6 +20,9 @@ import org.apache.dubbo.admin.model.dto.BalancingDTO;
 import org.apache.dubbo.admin.model.dto.DynamicConfigDTO;
 import org.apache.dubbo.admin.model.dto.WeightDTO;
 
+/**
+ * @author wujunshen
+ */
 public interface OverrideService {
 
     void saveOverride(DynamicConfigDTO override);

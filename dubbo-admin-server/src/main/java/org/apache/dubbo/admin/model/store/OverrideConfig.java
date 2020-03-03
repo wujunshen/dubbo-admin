@@ -20,6 +20,9 @@ package org.apache.dubbo.admin.model.store;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * @author wujunshen
+ */
 public class OverrideConfig {
 
     private String side;

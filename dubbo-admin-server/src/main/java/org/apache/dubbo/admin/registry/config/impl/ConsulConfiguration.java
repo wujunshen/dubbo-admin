@@ -25,6 +25,9 @@ import org.apache.dubbo.common.URL;
 import org.apache.dubbo.common.logger.Logger;
 import org.apache.dubbo.common.logger.LoggerFactory;
 
+/**
+ * @author wujunshen
+ */
 public class ConsulConfiguration implements GovernanceConfiguration {
     private static final Logger logger = LoggerFactory.getLogger(ConsulConfiguration.class);
     private static final int DEFAULT_PORT = 8500;

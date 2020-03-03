@@ -27,7 +27,7 @@ import org.apache.dubbo.admin.model.domain.Provider;
 import org.apache.dubbo.admin.model.dto.MetricDTO;
 import org.apache.dubbo.admin.service.ConsumerService;
 import org.apache.dubbo.admin.service.ProviderService;
-import org.apache.dubbo.admin.service.impl.MetrcisCollectServiceImpl;
+import org.apache.dubbo.admin.service.impl.MetricsCollectServiceImpl;
 import org.apache.dubbo.metadata.definition.model.FullServiceDefinition;
 import org.apache.dubbo.metadata.identifier.MetadataIdentifier;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,6 +38,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * @author wujunshen
+ */
 @Authority(needLogin = true)
 @RestController
 @RequestMapping("/api/{env}/metrics")
@@ -51,14 +54,14 @@ public class MetricsCollectController {
 
     @RequestMapping(method = RequestMethod.POST)
     public String metricsCollect(@RequestParam String group, @PathVariable String env) {
-        MetrcisCollectServiceImpl service = new MetrcisCollectServiceImpl();
+        MetricsCollectServiceImpl service = new MetricsCollectServiceImpl();
         service.setUrl("dubbo://127.0.0.1:20880?scope=remote&cache=true");
 
         return service.invoke(group).toString();
     }
 
     private String getOnePortMessage(String group, String ip, String port, String protocol) {
-        MetrcisCollectServiceImpl metrcisCollectService = new MetrcisCollectServiceImpl();
+        MetricsCollectServiceImpl metrcisCollectService = new MetricsCollectServiceImpl();
         metrcisCollectService.setUrl(protocol + "://" + ip + ":" + port + "?scope=remote&cache=true");
         String res = metrcisCollectService.invoke(group).toString();
         return res;

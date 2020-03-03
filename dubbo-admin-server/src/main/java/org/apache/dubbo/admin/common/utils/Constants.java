@@ -20,6 +20,9 @@ package org.apache.dubbo.admin.common.utils;
 import java.util.HashSet;
 import java.util.Set;
 
+/**
+ * @author wujunshen
+ */
 public class Constants {
   public static final String REGISTRY_ADDRESS = "dubbo.registry.address";
   public static final String METADATA_ADDRESS = "dubbo.metadata-report.address";

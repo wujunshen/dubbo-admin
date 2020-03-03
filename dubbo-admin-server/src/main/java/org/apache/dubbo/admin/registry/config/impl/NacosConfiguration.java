@@ -31,6 +31,9 @@ import java.util.Properties;
 
 import static com.alibaba.nacos.api.PropertyKeyConst.SERVER_ADDR;
 
+/**
+ * @author wujunshen
+ */
 public class NacosConfiguration implements GovernanceConfiguration {
     private static final Logger logger = LoggerFactory.getLogger(NacosConfiguration.class);
 

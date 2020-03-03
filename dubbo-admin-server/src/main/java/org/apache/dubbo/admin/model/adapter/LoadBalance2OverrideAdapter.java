@@ -20,6 +20,9 @@ import org.apache.dubbo.admin.model.domain.LoadBalance;
 import org.apache.dubbo.admin.model.domain.Override;
 import org.apache.dubbo.common.utils.StringUtils;
 
+/**
+ * @author wujunshen
+ */
 public class LoadBalance2OverrideAdapter extends Override {
     public LoadBalance2OverrideAdapter(final LoadBalance loadBalance) {
         setId(loadBalance.getId());

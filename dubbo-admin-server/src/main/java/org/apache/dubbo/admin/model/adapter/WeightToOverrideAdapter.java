@@ -19,6 +19,9 @@ package org.apache.dubbo.admin.model.adapter;
 import org.apache.dubbo.admin.model.domain.Override;
 import org.apache.dubbo.admin.model.domain.Weight;
 
+/**
+ * @author wujunshen
+ */
 public class WeightToOverrideAdapter extends Override {
     public WeightToOverrideAdapter(Weight weight) {
         setId(weight.getId());

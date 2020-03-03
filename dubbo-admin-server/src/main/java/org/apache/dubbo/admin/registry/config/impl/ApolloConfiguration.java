@@ -24,6 +24,9 @@ import org.apache.dubbo.common.URL;
 import org.apache.dubbo.common.extension.SPI;
 import org.springframework.beans.factory.annotation.Value;
 
+/**
+ * @author wujunshen
+ */
 @SPI("apollo")
 public class ApolloConfiguration implements GovernanceConfiguration {
 

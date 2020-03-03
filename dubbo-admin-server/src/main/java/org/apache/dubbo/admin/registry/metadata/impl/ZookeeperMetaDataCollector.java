@@ -27,6 +27,9 @@ import org.apache.dubbo.common.logger.Logger;
 import org.apache.dubbo.common.logger.LoggerFactory;
 import org.apache.dubbo.metadata.identifier.MetadataIdentifier;
 
+/**
+ * @author wujunshen
+ */
 public class ZookeeperMetaDataCollector implements MetaDataCollector {
 
     private static final Logger logger = LoggerFactory.getLogger(ZookeeperMetaDataCollector.class);

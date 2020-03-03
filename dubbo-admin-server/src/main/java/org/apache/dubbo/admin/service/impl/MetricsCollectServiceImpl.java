@@ -21,11 +21,14 @@ import org.apache.dubbo.config.ApplicationConfig;
 import org.apache.dubbo.config.ReferenceConfig;
 import org.apache.dubbo.monitor.MetricsService;
 
-public class MetrcisCollectServiceImpl {
+/**
+ * @author wujunshen
+ */
+public class MetricsCollectServiceImpl {
 
     private ReferenceConfig<MetricsService> referenceConfig;
 
-    public MetrcisCollectServiceImpl() {
+    public MetricsCollectServiceImpl() {
         referenceConfig = new ReferenceConfig<>();
         referenceConfig.setApplication(new ApplicationConfig("dubbo-admin"));
         referenceConfig.setInterface(MetricsService.class);

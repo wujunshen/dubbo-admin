@@ -27,6 +27,9 @@ import org.apache.dubbo.common.URL;
 import org.apache.dubbo.common.logger.Logger;
 import org.apache.dubbo.common.logger.LoggerFactory;
 
+/**
+ * @author wujunshen
+ */
 public class ZookeeperConfiguration implements GovernanceConfiguration {
     private static final Logger logger = LoggerFactory.getLogger(ZookeeperConfiguration.class);
     private CuratorFramework zkClient;

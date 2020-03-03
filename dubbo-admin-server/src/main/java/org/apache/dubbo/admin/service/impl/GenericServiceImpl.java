@@ -27,6 +27,9 @@ import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
 
+/**
+ * @author wujunshen
+ */
 @Component
 public class GenericServiceImpl {
     private final Registry registry;

@@ -50,6 +50,7 @@ import java.util.regex.Pattern;
  * <br>
  *
  * <p>Value object, thread safe.
+ * @author wujunshen
  */
 public class RouteUtils {
   private static Pattern ROUTE_PATTERN = Pattern.compile("([&!=,]*)\\s*([^&!=,\\s]+)");

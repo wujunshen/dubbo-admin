@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 
 /**
  * Permission denied exception
+ * @author wujunshen
  */
 @ResponseStatus(value = HttpStatus.UNAUTHORIZED)
 public class PermissionDeniedException extends RuntimeException {

@@ -24,6 +24,9 @@ import org.springframework.stereotype.Component;
 
 import static org.apache.dubbo.admin.common.utils.Constants.GLOBAL_CONFIG_PATH;
 
+/**
+ * @author wujunshen
+ */
 @Component
 public class ManagementServiceImpl extends AbstractService implements ManagementService {
     @Override

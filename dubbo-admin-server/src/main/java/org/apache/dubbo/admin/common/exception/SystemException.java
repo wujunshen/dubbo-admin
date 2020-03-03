@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 
 /**
  * System Exception
+ * @author wujunshen
  */
 @ResponseStatus(value = HttpStatus.INTERNAL_SERVER_ERROR)
 public class SystemException extends RuntimeException {

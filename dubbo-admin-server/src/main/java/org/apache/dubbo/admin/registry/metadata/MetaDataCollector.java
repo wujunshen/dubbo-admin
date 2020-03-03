@@ -21,6 +21,9 @@ import org.apache.dubbo.common.URL;
 import org.apache.dubbo.common.extension.SPI;
 import org.apache.dubbo.metadata.identifier.MetadataIdentifier;
 
+/**
+ * @author wujunshen
+ */
 @SPI("zookeeper")
 public interface MetaDataCollector {
 

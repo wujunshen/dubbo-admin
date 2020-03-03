@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 
 /**
  * Service Logic Exception
+ * @author wujunshen
  */
 @ResponseStatus(value = HttpStatus.SERVICE_UNAVAILABLE)
 public class ServiceException extends RuntimeException {

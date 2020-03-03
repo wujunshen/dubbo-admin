@@ -25,6 +25,7 @@ import java.util.Set;
 
 /**
  * ProviderService
+ * @author wujunshen
  */
 public interface ProviderService {
 

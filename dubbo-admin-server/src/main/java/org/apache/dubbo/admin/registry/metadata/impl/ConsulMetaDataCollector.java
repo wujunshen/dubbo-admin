@@ -30,6 +30,9 @@ import org.apache.dubbo.metadata.identifier.MetadataIdentifier;
 import java.util.Objects;
 
 
+/**
+ * @author wujunshen
+ */
 public class ConsulMetaDataCollector implements MetaDataCollector {
     private static final Logger LOG = LoggerFactory.getLogger(ConsulMetaDataCollector.class);
     private static final int DEFAULT_PORT = 8500;

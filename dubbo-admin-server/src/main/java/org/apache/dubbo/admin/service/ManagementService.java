@@ -19,6 +19,9 @@ package org.apache.dubbo.admin.service;
 
 import org.apache.dubbo.admin.model.dto.ConfigDTO;
 
+/**
+ * @author wujunshen
+ */
 public interface ManagementService {
 
 
