@@ -17,18 +17,15 @@
 
 package org.apache.dubbo.admin.model.dto;
 
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 import org.apache.dubbo.admin.model.domain.Tag;
 
 import java.util.List;
 
-public class TagRouteDTO extends RouteDTO {
-    private List<Tag> tags;
-
-    public List<Tag> getTags() {
-        return tags;
-    }
-
-    public void setTags(List<Tag> tags) {
-        this.tags = tags;
-    }
+/** @author wujunshen */
+@EqualsAndHashCode(callSuper = true)
+@Data
+public class TagRouteDTO extends AbstractRouteDTO {
+  private List<Tag> tags;
 }

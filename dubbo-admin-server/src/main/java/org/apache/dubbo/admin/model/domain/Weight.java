@@ -16,56 +16,53 @@
  */
 package org.apache.dubbo.admin.model.domain;
 
-public class Weight extends Entity {
+/** @author wujunshen */
+public class Weight extends AbstractEntity {
+  private static final long serialVersionUID = -1281982267153430266L;
+  /** User-configured provider address expression */
+  private String address;
 
-    //default weight value
-    public static final int DEFAULT_WEIGHT = 5;
-    private static final long serialVersionUID = -1281982267153430266L;
-    private String address; /* User-configured provider address expression */
+  private String serviceName;
+  /** weight value */
+  private int weight;
 
-    private String serviceName;
+  private String username;
 
-    private int weight;          /* weight value */
+  public Weight() {}
 
-    private String username;
+  public Weight(Long id) {
+    super(id);
+  }
 
-    public Weight() {
-    }
+  public String getAddress() {
+    return address;
+  }
 
-    public Weight(Long id) {
-        super(id);
-    }
+  public void setAddress(String address) {
+    this.address = address;
+  }
 
-    public String getAddress() {
-        return address;
-    }
+  public String getService() {
+    return serviceName;
+  }
 
-    public void setAddress(String address) {
-        this.address = address;
-    }
+  public void setService(String serviceName) {
+    this.serviceName = serviceName;
+  }
 
-    public String getService() {
-        return serviceName;
-    }
+  public int getWeight() {
+    return weight;
+  }
 
-    public void setService(String serviceName) {
-        this.serviceName = serviceName;
-    }
+  public void setWeight(int weight) {
+    this.weight = weight;
+  }
 
-    public int getWeight() {
-        return weight;
-    }
+  public String getUsername() {
+    return username;
+  }
 
-    public void setWeight(int weight) {
-        this.weight = weight;
-    }
-
-    public String getUsername() {
-        return username;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
-    }
-
+  public void setUsername(String username) {
+    this.username = username;
+  }
 }

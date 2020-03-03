@@ -17,126 +17,133 @@
 
 package org.apache.dubbo.admin.model.dto;
 
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
+/** @author wujunshen */
+@Data
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+@AllArgsConstructor
 public class MetricDTO {
+  private String metric;
+  private Long timestamp;
+  private Object value;
+  private MetricType metricType;
+  private Map<String, String> tags = new HashMap<>();
+  private MetricLevel metricLevel;
+  private transient String meterName;
+  /** 分桶统计时间间隔，目前针对Meter/Timer/Compass有效，-1表示此项无效 */
+  private Integer interval = -1;
 
-    private String metric;
-    private Long timestamp;
-    private Object value;
-    private MetricType metricType;
-    private Map<String, String> tags = new HashMap<String, String>();
-    private MetricLevel metricLevel;
-    private transient String meterName;
-    /**
-     * 分桶统计时间间隔，目前针对Meter/Timer/Compass有效，-1表示此项无效
-     */
-    private int interval = -1;
+  @Override
+  public boolean equals(Object o) {
 
-
-    private MetricDTO() {
+    if (o == this) {
+      return true;
     }
 
-    @Override
-    public boolean equals(Object o) {
-
-        if (o == this) {
-            return true;
-        }
-
-        if (!(o instanceof MetricDTO)) {
-            return false;
-        }
-
-        final MetricDTO rhs = (MetricDTO) o;
-
-        return equals(metric, rhs.metric) && equals(tags, rhs.tags) && equals(metricType, rhs.metricType)
-                && equals(metricLevel, rhs.metricLevel);
+    if (!(o instanceof MetricDTO)) {
+      return false;
     }
 
-    @Override
-    public int hashCode() {
-        return Arrays.hashCode(new Object[]{metric, tags, metricType, metricLevel});
-    }
+    final MetricDTO rhs = (MetricDTO) o;
 
-    @Override
-    public String toString() {
-        return this.getClass().getSimpleName() + "->metric: " + metric + ",value: "
-                + value + ",timestamp: " + timestamp + ",type: " + metricType
-                + ",tags: " + tags + ",level: " + metricLevel;
-    }
+    return equals(metric, rhs.metric)
+        && equals(tags, rhs.tags)
+        && equals(metricType, rhs.metricType)
+        && equals(metricLevel, rhs.metricLevel);
+  }
 
-    public String getMetric() {
-        return metric;
-    }
+  @Override
+  public int hashCode() {
+    return Arrays.hashCode(new Object[] {metric, tags, metricType, metricLevel});
+  }
 
-    public Long getTimestamp() {
-        return timestamp;
-    }
+  @Override
+  public String toString() {
+    return this.getClass().getSimpleName()
+        + "->metric: "
+        + metric
+        + ",value: "
+        + value
+        + ",timestamp: "
+        + timestamp
+        + ",type: "
+        + metricType
+        + ",tags: "
+        + tags
+        + ",level: "
+        + metricLevel;
+  }
 
-    public Object getValue() {
-        return value;
-    }
+  public String getMetric() {
+    return metric;
+  }
 
-    public Map<String, String> getTags() {
-        return tags;
-    }
+  public Long getTimestamp() {
+    return timestamp;
+  }
 
-    public MetricLevel getMetricLevel() {
-        return metricLevel;
-    }
+  public Object getValue() {
+    return value;
+  }
 
-    public MetricType getMetricType() {
-        return metricType;
-    }
+  public Map<String, String> getTags() {
+    return tags;
+  }
 
-    public int getInterval() {
-        return interval;
-    }
+  public MetricLevel getMetricLevel() {
+    return metricLevel;
+  }
 
-    public String getMeterName() {
-        return meterName;
-    }
+  public MetricType getMetricType() {
+    return metricType;
+  }
 
-    private boolean equals(Object a, Object b) {
-        return (a == b) || (a != null && a.equals(b));
-    }
+  public int getInterval() {
+    return interval;
+  }
 
-    public String getService() {
-        return getTags().get("service");
-    }
+  public String getMeterName() {
+    return meterName;
+  }
 
-    public enum MetricType {
-        /**
-         * 用于累加型的数据
-         */
-        COUNTER,
-        /**
-         * 用于瞬态数据
-         */
-        GAUGE,
-        /**
-         * 用于争分整秒的计数
-         */
-        DELTA,
-        /**
-         * 用于集群分位数计算
-         */
-        PERCENTILE
-    }
+  private boolean equals(Object a, Object b) {
+    return Objects.equals(a, b);
+  }
 
-    public enum MetricLevel {
+  public String getService() {
+    return getTags().get("service");
+  }
 
-        TRIVIAL, // 轻微指标
+  public enum MetricType {
+    /** 用于累加型的数据 */
+    COUNTER,
+    /** 用于瞬态数据 */
+    GAUGE,
+    /** 用于争分整秒的计数 */
+    DELTA,
+    /** 用于集群分位数计算 */
+    PERCENTILE
+  }
 
-        MINOR,   // 次要指标
-
-        NORMAL,  // 一般指标
-
-        MAJOR,   // 重要指标
-
-        CRITICAL // 关键指标
-    }
+  public enum MetricLevel {
+    /** 轻微指标 */
+    TRIVIAL,
+    /** 次要指标 */
+    MINOR,
+    /** 一般指标 */
+    NORMAL,
+    /** 重要指标 */
+    MAJOR,
+    /** 关键指标 */
+    CRITICAL
+  }
 }

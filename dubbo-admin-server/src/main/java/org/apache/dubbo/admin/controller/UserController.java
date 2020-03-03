@@ -18,7 +18,7 @@ package org.apache.dubbo.admin.controller;
 
 import lombok.Data;
 import org.apache.dubbo.admin.annotation.Authority;
-import org.apache.dubbo.admin.common.util.Sha256Utils;
+import org.apache.dubbo.admin.common.utils.Sha256Utils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.web.bind.annotation.*;

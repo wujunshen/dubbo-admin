@@ -20,8 +20,8 @@ package org.apache.dubbo.admin.controller;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import org.apache.dubbo.admin.annotation.Authority;
-import org.apache.dubbo.admin.common.util.Constants;
-import org.apache.dubbo.admin.common.util.Tool;
+import org.apache.dubbo.admin.common.utils.Constants;
+import org.apache.dubbo.admin.common.utils.Tool;
 import org.apache.dubbo.admin.model.domain.Consumer;
 import org.apache.dubbo.admin.model.domain.Provider;
 import org.apache.dubbo.admin.model.dto.MetricDTO;
@@ -75,15 +75,15 @@ public class MetricsCollectController {
         if (configMap.size() <= 0) {
             configMap.put("20880", "dubbo");
         }
-        List<MetricDTO> metricDTOS = new ArrayList<>();
+        List<MetricDTO> metricDtoList = new ArrayList<>();
         for (String port : configMap.keySet()) {
             String protocol = configMap.get(port);
             String res = getOnePortMessage(group, ip, port, protocol);
-            metricDTOS.addAll(new Gson().fromJson(res, new TypeToken<List<MetricDTO>>() {
+            metricDtoList.addAll(new Gson().fromJson(res, new TypeToken<List<MetricDTO>>() {
             }.getType()));
         }
 
-        return metricDTOS;
+        return metricDtoList;
     }
 
     protected void addMetricsConfigToMap(Map<String, String> configMap, String ip) {

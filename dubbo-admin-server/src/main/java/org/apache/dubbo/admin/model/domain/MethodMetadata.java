@@ -17,34 +17,14 @@
 
 package org.apache.dubbo.admin.model.domain;
 
+import lombok.Data;
+
 import java.util.List;
 
+/** @author wujunshen */
+@Data
 public class MethodMetadata {
-    private String signature;
-    private List<Object> parameterTypes;
-    private String returnType;
-
-    public String getSignature() {
-        return signature;
-    }
-
-    public void setSignature(String signature) {
-        this.signature = signature;
-    }
-
-    public List<Object> getParameterTypes() {
-        return parameterTypes;
-    }
-
-    public void setParameterTypes(List<Object> parameterTypes) {
-        this.parameterTypes = parameterTypes;
-    }
-
-    public String getReturnType() {
-        return returnType;
-    }
-
-    public void setReturnType(String returnType) {
-        this.returnType = returnType;
-    }
+  private String signature;
+  private List<Object> parameterTypes;
+  private String returnType;
 }

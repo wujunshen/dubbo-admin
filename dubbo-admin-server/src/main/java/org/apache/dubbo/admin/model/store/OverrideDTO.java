@@ -17,52 +17,16 @@
 
 package org.apache.dubbo.admin.model.store;
 
+import lombok.Data;
+
 import java.util.List;
 
+/** @author wujunshen */
+@Data
 public class OverrideDTO {
-    private String key;
-    private String scope;
-    private String configVersion;
-    private boolean enabled;
-    private List<OverrideConfig> configs;
-
-    public String getKey() {
-        return key;
-    }
-
-    public void setKey(String key) {
-        this.key = key;
-    }
-
-    public String getScope() {
-        return scope;
-    }
-
-    public void setScope(String scope) {
-        this.scope = scope;
-    }
-
-    public String getConfigVersion() {
-        return configVersion;
-    }
-
-    public void setConfigVersion(String configVersion) {
-        this.configVersion = configVersion;
-    }
-
-    public boolean isEnabled() {
-        return enabled;
-    }
-
-    public void setEnabled(boolean enabled) {
-        this.enabled = enabled;
-    }
-
-    public List<OverrideConfig> getConfigs() {
-        return configs;
-    }
-
-    public void setConfigs(List<OverrideConfig> configs) {
-        this.configs = configs;
-    }
+  private String key;
+  private String scope;
+  private String configVersion;
+  private Boolean enabled;
+  private List<OverrideConfig> configs;
 }

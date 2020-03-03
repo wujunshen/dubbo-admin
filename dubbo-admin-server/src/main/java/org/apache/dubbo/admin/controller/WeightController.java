@@ -22,7 +22,7 @@ import org.apache.dubbo.admin.annotation.Authority;
 import org.apache.dubbo.admin.common.exception.ParamValidationException;
 import org.apache.dubbo.admin.common.exception.ResourceNotFoundException;
 import org.apache.dubbo.admin.common.exception.VersionValidationException;
-import org.apache.dubbo.admin.common.util.Constants;
+import org.apache.dubbo.admin.common.utils.Constants;
 import org.apache.dubbo.admin.model.dto.WeightDTO;
 import org.apache.dubbo.admin.service.OverrideService;
 import org.apache.dubbo.admin.service.ProviderService;
@@ -38,83 +38,83 @@ import java.util.List;
 @RequestMapping("/api/{env}/rules/weight")
 public class WeightController {
 
-    private final OverrideService overrideService;
-    private final ProviderService providerService;
+  private final OverrideService overrideService;
+  private final ProviderService providerService;
 
-    @Autowired
-    public WeightController(OverrideService overrideService, ProviderService providerService) {
-        this.overrideService = overrideService;
-        this.providerService = providerService;
+  @Autowired
+  public WeightController(OverrideService overrideService, ProviderService providerService) {
+    this.overrideService = overrideService;
+    this.providerService = providerService;
+  }
+
+  @RequestMapping(method = RequestMethod.POST)
+  @ResponseStatus(HttpStatus.CREATED)
+  public boolean createWeight(@RequestBody WeightDTO weightDTO, @PathVariable String env) {
+    if (StringUtils.isBlank(weightDTO.getService())
+        && StringUtils.isBlank(weightDTO.getApplication())) {
+      throw new ParamValidationException("Either Service or application is required.");
+    }
+    String application = weightDTO.getApplication();
+    if (StringUtils.isNotEmpty(application)
+        && this.providerService.findVersionInApplication(application).equals("2.6")) {
+      throw new VersionValidationException(
+          "dubbo 2.6 does not support application scope blackwhite list config");
+    }
+    overrideService.saveWeight(weightDTO);
+    return true;
+  }
+
+  @RequestMapping(value = "/{id}", method = RequestMethod.PUT)
+  public boolean updateWeight(
+      @PathVariable String id, @RequestBody WeightDTO weightDTO, @PathVariable String env) {
+    if (id == null) {
+      throw new ParamValidationException("Unknown ID!");
+    }
+    id = id.replace(Constants.ANY_VALUE, Constants.PATH_SEPARATOR);
+    WeightDTO weight = overrideService.findWeight(id);
+    if (weight == null) {
+      throw new ResourceNotFoundException("Unknown ID!");
+    }
+    overrideService.updateWeight(weightDTO);
+    return true;
+  }
+
+  @RequestMapping(method = RequestMethod.GET)
+  public List<WeightDTO> searchWeight(
+      @RequestParam(required = false) String service,
+      @RequestParam(required = false) String application,
+      @PathVariable String env) {
+    if (StringUtils.isBlank(service) && StringUtils.isBlank(application)) {
+      throw new ParamValidationException("Either service or application is required");
+    }
+    WeightDTO weightDTO;
+    if (StringUtils.isNotBlank(application)) {
+      weightDTO = overrideService.findWeight(application);
+    } else {
+      weightDTO = overrideService.findWeight(service);
+    }
+    List<WeightDTO> weightDtoList = new ArrayList<>();
+    if (weightDTO != null) {
+      weightDtoList.add(weightDTO);
     }
 
-    @RequestMapping(method = RequestMethod.POST)
-    @ResponseStatus(HttpStatus.CREATED)
-    public boolean createWeight(@RequestBody WeightDTO weightDTO, @PathVariable String env) {
-        if (StringUtils.isBlank(weightDTO.getService())
-                && StringUtils.isBlank(weightDTO.getApplication())) {
-            throw new ParamValidationException("Either Service or application is required.");
-        }
-        String application = weightDTO.getApplication();
-        if (StringUtils.isNotEmpty(application)
-                && this.providerService.findVersionInApplication(application).equals("2.6")) {
-            throw new VersionValidationException(
-                    "dubbo 2.6 does not support application scope blackwhite list config");
-        }
-        overrideService.saveWeight(weightDTO);
-        return true;
-    }
+    return weightDtoList;
+  }
 
-    @RequestMapping(value = "/{id}", method = RequestMethod.PUT)
-    public boolean updateWeight(
-            @PathVariable String id, @RequestBody WeightDTO weightDTO, @PathVariable String env) {
-        if (id == null) {
-            throw new ParamValidationException("Unknown ID!");
-        }
-        id = id.replace(Constants.ANY_VALUE, Constants.PATH_SEPARATOR);
-        WeightDTO weight = overrideService.findWeight(id);
-        if (weight == null) {
-            throw new ResourceNotFoundException("Unknown ID!");
-        }
-        overrideService.updateWeight(weightDTO);
-        return true;
+  @RequestMapping(value = "/{id}", method = RequestMethod.GET)
+  public WeightDTO detailWeight(@PathVariable String id, @PathVariable String env) {
+    id = id.replace(Constants.ANY_VALUE, Constants.PATH_SEPARATOR);
+    WeightDTO weightDTO = overrideService.findWeight(id);
+    if (weightDTO == null) {
+      throw new ResourceNotFoundException("Unknown ID!");
     }
+    return weightDTO;
+  }
 
-    @RequestMapping(method = RequestMethod.GET)
-    public List<WeightDTO> searchWeight(
-            @RequestParam(required = false) String service,
-            @RequestParam(required = false) String application,
-            @PathVariable String env) {
-        if (StringUtils.isBlank(service) && StringUtils.isBlank(application)) {
-            throw new ParamValidationException("Either service or application is required");
-        }
-        WeightDTO weightDTO;
-        if (StringUtils.isNotBlank(application)) {
-            weightDTO = overrideService.findWeight(application);
-        } else {
-            weightDTO = overrideService.findWeight(service);
-        }
-        List<WeightDTO> weightDTOS = new ArrayList<>();
-        if (weightDTO != null) {
-            weightDTOS.add(weightDTO);
-        }
-
-        return weightDTOS;
-    }
-
-    @RequestMapping(value = "/{id}", method = RequestMethod.GET)
-    public WeightDTO detailWeight(@PathVariable String id, @PathVariable String env) {
-        id = id.replace(Constants.ANY_VALUE, Constants.PATH_SEPARATOR);
-        WeightDTO weightDTO = overrideService.findWeight(id);
-        if (weightDTO == null) {
-            throw new ResourceNotFoundException("Unknown ID!");
-        }
-        return weightDTO;
-    }
-
-    @RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
-    public boolean deleteWeight(@PathVariable String id, @PathVariable String env) {
-        id = id.replace(Constants.ANY_VALUE, Constants.PATH_SEPARATOR);
-        overrideService.deleteWeight(id);
-        return true;
-    }
+  @RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
+  public boolean deleteWeight(@PathVariable String id, @PathVariable String env) {
+    id = id.replace(Constants.ANY_VALUE, Constants.PATH_SEPARATOR);
+    overrideService.deleteWeight(id);
+    return true;
+  }
 }

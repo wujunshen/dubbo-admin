@@ -16,12 +16,13 @@
  */
 package org.apache.dubbo.admin.controller;
 
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.dubbo.admin.annotation.Authority;
 import org.apache.dubbo.admin.common.exception.ParamValidationException;
 import org.apache.dubbo.admin.common.exception.ResourceNotFoundException;
 import org.apache.dubbo.admin.common.exception.VersionValidationException;
-import org.apache.dubbo.admin.common.util.Constants;
+import org.apache.dubbo.admin.common.utils.Constants;
 import org.apache.dubbo.admin.model.dto.AccessDTO;
 import org.apache.dubbo.admin.model.dto.ConditionRouteDTO;
 import org.apache.dubbo.admin.service.ProviderService;
@@ -36,12 +37,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+/**
+ * @author wujunshen
+ */
+@Slf4j
 @Authority(needLogin = true)
 @RestController
 @RequestMapping("/api/{env}/rules/access")
 public class AccessesController {
-    private static final Logger logger = LoggerFactory.getLogger(AccessesController.class);
-
     private final RouteService routeService;
     private final ProviderService providerService;
 
@@ -59,7 +62,7 @@ public class AccessesController {
         if (StringUtils.isBlank(service) && StringUtils.isBlank(application)) {
             throw new ParamValidationException("Either service or application is required");
         }
-        List<AccessDTO> accessDTOS = new ArrayList<>();
+        List<AccessDTO> accessDtoList = new ArrayList<>();
         AccessDTO accessDTO;
         if (StringUtils.isNotBlank(application)) {
             accessDTO = routeService.findAccess(application);
@@ -68,9 +71,9 @@ public class AccessesController {
         }
         if (accessDTO != null) {
             accessDTO.setEnabled(true);
-            accessDTOS.add(accessDTO);
+            accessDtoList.add(accessDTO);
         }
-        return accessDTOS;
+        return accessDtoList;
     }
 
     @RequestMapping(value = "/{id}", method = RequestMethod.GET)

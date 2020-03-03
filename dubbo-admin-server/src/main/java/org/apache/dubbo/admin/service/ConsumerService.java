@@ -21,20 +21,21 @@ import org.apache.dubbo.metadata.identifier.MetadataIdentifier;
 
 import java.util.List;
 
-/**
- * Query service for consumer info
- */
+/** Query service for consumer info
+ * @author wujunshen*/
 public interface ConsumerService {
 
-    List<Consumer> findByService(String serviceName);
+  List<Consumer> findByService(String serviceName);
 
+  String getConsumerMetadata(MetadataIdentifier consumerIdentifier);
 
-    String getConsumerMetadata(MetadataIdentifier consumerIdentifier);
+  List<Consumer> findAll();
 
-    List<Consumer> findAll();
-
-    /**
-     * query for all consumer addresses
-     */
-    List<Consumer> findByAddress(String consumerAddress);
+  /**
+   * query for all consumer addresses
+   *
+   * @param consumerAddress 消费者地址
+   * @return 消费者列表
+   */
+  List<Consumer> findByAddress(String consumerAddress);
 }

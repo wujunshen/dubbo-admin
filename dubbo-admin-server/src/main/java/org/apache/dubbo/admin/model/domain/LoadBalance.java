@@ -18,57 +18,55 @@ package org.apache.dubbo.admin.model.domain;
 
 /**
  * LoadBalance
+ *
+ * @author wujunshen
  */
-public class LoadBalance extends Entity {
+public class LoadBalance extends AbstractEntity {
+  private static final long serialVersionUID = -6050324375352581440L;
+  /** service name */
+  private String service;
+  /** method name */
+  private String method;
+  /** loadBalance policy */
+  private String strategy;
 
-    public static final String ALL_METHOD = "*";
-    private static final long serialVersionUID = -6050324375352581440L;
-    private String service;            /* service name */
+  private String username;
 
-    private String method;             /* method name */
+  public LoadBalance() {}
 
-    private String strategy;              /*loadbalance policy*/
+  public LoadBalance(Long id) {
+    super(id);
+  }
 
-    private String username;
+  public String getService() {
+    return service;
+  }
 
-    public LoadBalance() {
-    }
+  public void setService(String service) {
+    this.service = service;
+  }
 
-    public LoadBalance(Long id) {
-        super(id);
-    }
+  public String getMethod() {
+    return method;
+  }
 
-    public String getService() {
-        return service;
-    }
+  public void setMethod(String method) {
+    this.method = method;
+  }
 
-    public void setService(String service) {
-        this.service = service;
-    }
+  public String getStrategy() {
+    return strategy;
+  }
 
-    public String getMethod() {
-        return method;
-    }
+  public void setStrategy(String strategy) {
+    this.strategy = strategy;
+  }
 
-    public void setMethod(String method) {
-        this.method = method;
-    }
+  public String getUsername() {
+    return username;
+  }
 
-    public String getStrategy() {
-        return strategy;
-    }
-
-    public void setStrategy(String strategy) {
-        this.strategy = strategy;
-    }
-
-    public String getUsername() {
-        return username;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
-    }
-
-
+  public void setUsername(String username) {
+    this.username = username;
+  }
 }

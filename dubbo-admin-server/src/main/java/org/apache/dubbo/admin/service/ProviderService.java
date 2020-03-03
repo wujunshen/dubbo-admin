@@ -73,7 +73,7 @@ public interface ProviderService {
      */
     List<Provider> findByService(String serviceName);
 
-    List<Provider> findByAppandService(String app, String serviceName);
+    List<Provider> findByAppAndService(String app, String serviceName);
 
     List<Provider> findAll();
 
@@ -114,6 +114,6 @@ public interface ProviderService {
      * @param env     {@code String}the environment of front end
      * @return a set of services for fore-end page
      */
-    Set<ServiceDTO> getServiceDTOS(String pattern, String filter, String env);
+    Set<ServiceDTO> getServiceDtoList(String pattern, String filter, String env);
 
 }

@@ -20,7 +20,7 @@ package org.apache.dubbo.admin.controller;
 import org.apache.dubbo.admin.annotation.Authority;
 import org.apache.dubbo.admin.common.exception.ParamValidationException;
 import org.apache.dubbo.admin.common.exception.ResourceNotFoundException;
-import org.apache.dubbo.admin.common.util.Constants;
+import org.apache.dubbo.admin.common.utils.Constants;
 import org.apache.dubbo.admin.model.dto.ConfigDTO;
 import org.apache.dubbo.admin.service.ManagementService;
 import org.apache.dubbo.admin.service.ProviderService;
@@ -74,7 +74,7 @@ public class ManagementController {
     @RequestMapping(value = "/config/{key}", method = RequestMethod.GET)
     public List<ConfigDTO> getConfig(@PathVariable String key, @PathVariable String env) {
         Set<String> query = new HashSet<>();
-        List<ConfigDTO> configDTOs = new ArrayList<>();
+        List<ConfigDTO> configDtoList = new ArrayList<>();
         if (key.equals(Constants.ANY_VALUE)) {
             query = providerService.findApplications();
             query.add(Constants.GLOBAL_CONFIG);
@@ -97,9 +97,9 @@ public class ManagementController {
             } else {
                 configDTO.setScope(Constants.APPLICATION);
             }
-            configDTOs.add(configDTO);
+            configDtoList.add(configDTO);
         }
-        return configDTOs;
+        return configDtoList;
     }
 
     @RequestMapping(value = "/config/{key}", method = RequestMethod.DELETE)

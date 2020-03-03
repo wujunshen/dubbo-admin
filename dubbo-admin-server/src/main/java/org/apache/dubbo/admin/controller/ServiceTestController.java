@@ -19,9 +19,9 @@ package org.apache.dubbo.admin.controller;
 
 import com.google.gson.Gson;
 import org.apache.dubbo.admin.annotation.Authority;
-import org.apache.dubbo.admin.common.util.Constants;
-import org.apache.dubbo.admin.common.util.ConvertUtil;
-import org.apache.dubbo.admin.common.util.ServiceTestUtil;
+import org.apache.dubbo.admin.common.utils.Constants;
+import org.apache.dubbo.admin.common.utils.ConvertUtils;
+import org.apache.dubbo.admin.common.utils.ServiceTestUtils;
 import org.apache.dubbo.admin.model.domain.MethodMetadata;
 import org.apache.dubbo.admin.model.dto.ServiceTestDTO;
 import org.apache.dubbo.admin.service.ProviderService;
@@ -65,7 +65,7 @@ public class ServiceTestController {
             @RequestParam String application,
             @RequestParam String service,
             @RequestParam String method) {
-        Map<String, String> info = ConvertUtil.serviceName2Map(service);
+        Map<String, String> info = ConvertUtils.serviceName2Map(service);
         MetadataIdentifier identifier =
                 new MetadataIdentifier(
                         info.get(Constants.INTERFACE_KEY),
@@ -82,8 +82,8 @@ public class ServiceTestController {
             List<MethodDefinition> methods = serviceDefinition.getMethods();
             if (methods != null) {
                 for (MethodDefinition m : methods) {
-                    if (ServiceTestUtil.sameMethod(m, method)) {
-                        methodMetadata = ServiceTestUtil.generateMethodMeta(serviceDefinition, m);
+                    if (ServiceTestUtils.sameMethod(m, method)) {
+                        methodMetadata = ServiceTestUtils.generateMethodMeta(serviceDefinition, m);
                         break;
                     }
                 }

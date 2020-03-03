@@ -22,7 +22,7 @@ import org.apache.dubbo.admin.annotation.Authority;
 import org.apache.dubbo.admin.common.exception.ParamValidationException;
 import org.apache.dubbo.admin.common.exception.ResourceNotFoundException;
 import org.apache.dubbo.admin.common.exception.VersionValidationException;
-import org.apache.dubbo.admin.common.util.Constants;
+import org.apache.dubbo.admin.common.utils.Constants;
 import org.apache.dubbo.admin.model.dto.BalancingDTO;
 import org.apache.dubbo.admin.service.OverrideService;
 import org.apache.dubbo.admin.service.ProviderService;
@@ -97,11 +97,11 @@ public class LoadBalanceController {
         } else {
             balancingDTO = overrideService.findBalance(service);
         }
-        List<BalancingDTO> balancingDTOS = new ArrayList<>();
+        List<BalancingDTO> balancingDtoList = new ArrayList<>();
         if (balancingDTO != null) {
-            balancingDTOS.add(balancingDTO);
+            balancingDtoList.add(balancingDTO);
         }
-        return balancingDTOS;
+        return balancingDtoList;
     }
 
     @RequestMapping(value = "/{id}", method = RequestMethod.GET)

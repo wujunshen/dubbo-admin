@@ -16,36 +16,21 @@
  */
 package org.apache.dubbo.admin.model.dto;
 
+import lombok.*;
+
 import java.util.Set;
 
+/** @author wujunshen */
+@EqualsAndHashCode(callSuper = true)
+@Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class AccessDTO extends BaseDTO {
-    // BlackWhiteList key
+  /** BlackWhiteList key */
+  private Set<String> whitelist;
 
-    private Set<String> whitelist;
-    private Set<String> blacklist;
-    private boolean enabled = true;
+  private Set<String> blacklist;
 
-    public boolean isEnabled() {
-        return enabled;
-    }
-
-    public void setEnabled(boolean enabled) {
-        this.enabled = enabled;
-    }
-
-    public Set<String> getWhitelist() {
-        return whitelist;
-    }
-
-    public void setWhitelist(Set<String> whitelist) {
-        this.whitelist = whitelist;
-    }
-
-    public Set<String> getBlacklist() {
-        return blacklist;
-    }
-
-    public void setBlacklist(Set<String> blacklist) {
-        this.blacklist = blacklist;
-    }
+  @Builder.Default private Boolean enabled = true;
 }

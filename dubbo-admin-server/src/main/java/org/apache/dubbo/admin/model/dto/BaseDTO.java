@@ -16,28 +16,17 @@
  */
 package org.apache.dubbo.admin.model.dto;
 
+import lombok.Data;
+
 /**
  * BaseDTO
- * <p>
- * For receive ID parameter with @RequestBody
+ *
+ * <p>For receive ID parameter with @RequestBody
+ *
+ * @author wujunshen
  */
+@Data
 public abstract class BaseDTO {
-    private String application;
-    private String service;
-
-    public String getApplication() {
-        return application;
-    }
-
-    public void setApplication(String application) {
-        this.application = application;
-    }
-
-    public String getService() {
-        return service;
-    }
-
-    public void setService(String service) {
-        this.service = service;
-    }
+  private String application;
+  private String service;
 }

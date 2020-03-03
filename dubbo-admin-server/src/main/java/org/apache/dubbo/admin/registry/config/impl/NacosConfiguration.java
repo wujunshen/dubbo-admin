@@ -21,7 +21,7 @@ import com.alibaba.nacos.api.NacosFactory;
 import com.alibaba.nacos.api.config.ConfigService;
 import com.alibaba.nacos.api.exception.NacosException;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.dubbo.admin.common.util.Constants;
+import org.apache.dubbo.admin.common.utils.Constants;
 import org.apache.dubbo.admin.registry.config.GovernanceConfiguration;
 import org.apache.dubbo.common.URL;
 import org.apache.dubbo.common.logger.Logger;

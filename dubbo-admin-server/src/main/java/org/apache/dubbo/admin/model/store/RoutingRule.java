@@ -17,81 +17,18 @@
 
 package org.apache.dubbo.admin.model.store;
 
+import lombok.Data;
+
 import java.util.List;
 
+/** @author wujunshen */
+@Data
 public class RoutingRule {
-
-    private String key;
-    private String scope;
-    private int priority;
-    private boolean enabled;
-    private boolean force;
-    private boolean runtime;
-    private List<String> conditions;
-//    private BlackWhiteList blackWhiteList;
-
-
-    public String getKey() {
-        return key;
-    }
-
-    public void setKey(String key) {
-        this.key = key;
-    }
-
-    public String getScope() {
-        return scope;
-    }
-
-    public void setScope(String scope) {
-        this.scope = scope;
-    }
-
-    public int getPriority() {
-        return priority;
-    }
-
-    public void setPriority(int priority) {
-        this.priority = priority;
-    }
-
-    public boolean isEnabled() {
-        return enabled;
-    }
-
-    public void setEnabled(boolean enabled) {
-        this.enabled = enabled;
-    }
-
-    public boolean isForce() {
-        return force;
-    }
-
-    public void setForce(boolean force) {
-        this.force = force;
-    }
-
-    public boolean isRuntime() {
-        return runtime;
-    }
-
-    public void setRuntime(boolean runtime) {
-        this.runtime = runtime;
-    }
-
-    public List<String> getConditions() {
-        return conditions;
-    }
-
-    public void setConditions(List<String> conditions) {
-        this.conditions = conditions;
-    }
-
-//    public BlackWhiteList getBlackWhiteList() {
-//        return blackWhiteList;
-//    }
-//
-//    public void setBlackWhiteList(BlackWhiteList blackWhiteList) {
-//        this.blackWhiteList = blackWhiteList;
-//    }
+  private String key;
+  private String scope;
+  private Integer priority;
+  private Boolean enabled;
+  private Boolean force;
+  private Boolean runtime;
+  private List<String> conditions;
 }

@@ -18,7 +18,7 @@
 package org.apache.dubbo.admin.controller;
 
 import org.apache.dubbo.admin.AbstractSpringIntegrationTest;
-import org.apache.dubbo.admin.common.util.Constants;
+import org.apache.dubbo.admin.common.utils.Constants;
 import org.apache.dubbo.admin.model.dto.ServiceDTO;
 import org.apache.dubbo.common.URL;
 import org.apache.dubbo.registry.Registry;

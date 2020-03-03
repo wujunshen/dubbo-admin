@@ -17,78 +17,57 @@
 
 package org.apache.dubbo.admin.model.dto;
 
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.Objects;
 
+/** @author wujunshen */
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class ServiceDTO implements Comparable<ServiceDTO> {
-    private String service;
-    private String appName;
-    private String group;
-    private String version;
+  private String service;
+  private String appName;
+  private String group;
+  private String version;
 
-    public String getService() {
-        return service;
+  @Override
+  public int compareTo(ServiceDTO o) {
+    int result =
+        StringUtils.trimToEmpty(appName).compareTo(StringUtils.trimToEmpty(o.getAppName()));
+    if (result == 0) {
+      result = StringUtils.trimToEmpty(service).compareTo(StringUtils.trimToEmpty(o.getService()));
+      if (result == 0) {
+        result = StringUtils.trimToEmpty(group).compareTo(StringUtils.trimToEmpty(o.getGroup()));
+      }
+      if (result == 0) {
+        result =
+            StringUtils.trimToEmpty(version).compareTo(StringUtils.trimToEmpty(o.getVersion()));
+      }
     }
+    return result;
+  }
 
-    public void setService(String service) {
-        this.service = service;
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
     }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
+    ServiceDTO that = (ServiceDTO) o;
+    return Objects.equals(service, that.service)
+        && Objects.equals(appName, that.appName)
+        && Objects.equals(group, that.group)
+        && Objects.equals(version, that.version);
+  }
 
-    public String getAppName() {
-        return appName;
-    }
-
-    public void setAppName(String appName) {
-        this.appName = appName;
-    }
-
-    public String getGroup() {
-        return group;
-    }
-
-    public void setGroup(String group) {
-        this.group = group;
-    }
-
-    public String getVersion() {
-        return version;
-    }
-
-    public void setVersion(String version) {
-        this.version = version;
-    }
-
-    @Override
-    public int compareTo(ServiceDTO o) {
-        int result = StringUtils.trimToEmpty(appName).compareTo(StringUtils.trimToEmpty(o.getAppName()));
-        if (result == 0) {
-            result = StringUtils.trimToEmpty(service).compareTo(StringUtils.trimToEmpty(o.getService()));
-            if (result == 0) {
-                result = StringUtils.trimToEmpty(group).compareTo(StringUtils.trimToEmpty(o.getGroup()));
-            }
-            if (result == 0) {
-                result = StringUtils.trimToEmpty(version).compareTo(StringUtils.trimToEmpty(o.getVersion()));
-            }
-        }
-        return result;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-        ServiceDTO that = (ServiceDTO) o;
-        return Objects.equals(service, that.service) && Objects.equals(appName, that.appName) && Objects
-                .equals(group, that.group) && Objects.equals(version, that.version);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(service, appName, group, version);
-    }
+  @Override
+  public int hashCode() {
+    return Objects.hash(service, appName, group, version);
+  }
 }

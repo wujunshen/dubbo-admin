@@ -1,4 +1,4 @@
-package org.apache.dubbo.admin.common.util;
+package org.apache.dubbo.admin.common.utils;
 
 import org.junit.Test;
 

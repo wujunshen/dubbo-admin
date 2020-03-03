@@ -17,7 +17,7 @@
 
 package org.apache.dubbo.admin.service;
 
-import org.apache.dubbo.admin.common.util.Constants;
+import org.apache.dubbo.admin.common.utils.Constants;
 import org.apache.dubbo.common.URL;
 import org.apache.dubbo.registry.Registry;
 import org.junit.Test;

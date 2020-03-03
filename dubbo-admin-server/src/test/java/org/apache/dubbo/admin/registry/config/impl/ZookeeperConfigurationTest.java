@@ -18,7 +18,7 @@
 package org.apache.dubbo.admin.registry.config.impl;
 
 import org.apache.curator.test.TestingServer;
-import org.apache.dubbo.admin.common.util.Constants;
+import org.apache.dubbo.admin.common.utils.Constants;
 import org.apache.dubbo.common.URL;
 import org.apache.dubbo.common.utils.NetUtils;
 import org.junit.After;

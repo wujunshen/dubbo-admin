@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.dubbo.admin.common.util;
+package org.apache.dubbo.admin.common.utils;
 
 import org.apache.dubbo.admin.model.dto.DynamicConfigDTO;
 import org.apache.dubbo.admin.model.store.OverrideConfig;
@@ -41,7 +41,7 @@ public class YamlParserTest {
         try (InputStream yamlStream = this.getClass().getResourceAsStream("/LoadBalance.yml")) {
             DynamicConfigDTO overrideDTO = YamlParser.loadObject(streamToString(yamlStream), DynamicConfigDTO.class);
             assertEquals("v2.7", overrideDTO.getConfigVersion());
-            assertEquals(false, overrideDTO.isEnabled());
+            assertEquals(false, overrideDTO.getEnabled());
             List<OverrideConfig> configs = overrideDTO.getConfigs();
             assertEquals(2, configs.size());
 

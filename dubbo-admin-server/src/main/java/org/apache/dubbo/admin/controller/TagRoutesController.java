@@ -22,7 +22,7 @@ import org.apache.dubbo.admin.annotation.Authority;
 import org.apache.dubbo.admin.common.exception.ParamValidationException;
 import org.apache.dubbo.admin.common.exception.ResourceNotFoundException;
 import org.apache.dubbo.admin.common.exception.VersionValidationException;
-import org.apache.dubbo.admin.common.util.Constants;
+import org.apache.dubbo.admin.common.utils.Constants;
 import org.apache.dubbo.admin.model.dto.TagRouteDTO;
 import org.apache.dubbo.admin.service.ProviderService;
 import org.apache.dubbo.admin.service.RouteService;

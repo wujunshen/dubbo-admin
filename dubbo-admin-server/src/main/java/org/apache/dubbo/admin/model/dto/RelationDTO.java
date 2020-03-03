@@ -16,199 +16,101 @@
  */
 package org.apache.dubbo.admin.model.dto;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
-/**
- * relation about node for relation graph
- */
+/** relation about node for relation graph
+ * @author wujunshen*/
+@Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class RelationDTO {
+  public static final Categories CONSUMER_CATEGORIES = new Categories(0, "consumer", "consumer");
+  public static final Categories PROVIDER_CATEGORIES = new Categories(1, "provider", "provider");
+  public static final Categories CONSUMER_AND_PROVIDER_CATEGORIES =
+      new Categories(2, "consumer and provider", "consumer and provider");
+  public static final List<Categories> CATEGORIES_LIST =
+      Arrays.asList(CONSUMER_CATEGORIES, PROVIDER_CATEGORIES, CONSUMER_AND_PROVIDER_CATEGORIES);
+  private List<Categories> categories;
+  private List<Node> nodes;
+  private List<Link> links;
 
-    public static final Categories CONSUMER_CATEGORIES = new Categories(0, "consumer", "consumer");
-    public static final Categories PROVIDER_CATEGORIES = new Categories(1, "provider", "provider");
-    public static final Categories CONSUMER_AND_PROVIDER_CATEGORIES = new Categories(2, "consumer and provider", "consumer and provider");
-    public static final List<Categories> CATEGORIES_LIST = Arrays.asList(CONSUMER_CATEGORIES, PROVIDER_CATEGORIES, CONSUMER_AND_PROVIDER_CATEGORIES);
-    private List<Categories> categories;
-    private List<Node> nodes;
-    private List<Link> links;
+  public RelationDTO(List<Node> nodes, List<Link> links) {
+    this.categories = CATEGORIES_LIST;
+    this.nodes = nodes;
+    this.links = links;
+  }
 
-    public RelationDTO() {
+  @Data
+  @NoArgsConstructor
+  @AllArgsConstructor
+  public static class Categories {
+    private Integer index;
+    private String name;
+    private String base;
+  }
+
+  @Data
+  @NoArgsConstructor
+  @AllArgsConstructor
+  public static class Node {
+
+    private Integer index;
+    private String name;
+    private int category;
+
+    @Override
+    public boolean equals(Object o) {
+      if (this == o) {
+        return true;
+      }
+      if (o == null || getClass() != o.getClass()) {
+        return false;
+      }
+      Node node = (Node) o;
+      return category == node.category && index.equals(node.index) && name.equals(node.name);
     }
 
-    public RelationDTO(List<Node> nodes, List<Link> links) {
-        this.categories = CATEGORIES_LIST;
-        this.nodes = nodes;
-        this.links = links;
+    @Override
+    public int hashCode() {
+      return Objects.hash(index, name, category);
+    }
+  }
+
+  @Data
+  @NoArgsConstructor
+  @AllArgsConstructor
+  public static class Link {
+    private int source;
+    private int target;
+
+    @Override
+    public boolean equals(Object o) {
+      if (this == o) {
+        return true;
+      }
+      if (o == null || getClass() != o.getClass()) {
+        return false;
+      }
+      Link link = (Link) o;
+      return source == link.source && target == link.target;
     }
 
-    public List<Categories> getCategories() {
-        return categories;
+    @Override
+    public int hashCode() {
+      return Objects.hash(source, target);
     }
 
-    public void setCategories(List<Categories> categories) {
-        this.categories = categories;
+    @Override
+    public String toString() {
+      return "Link{" + "source=" + source + ", target=" + target + '}';
     }
-
-    public List<Node> getNodes() {
-        return nodes;
-    }
-
-    public void setNodes(List<Node> nodes) {
-        this.nodes = nodes;
-    }
-
-    public List<Link> getLinks() {
-        return links;
-    }
-
-    public void setLinks(List<Link> links) {
-        this.links = links;
-    }
-
-    public static class Categories {
-        private Integer index;
-        private String name;
-        private String base;
-
-        public Categories() {
-        }
-
-        public Categories(Integer index, String name, String base) {
-            this.index = index;
-            this.name = name;
-            this.base = base;
-        }
-
-        public Integer getIndex() {
-            return index;
-        }
-
-        public void setIndex(Integer index) {
-            this.index = index;
-        }
-
-        public String getName() {
-            return name;
-        }
-
-        public void setName(String name) {
-            this.name = name;
-        }
-
-        public String getBase() {
-            return base;
-        }
-
-        public void setBase(String base) {
-            this.base = base;
-        }
-    }
-
-    public static class Node {
-
-        private Integer index;
-        private String name;
-        private int category;
-
-        public Node() {
-        }
-
-        public Node(Integer index, String name, int category) {
-            this.index = index;
-            this.name = name;
-            this.category = category;
-        }
-
-        public Integer getIndex() {
-            return index;
-        }
-
-        public void setIndex(Integer index) {
-            this.index = index;
-        }
-
-        public String getName() {
-            return name;
-        }
-
-        public void setName(String name) {
-            this.name = name;
-        }
-
-        public int getCategory() {
-            return category;
-        }
-
-        public void setCategory(int category) {
-            this.category = category;
-        }
-
-        @Override
-        public boolean equals(Object o) {
-            if (this == o) return true;
-            if (o == null || getClass() != o.getClass()) return false;
-            Node node = (Node) o;
-            return category == node.category &&
-                    index.equals(node.index) &&
-                    name.equals(node.name);
-        }
-
-        @Override
-        public int hashCode() {
-            return Objects.hash(index, name, category);
-        }
-    }
-
-    public static class Link {
-
-        private int source;
-        private int target;
-
-        public Link() {
-        }
-
-        public Link(int source, int target) {
-            this.source = source;
-            this.target = target;
-        }
-
-        public int getSource() {
-            return source;
-        }
-
-        public void setSource(int source) {
-            this.source = source;
-        }
-
-        public int getTarget() {
-            return target;
-        }
-
-        public void setTarget(int target) {
-            this.target = target;
-        }
-
-        @Override
-        public boolean equals(Object o) {
-            if (this == o) return true;
-            if (o == null || getClass() != o.getClass()) return false;
-            Link link = (Link) o;
-            return source == link.source &&
-                    target == link.target;
-        }
-
-        @Override
-        public int hashCode() {
-            return Objects.hash(source, target);
-        }
-
-        @Override
-        public String toString() {
-            return "Link{" +
-                    "source=" + source +
-                    ", target=" + target +
-                    '}';
-        }
-    }
+  }
 }

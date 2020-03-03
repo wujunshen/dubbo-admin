@@ -16,178 +16,97 @@
  */
 package org.apache.dubbo.admin.model.domain;
 
-import org.apache.dubbo.admin.common.util.Constants;
-import org.apache.dubbo.admin.common.util.Tool;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
+import org.apache.dubbo.admin.common.utils.Constants;
+import org.apache.dubbo.admin.common.utils.Tool;
 import org.apache.dubbo.common.URL;
 import org.apache.dubbo.common.utils.StringUtils;
 
 import java.util.Map;
 
-public class Override extends Entity {
+/** @author wujunshen */
+@EqualsAndHashCode(callSuper = true)
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+public class Override extends AbstractEntity {
+  private static final long serialVersionUID = 114828505391757846L;
 
-    private static final long serialVersionUID = 114828505391757846L;
+  private String service;
 
-    private String service;
+  private String params;
 
-    private String params;
+  private String application;
 
-    private String application;
+  private String address;
 
-    private String address;
+  private String username;
 
-    private String username;
+  private Boolean enabled;
 
-    private boolean enabled;
+  public Override(long id) {
+    super(id);
+  }
 
-    public Override() {
+  @java.lang.Override
+  public String toString() {
+    return "Override [service="
+        + service
+        + ", params="
+        + params
+        + ", application="
+        + application
+        + ", address="
+        + address
+        + ", username="
+        + username
+        + ", enabled="
+        + enabled
+        + "]";
+  }
+
+  public boolean isDefault() {
+    return (getAddress() == null
+            || getAddress().length() == 0
+            || Constants.ANY_VALUE.equals(getAddress())
+            || Constants.ANY_HOST_VALUE.equals(getAddress()))
+        && (getApplication() == null
+            || getApplication().length() == 0
+            || Constants.ANY_VALUE.equals(getApplication()));
+  }
+
+  public URL toUrl() {
+    String group = Tool.getGroup(service);
+    String version = Tool.getVersion(service);
+    String interfaze = Tool.getInterface(service);
+    StringBuilder sb = new StringBuilder();
+    sb.append(Constants.OVERRIDE_PROTOCOL);
+    sb.append("://");
+    if (!StringUtils.isBlank(address) && !Constants.ANY_VALUE.equals(address)) {
+      sb.append(address);
+    } else {
+      sb.append(Constants.ANY_HOST_VALUE);
     }
-
-    public Override(long id) {
-        super(id);
+    sb.append("/");
+    sb.append(interfaze);
+    sb.append("?");
+    Map<String, String> param = StringUtils.parseQueryString(params);
+    param.put(Constants.CATEGORY_KEY, Constants.CONFIGURATORS_CATEGORY);
+    param.put(Constants.ENABLED_KEY, String.valueOf(getEnabled()));
+    param.put(Constants.DYNAMIC_KEY, "false");
+    if (!StringUtils.isBlank(application) && !Constants.ANY_VALUE.equals(application)) {
+      param.put(Constants.APPLICATION_KEY, application);
     }
-
-    public String getService() {
-        return service;
+    if (group != null) {
+      param.put(Constants.GROUP_KEY, group);
     }
-
-
-    public void setService(String service) {
-        this.service = service;
+    if (version != null) {
+      param.put(Constants.VERSION_KEY, version);
     }
-
-
-    public String getParams() {
-        return params;
-    }
-
-
-    public void setParams(String params) {
-        this.params = params;
-    }
-
-
-    public String getApplication() {
-        return application;
-    }
-
-
-    public void setApplication(String application) {
-        this.application = application;
-    }
-
-
-    public String getAddress() {
-        return address;
-    }
-
-
-    public void setAddress(String address) {
-        this.address = address;
-    }
-
-    public String getUsername() {
-        return username;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
-    }
-
-
-    public boolean isEnabled() {
-        return enabled;
-    }
-
-
-    public void setEnabled(boolean enabled) {
-        this.enabled = enabled;
-    }
-
-    public String toString() {
-        return "Override [service=" + service + ", params=" + params + ", application="
-                + application + ", address=" + address + ", username=" + username + ", enabled=" + enabled + "]";
-    }
-
-    public boolean isDefault() {
-        return (getAddress() == null || getAddress().length() == 0 || Constants.ANY_VALUE.equals(getAddress()) || Constants.ANYHOST_VALUE.equals(getAddress()))
-                && (getApplication() == null || getApplication().length() == 0 || Constants.ANY_VALUE.equals(getApplication()));
-    }
-
-    public boolean isMatch(String service, String address, String application) {
-        return isEnabled() && getParams() != null && getParams().length() > 0
-                && service.equals(getService())
-                && (address == null || getAddress() == null || getAddress().length() == 0 || getAddress().equals(Constants.ANY_VALUE) || getAddress().equals(Constants.ANYHOST_VALUE) || getAddress().equals(address))
-                && (application == null || getApplication() == null || getApplication().length() == 0 || getApplication().equals(Constants.ANY_VALUE) || getApplication().equals(application));
-    }
-
-    public boolean isUniqueMatch(Provider provider) {
-        return isEnabled() && getParams() != null && getParams().length() > 0
-                && provider.getService().equals(getService())
-                && provider.getAddress().equals(getAddress());
-    }
-
-    public boolean isMatch(Provider provider) {
-        return isEnabled() && getParams() != null && getParams().length() > 0
-                && provider.getService().equals(getService())
-                && (getAddress() == null || getAddress().length() == 0 || getAddress().equals(Constants.ANY_VALUE) || getAddress().equals(Constants.ANYHOST_VALUE) || getAddress().equals(provider.getAddress()))
-                && (getApplication() == null || getApplication().length() == 0 || getApplication().equals(Constants.ANY_VALUE) || getApplication().equals(provider.getApplication()));
-    }
-
-    public boolean isUniqueMatch(Consumer consumer) {
-        return isEnabled() && getParams() != null && getParams().length() > 0
-                && consumer.getService().equals(getService())
-                && consumer.getAddress().equals(getAddress());
-    }
-
-    public boolean isMatch(Consumer consumer) {
-        return isEnabled() && getParams() != null && getParams().length() > 0
-                && consumer.getService().equals(getService())
-                && (getAddress() == null || getAddress().length() == 0 || getAddress().equals(Constants.ANY_VALUE) || getAddress().equals(Constants.ANYHOST_VALUE) || getAddress().equals(consumer.getAddress()))
-                && (getApplication() == null || getApplication().length() == 0 || getApplication().equals(Constants.ANY_VALUE) || getApplication().equals(consumer.getApplication()));
-    }
-
-    public Map<String, String> toParametersMap() {
-        Map<String, String> map = StringUtils.parseQueryString(getParams());
-        map.remove(Constants.INTERFACE_KEY);
-        map.remove(Constants.GROUP_KEY);
-        map.remove(Constants.VERSION_KEY);
-        map.remove(Constants.APPLICATION_KEY);
-        map.remove(Constants.CATEGORY_KEY);
-        map.remove(Constants.DYNAMIC_KEY);
-        map.remove(Constants.ENABLED_KEY);
-        return map;
-    }
-
-    public URL toUrl() {
-        String group = Tool.getGroup(service);
-        String version = Tool.getVersion(service);
-        String interfaze = Tool.getInterface(service);
-        StringBuilder sb = new StringBuilder();
-        sb.append(Constants.OVERRIDE_PROTOCOL);
-        sb.append("://");
-        if (!StringUtils.isBlank(address) && !Constants.ANY_VALUE.equals(address)) {
-            sb.append(address);
-        } else {
-            sb.append(Constants.ANYHOST_VALUE);
-        }
-        sb.append("/");
-        sb.append(interfaze);
-        sb.append("?");
-        Map<String, String> param = StringUtils.parseQueryString(params);
-        param.put(Constants.CATEGORY_KEY, Constants.CONFIGURATORS_CATEGORY);
-        param.put(Constants.ENABLED_KEY, String.valueOf(isEnabled()));
-        param.put(Constants.DYNAMIC_KEY, "false");
-        if (!StringUtils.isBlank(application) && !Constants.ANY_VALUE.equals(application)) {
-            param.put(Constants.APPLICATION_KEY, application);
-        }
-        if (group != null) {
-            param.put(Constants.GROUP_KEY, group);
-        }
-        if (version != null) {
-            param.put(Constants.VERSION_KEY, version);
-        }
-        sb.append(StringUtils.toQueryString(param));
-        return URL.valueOf(sb.toString());
-    }
-
+    sb.append(StringUtils.toQueryString(param));
+    return URL.valueOf(sb.toString());
+  }
 }

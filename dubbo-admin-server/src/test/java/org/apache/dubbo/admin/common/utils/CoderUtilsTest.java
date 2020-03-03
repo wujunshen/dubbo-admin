@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.dubbo.admin.common.util;
+package org.apache.dubbo.admin.common.utils;
 
 import org.junit.Test;
 
@@ -23,47 +23,47 @@ import static org.assertj.core.api.Java6Assertions.fail;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
-public class CoderUtilTest {
+public class CoderUtilsTest {
 
     @Test
     public void MD5_16bit() {
-        assertNull(CoderUtil.MD5_16bit(null));
+        assertNull(CoderUtils.md516Bit(null));
 
         String input = "dubbo";
         String output = "2CC9DEED96FE012E";
-        assertEquals(output, CoderUtil.MD5_16bit(input));
+        assertEquals(output, CoderUtils.md516Bit(input));
     }
 
     @Test
     public void MD5_32bit() {
         String input = null;
-        assertNull(CoderUtil.MD5_32bit(input));
+        assertNull(CoderUtils.md532Bit(input));
 
         input = "dubbo";
         String output = "AA4E1B8C2CC9DEED96FE012EF2E0752A";
-        assertEquals(output, CoderUtil.MD5_32bit(input));
+        assertEquals(output, CoderUtils.md532Bit(input));
     }
 
     @Test
     public void MD5_32bit1() {
         byte[] input = null;
-        assertNull(CoderUtil.MD5_32bit(input));
+        assertNull(CoderUtils.md532Bit(input));
 
         input = "dubbo".getBytes();
         String output = "AA4E1B8C2CC9DEED96FE012EF2E0752A";
-        assertEquals(output, CoderUtil.MD5_32bit(input));
+        assertEquals(output, CoderUtils.md532Bit(input));
     }
 
     @Test
     public void decodeBase64() {
         try {
-            CoderUtil.decodeBase64(null);
+            CoderUtils.decodeBase64(null);
             fail("when param is null, this should throw exception");
         } catch (Exception e) {
         }
 
         String input = "ZHViYm8=";
         String output = "dubbo";
-        assertEquals(output, CoderUtil.decodeBase64(input));
+        assertEquals(output, CoderUtils.decodeBase64(input));
     }
 }

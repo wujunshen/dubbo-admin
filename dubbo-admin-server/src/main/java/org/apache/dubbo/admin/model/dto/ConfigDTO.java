@@ -17,42 +17,21 @@
 
 package org.apache.dubbo.admin.model.dto;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+/**
+ * @author wujunshen
+ */
+@Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class ConfigDTO {
-
-    private String key;
-    private String config;
-    private String scope;
-    private String path;
-
-    public String getKey() {
-        return key;
-    }
-
-    public void setKey(String key) {
-        this.key = key;
-    }
-
-    public String getConfig() {
-        return config;
-    }
-
-    public void setConfig(String config) {
-        this.config = config;
-    }
-
-    public String getScope() {
-        return scope;
-    }
-
-    public void setScope(String scope) {
-        this.scope = scope;
-    }
-
-    public String getPath() {
-        return path;
-    }
-
-    public void setPath(String path) {
-        this.path = path;
-    }
+  private String key;
+  private String config;
+  private String scope;
+  private String path;
 }

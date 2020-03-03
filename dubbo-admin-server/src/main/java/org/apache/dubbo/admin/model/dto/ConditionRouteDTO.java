@@ -17,16 +17,15 @@
 
 package org.apache.dubbo.admin.model.dto;
 
+import lombok.*;
+
 import java.util.List;
-
-public class ConditionRouteDTO extends RouteDTO {
-    private List<String> conditions;
-
-    public List<String> getConditions() {
-        return conditions;
-    }
-
-    public void setConditions(List<String> conditions) {
-        this.conditions = conditions;
-    }
+/** @author wujunshen */
+@EqualsAndHashCode(callSuper = true)
+@Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+public class ConditionRouteDTO extends AbstractRouteDTO {
+  private List<String> conditions;
 }

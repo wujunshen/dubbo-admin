@@ -22,10 +22,10 @@ import org.apache.dubbo.admin.model.domain.Tag;
 import java.util.List;
 
 public class TagRoute {
-    private int priority;
-    private boolean enabled;
-    private boolean force;
-    private boolean runtime;
+    private Integer priority;
+    private Boolean enabled;
+    private Boolean force;
+    private Boolean runtime;
     private String key;
     private List<Tag> tags;
 

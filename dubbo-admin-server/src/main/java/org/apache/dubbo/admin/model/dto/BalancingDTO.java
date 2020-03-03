@@ -17,24 +17,15 @@
 
 package org.apache.dubbo.admin.model.dto;
 
+import lombok.*;
+
+/** @author wujunshen */
+@EqualsAndHashCode(callSuper = true)
+@Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class BalancingDTO extends BaseDTO {
-
-    private String methodName;
-    private String strategy;
-
-    public String getMethodName() {
-        return methodName;
-    }
-
-    public void setMethodName(String methodName) {
-        this.methodName = methodName;
-    }
-
-    public String getStrategy() {
-        return strategy;
-    }
-
-    public void setStrategy(String strategy) {
-        this.strategy = strategy;
-    }
+  private String methodName;
+  private String strategy;
 }

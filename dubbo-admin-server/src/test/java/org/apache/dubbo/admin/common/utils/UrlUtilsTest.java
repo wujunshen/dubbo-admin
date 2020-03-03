@@ -14,44 +14,29 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package org.apache.dubbo.admin.common.utils;
 
-package org.apache.dubbo.admin.model.dto;
+import org.junit.Assert;
+import org.junit.Test;
 
-public abstract class RouteDTO extends BaseDTO {
-    private int priority;
-    private boolean enabled;
-    private boolean force;
-    private boolean runtime;
+import java.util.HashMap;
+import java.util.Map;
 
-    public int getPriority() {
-        return priority;
+public class UrlUtilsTest {
+
+    @Test
+    public void testParamsMapToString() {
+        Map<String, String[]> params = new HashMap<>();
+        params.put("a", new String[]{"1", "2", "3"});
+        params.put("b", new String[]{"8", "7", "6"});
+        String result = UrlUtils.paramsMapToString(params);
+        Assert.assertEquals(result, "&a=1,2,3&b=8,7,6");
     }
 
-    public void setPriority(int priority) {
-        this.priority = priority;
-    }
-
-    public boolean isEnabled() {
-        return enabled;
-    }
-
-    public void setEnabled(boolean enabled) {
-        this.enabled = enabled;
-    }
-
-    public boolean isForce() {
-        return force;
-    }
-
-    public void setForce(boolean force) {
-        this.force = force;
-    }
-
-    public boolean isRuntime() {
-        return runtime;
-    }
-
-    public void setRuntime(boolean runtime) {
-        this.runtime = runtime;
+    @Test
+    public void testArrayToString() {
+        String[] strArr = {"1", "2", "3"};
+        String result = UrlUtils.arrayToString(strArr);
+        Assert.assertEquals(result, "1,2,3");
     }
 }

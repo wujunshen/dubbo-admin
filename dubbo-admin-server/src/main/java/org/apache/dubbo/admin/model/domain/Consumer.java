@@ -16,8 +16,8 @@
  */
 package org.apache.dubbo.admin.model.domain;
 
-import org.apache.dubbo.admin.common.util.Constants;
-import org.apache.dubbo.admin.common.util.Tool;
+import org.apache.dubbo.admin.common.utils.Constants;
+import org.apache.dubbo.admin.common.utils.Tool;
 import org.apache.dubbo.common.URL;
 import org.apache.dubbo.common.utils.StringUtils;
 
@@ -27,193 +27,217 @@ import java.util.Map;
 
 /**
  * Consumer
+ *
+ * @author wujunshen
  */
-public class Consumer extends Entity {
+public class Consumer extends AbstractEntity {
+  private static final long serialVersionUID = -1140894843784583237L;
+  /** The name of the service referenced by the consumer */
+  private String service;
 
-    private static final long serialVersionUID = -1140894843784583237L;
+  private String parameters;
 
-    private String service; /* The name of the service referenced by the consumer */
+  private String result; /*route result*/
 
-    private String parameters;
+  private String address; /* address of consumer */
 
-    private String result;    /*route result*/
+  private String registry; /* Consumer connected registry address */
 
-    private String address; /* address of consumer */
+  private String application; /* application name */
 
-    private String registry; /* Consumer connected registry address */
+  private String username; /* user name of consumer */
 
-    private String application; /* application name */
+  private String statistics; /* Service call statistics */
 
-    private String username;      /* user name of consumer */
+  private Date collected; /* Date statistics was recorded */
 
-    private String statistics;    /* Service call statistics */
+  private Override override;
 
-    private Date collected;  /* Date statistics was recorded */
+  private List<Override> overrides;
 
-    private Override override;
+  private List<Route> conditionRoutes;
 
-    private List<Override> overrides;
+  private List<Provider> providers;
 
-    private List<Route> conditionRoutes;
+  private Date expired;
 
-    private List<Provider> providers;
+  private long alived; /*Time to live in milliseconds*/
 
-    private Date expired;
+  public Consumer() {}
 
-    private long alived;    /*Time to live in milliseconds*/
+  public Consumer(Long id) {
+    super(id);
+  }
 
-    public Consumer() {
+  public String getService() {
+    return service;
+  }
+
+  public void setService(String service) {
+    this.service = service;
+  }
+
+  public String getParameters() {
+    return parameters;
+  }
+
+  public void setParameters(String parameters) {
+    this.parameters = parameters;
+  }
+
+  public String getAddress() {
+    return address;
+  }
+
+  public void setAddress(String address) {
+    this.address = address;
+  }
+
+  public String getRegistry() {
+    return registry;
+  }
+
+  public void setRegistry(String registry) {
+    this.registry = registry;
+  }
+
+  public String getUsername() {
+    return username;
+  }
+
+  public void setUsername(String username) {
+    this.username = username;
+  }
+
+  public String getStatistics() {
+    return statistics;
+  }
+
+  public void setStatistics(String statistics) {
+    this.statistics = statistics;
+  }
+
+  public Date getCollected() {
+    return collected;
+  }
+
+  public void setCollected(Date collected) {
+    this.collected = collected;
+  }
+
+  public String getResult() {
+    return result;
+  }
+
+  public void setResult(String result) {
+    this.result = result;
+  }
+
+  public String getApplication() {
+    return application;
+  }
+
+  public void setApplication(String application) {
+    this.application = application;
+  }
+
+  public Date getExpired() {
+    return expired;
+  }
+
+  public void setExpired(Date expired) {
+    this.expired = expired;
+  }
+
+  public long getAlived() {
+    return alived;
+  }
+
+  public void setAlived(long alived) {
+    this.alived = alived;
+  }
+
+  public Override getOverride() {
+    return override;
+  }
+
+  public void setOverride(Override override) {
+    this.override = override;
+  }
+
+  public List<Override> getOverrides() {
+    return overrides;
+  }
+
+  public void setOverrides(List<Override> overrides) {
+    this.overrides = overrides;
+  }
+
+  public List<Route> getConditionRoutes() {
+    return conditionRoutes;
+  }
+
+  public void setConditionRoutes(List<Route> conditionRoutes) {
+    this.conditionRoutes = conditionRoutes;
+  }
+
+  public List<Provider> getProviders() {
+    return providers;
+  }
+
+  public void setProviders(List<Provider> providers) {
+    this.providers = providers;
+  }
+
+  public String toString() {
+    return "Consumer [service="
+        + service
+        + ", parameters="
+        + parameters
+        + ", result="
+        + result
+        + ", address="
+        + address
+        + ", registry="
+        + registry
+        + ", application="
+        + application
+        + ", username="
+        + username
+        + ", statistics="
+        + statistics
+        + ", collected="
+        + collected
+        + ", conditionRoutes="
+        + conditionRoutes
+        + ", overrides="
+        + overrides
+        + ", expired="
+        + expired
+        + ", alived="
+        + alived
+        + "]";
+  }
+
+  public URL toUrl() {
+    String group = Tool.getGroup(service);
+    String version = Tool.getVersion(service);
+    String interfaze = Tool.getInterface(service);
+    Map<String, String> param = StringUtils.parseQueryString(parameters);
+    param.put(Constants.CATEGORY_KEY, Constants.CONSUMERS_CATEGORY);
+    if (group != null) {
+      param.put(Constants.GROUP_KEY, group);
     }
-
-    public Consumer(Long id) {
-        super(id);
+    if (version != null) {
+      param.put(Constants.VERSION_KEY, version);
     }
-
-    public String getService() {
-        return service;
-    }
-
-    public void setService(String service) {
-        this.service = service;
-    }
-
-    public String getParameters() {
-        return parameters;
-    }
-
-    public void setParameters(String parameters) {
-        this.parameters = parameters;
-    }
-
-    public String getAddress() {
-        return address;
-    }
-
-    public void setAddress(String address) {
-        this.address = address;
-    }
-
-    public String getRegistry() {
-        return registry;
-    }
-
-    public void setRegistry(String registry) {
-        this.registry = registry;
-    }
-
-    public String getUsername() {
-        return username;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
-    }
-
-    public String getStatistics() {
-        return statistics;
-    }
-
-    public void setStatistics(String statistics) {
-        this.statistics = statistics;
-    }
-
-    public Date getCollected() {
-        return collected;
-    }
-
-    public void setCollected(Date collected) {
-        this.collected = collected;
-    }
-
-    public String getResult() {
-        return result;
-    }
-
-    public void setResult(String result) {
-        this.result = result;
-    }
-
-    public String getApplication() {
-        return application;
-    }
-
-    public void setApplication(String application) {
-        this.application = application;
-    }
-
-    public Date getExpired() {
-        return expired;
-    }
-
-
-    public void setExpired(Date expired) {
-        this.expired = expired;
-    }
-
-
-    public long getAlived() {
-        return alived;
-    }
-
-
-    public void setAlived(long alived) {
-        this.alived = alived;
-    }
-
-    public Override getOverride() {
-        return override;
-    }
-
-    public void setOverride(Override override) {
-        this.override = override;
-    }
-
-    public List<Override> getOverrides() {
-        return overrides;
-    }
-
-    public void setOverrides(List<Override> overrides) {
-        this.overrides = overrides;
-    }
-
-    public List<Route> getConditionRoutes() {
-        return conditionRoutes;
-    }
-
-    public void setConditionRoutes(List<Route> conditionRoutes) {
-        this.conditionRoutes = conditionRoutes;
-    }
-
-    public List<Provider> getProviders() {
-        return providers;
-    }
-
-    public void setProviders(List<Provider> providers) {
-        this.providers = providers;
-    }
-
-    public String toString() {
-        return "Consumer [service=" + service + ", parameters=" + parameters + ", result=" + result
-                + ", address=" + address + ", registry=" + registry + ", application="
-                + application + ", username=" + username + ", statistics=" + statistics
-                + ", collected=" + collected + ", conditionRoutes=" + conditionRoutes + ", overrides=" + overrides
-                + ", expired=" + expired + ", alived=" + alived + "]";
-    }
-
-    public URL toUrl() {
-        String group = Tool.getGroup(service);
-        String version = Tool.getVersion(service);
-        String interfaze = Tool.getInterface(service);
-        Map<String, String> param = StringUtils.parseQueryString(parameters);
-        param.put(Constants.CATEGORY_KEY, Constants.CONSUMERS_CATEGORY);
-        if (group != null) {
-            param.put(Constants.GROUP_KEY, group);
-        }
-        if (version != null) {
-            param.put(Constants.VERSION_KEY, version);
-        }
-        return URL.valueOf(Constants.CONSUMER_PROTOCOL + "://" + address + "/" + interfaze
-                + "?" + StringUtils.toQueryString(param));
-    }
-
+    return URL.valueOf(
+        Constants.CONSUMER_PROTOCOL
+            + "://"
+            + address
+            + "/"
+            + interfaze
+            + "?"
+            + StringUtils.toQueryString(param));
+  }
 }

@@ -17,7 +17,7 @@
 
 package org.apache.dubbo.admin.service.impl;
 
-import org.apache.dubbo.admin.common.util.Tool;
+import org.apache.dubbo.admin.common.utils.Tool;
 import org.apache.dubbo.config.ApplicationConfig;
 import org.apache.dubbo.config.ReferenceConfig;
 import org.apache.dubbo.config.RegistryConfig;

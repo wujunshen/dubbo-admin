@@ -19,8 +19,8 @@ package org.apache.dubbo.admin.controller;
 
 import com.google.gson.Gson;
 import org.apache.dubbo.admin.annotation.Authority;
-import org.apache.dubbo.admin.common.util.Constants;
-import org.apache.dubbo.admin.common.util.Tool;
+import org.apache.dubbo.admin.common.utils.Constants;
+import org.apache.dubbo.admin.common.utils.Tool;
 import org.apache.dubbo.admin.model.domain.Consumer;
 import org.apache.dubbo.admin.model.domain.Provider;
 import org.apache.dubbo.admin.model.dto.ServiceDTO;
@@ -62,11 +62,11 @@ public class ServiceController {
             @RequestParam String filter,
             @PathVariable String env,
             Pageable pageable) {
-        final Set<ServiceDTO> serviceDTOS = providerService.getServiceDTOS(pattern, filter, env);
+        final Set<ServiceDTO> serviceDtoList = providerService.getServiceDtoList(pattern, filter, env);
 
-        final int total = serviceDTOS.size();
+        final int total = serviceDtoList.size();
         final List<ServiceDTO> content =
-                serviceDTOS.stream()
+                serviceDtoList.stream()
                         .skip(pageable.getOffset())
                         .limit(pageable.getPageSize())
                         .collect(Collectors.toList());

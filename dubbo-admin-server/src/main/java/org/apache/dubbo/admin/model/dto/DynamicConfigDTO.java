@@ -17,37 +17,18 @@
 
 package org.apache.dubbo.admin.model.dto;
 
+import lombok.*;
 import org.apache.dubbo.admin.model.store.OverrideConfig;
 
 import java.util.List;
-
+/** @author wujunshen */
+@EqualsAndHashCode(callSuper = true)
+@Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class DynamicConfigDTO extends BaseDTO {
-
-    private String configVersion;
-    private boolean enabled;
-    private List<OverrideConfig> configs;
-
-    public List<OverrideConfig> getConfigs() {
-        return configs;
-    }
-
-    public void setConfigs(List<OverrideConfig> configs) {
-        this.configs = configs;
-    }
-
-    public String getConfigVersion() {
-        return configVersion;
-    }
-
-    public void setConfigVersion(String configVersion) {
-        this.configVersion = configVersion;
-    }
-
-    public boolean isEnabled() {
-        return enabled;
-    }
-
-    public void setEnabled(boolean enabled) {
-        this.enabled = enabled;
-    }
+  private String configVersion;
+  private Boolean enabled;
+  private List<OverrideConfig> configs;
 }

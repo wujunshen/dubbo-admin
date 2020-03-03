@@ -17,12 +17,12 @@
 
 package org.apache.dubbo.admin.service.impl;
 
-import org.apache.dubbo.admin.common.util.Constants;
+import org.apache.dubbo.admin.common.utils.Constants;
 import org.apache.dubbo.admin.model.dto.ConfigDTO;
 import org.apache.dubbo.admin.service.ManagementService;
 import org.springframework.stereotype.Component;
 
-import static org.apache.dubbo.admin.common.util.Constants.GLOBAL_CONFIG_PATH;
+import static org.apache.dubbo.admin.common.utils.Constants.GLOBAL_CONFIG_PATH;
 
 @Component
 public class ManagementServiceImpl extends AbstractService implements ManagementService {

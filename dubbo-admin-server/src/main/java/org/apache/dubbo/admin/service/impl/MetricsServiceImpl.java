@@ -27,6 +27,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 @Component
@@ -48,9 +49,9 @@ public class MetricsServiceImpl implements MetricsService {
         Set<String> serviceSet = new HashSet<>();
 
         // collect consumer's nodes map <application, node>
-        Map<String, RelationDTO.Node> consumerNodeMap = new HashMap<>();
+        Map<String, RelationDTO.Node> consumerNodeMap =  new ConcurrentHashMap<>(8);
         // collect consumer's service and applications map <service, set<application>>
-        Map<String, Set<String>> consumerServiceApplicationMap = new HashMap<>();
+        Map<String, Set<String>> consumerServiceApplicationMap =  new ConcurrentHashMap<>(8);
         for (Consumer consumer : consumerList) {
             String application = consumer.getApplication();
             if (!consumerNodeMap.containsKey(application)) {
@@ -64,9 +65,9 @@ public class MetricsServiceImpl implements MetricsService {
             consumerServiceApplicationMap.get(service).add(application);
         }
         // collect provider's nodes
-        Map<String, RelationDTO.Node> providerNodeMap = new HashMap<>();
+        Map<String, RelationDTO.Node> providerNodeMap =  new ConcurrentHashMap<>(8);;
         // collect provider's service and applications map <service, set<application>>
-        Map<String, Set<String>> providerServiceApplicationMap = new HashMap<>();
+        Map<String, Set<String>> providerServiceApplicationMap = new ConcurrentHashMap<>(8);
         for (Provider provider : providerList) {
             String application = provider.getApplication();
             if (!providerNodeMap.containsKey(application)) {

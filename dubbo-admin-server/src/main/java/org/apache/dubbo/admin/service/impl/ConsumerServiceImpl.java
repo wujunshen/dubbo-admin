@@ -16,64 +16,61 @@
  */
 package org.apache.dubbo.admin.service.impl;
 
-import org.apache.dubbo.admin.common.util.Constants;
-import org.apache.dubbo.admin.common.util.SyncUtils;
+import org.apache.dubbo.admin.common.utils.Constants;
+import org.apache.dubbo.admin.common.utils.SyncUtils;
 import org.apache.dubbo.admin.model.domain.Consumer;
 import org.apache.dubbo.admin.service.ConsumerService;
 import org.apache.dubbo.common.URL;
 import org.apache.dubbo.metadata.identifier.MetadataIdentifier;
 import org.springframework.stereotype.Component;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
+/** @author wujunshen */
 @Component
 public class ConsumerServiceImpl extends AbstractService implements ConsumerService {
 
-    @Override
-    public List<Consumer> findByService(String service) {
-        return SyncUtils.url2ConsumerList(findConsumerUrlByService(service));
-    }
+  @Override
+  public List<Consumer> findByService(String service) {
+    return SyncUtils.url2ConsumerList(findConsumerUrlByService(service));
+  }
 
+  @Override
+  public List<Consumer> findAll() {
+    return SyncUtils.url2ConsumerList(findAllConsumerUrl());
+  }
 
-    @Override
-    public List<Consumer> findAll() {
-        return SyncUtils.url2ConsumerList(findAllConsumerUrl());
-    }
+  @Override
+  public String getConsumerMetadata(MetadataIdentifier consumerIdentifier) {
+    return metaDataCollector.getConsumerMetaData(consumerIdentifier);
+  }
 
-    @Override
-    public String getConsumerMetadata(MetadataIdentifier consumerIdentifier) {
-        return metaDataCollector.getConsumerMetaData(consumerIdentifier);
-    }
+  private Map<String, URL> findAllConsumerUrl() {
+    Map<String, String> filter = new ConcurrentHashMap<>(8);
+    filter.put(Constants.CATEGORY_KEY, Constants.CONSUMERS_CATEGORY);
+    return SyncUtils.filterFromCategory(getRegistryCache(), filter);
+  }
 
-    private Map<String, URL> findAllConsumerUrl() {
-        Map<String, String> filter = new HashMap<String, String>();
-        filter.put(Constants.CATEGORY_KEY, Constants.CONSUMERS_CATEGORY);
-        return SyncUtils.filterFromCategory(getRegistryCache(), filter);
-    }
+  @Override
+  public List<Consumer> findByAddress(String consumerAddress) {
+    return SyncUtils.url2ConsumerList(findConsumerUrlByAddress(consumerAddress));
+  }
 
+  private Map<String, URL> findConsumerUrlByAddress(String address) {
+    Map<String, String> filter = new ConcurrentHashMap<>(8);
+    filter.put(Constants.CATEGORY_KEY, Constants.CONSUMERS_CATEGORY);
+    filter.put(SyncUtils.ADDRESS_FILTER_KEY, address);
 
-    @Override
-    public List<Consumer> findByAddress(String consumerAddress) {
-        return SyncUtils.url2ConsumerList(findConsumerUrlByAddress(consumerAddress));
-    }
+    return SyncUtils.filterFromCategory(getRegistryCache(), filter);
+  }
 
+  public Map<String, URL> findConsumerUrlByService(String service) {
+    Map<String, String> filter = new ConcurrentHashMap<>(8);
+    filter.put(Constants.CATEGORY_KEY, Constants.CONSUMERS_CATEGORY);
+    filter.put(SyncUtils.SERVICE_FILTER_KEY, service);
 
-    private Map<String, URL> findConsumerUrlByAddress(String address) {
-        Map<String, String> filter = new HashMap<String, String>();
-        filter.put(Constants.CATEGORY_KEY, Constants.CONSUMERS_CATEGORY);
-        filter.put(SyncUtils.ADDRESS_FILTER_KEY, address);
-
-        return SyncUtils.filterFromCategory(getRegistryCache(), filter);
-    }
-
-    public Map<String, URL> findConsumerUrlByService(String service) {
-        Map<String, String> filter = new HashMap<String, String>();
-        filter.put(Constants.CATEGORY_KEY, Constants.CONSUMERS_CATEGORY);
-        filter.put(SyncUtils.SERVICE_FILTER_KEY, service);
-
-        return SyncUtils.filterFromCategory(getRegistryCache(), filter);
-    }
-
+    return SyncUtils.filterFromCategory(getRegistryCache(), filter);
+  }
 }

@@ -14,26 +14,51 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package org.apache.dubbo.admin.model.domain;
 
-package org.apache.dubbo.admin.model.dto;
-
-import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.apache.dubbo.admin.model.domain.Consumer;
-import org.apache.dubbo.admin.model.domain.Provider;
-import org.apache.dubbo.metadata.definition.model.FullServiceDefinition;
 
+import java.io.Serializable;
+import java.util.Date;
 import java.util.List;
 
-/** @author wujunshen */
+/**
+ * Entity
+ *
+ * @author wujunshen
+ */
 @Data
 @NoArgsConstructor
-@AllArgsConstructor
-public class ServiceDetailDTO {
-  List<Provider> providers;
-  List<Consumer> consumers;
-  FullServiceDefinition metadata;
-  private String service;
-  private String application;
+public abstract class AbstractEntity implements Serializable {
+  private static final long serialVersionUID = -3031128781434583143L;
+
+  private List<Long> ids;
+
+  private Long id;
+
+  private String hash;
+
+  private Date created;
+
+  private Date modified;
+
+  private Date now;
+
+  private String operator;
+
+  private String operatorAddress;
+
+  private boolean miss;
+
+  public AbstractEntity(Long id) {
+    this.id = id;
+  }
+
+  public void setOperator(String operator) {
+    if (operator != null && operator.length() > 200) {
+      operator = operator.substring(0, 200);
+    }
+    this.operator = operator;
+  }
 }
