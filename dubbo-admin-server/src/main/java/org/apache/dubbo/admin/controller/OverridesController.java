@@ -18,7 +18,6 @@
 package org.apache.dubbo.admin.controller;
 
 import org.apache.commons.lang3.StringUtils;
-
 import org.apache.dubbo.admin.annotation.Authority;
 import org.apache.dubbo.admin.common.exception.ParamValidationException;
 import org.apache.dubbo.admin.common.exception.ResourceNotFoundException;
@@ -29,16 +28,11 @@ import org.apache.dubbo.admin.service.OverrideService;
 import org.apache.dubbo.admin.service.ProviderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
+
 @Authority(needLogin = true)
 @RestController
 @RequestMapping("/api/{env}/rules/override")
@@ -55,21 +49,27 @@ public class OverridesController {
 
     @RequestMapping(method = RequestMethod.POST)
     @ResponseStatus(HttpStatus.CREATED)
-    public boolean createOverride(@RequestBody DynamicConfigDTO overrideDTO, @PathVariable String env) {
+    public boolean createOverride(
+            @RequestBody DynamicConfigDTO overrideDTO, @PathVariable String env) {
         String serviceName = overrideDTO.getService();
         String application = overrideDTO.getApplication();
         if (StringUtils.isEmpty(serviceName) && StringUtils.isEmpty(application)) {
             throw new ParamValidationException("serviceName and application are Empty!");
         }
-        if (StringUtils.isNotEmpty(application) && providerService.findVersionInApplication(application).equals("2.6")) {
-            throw new VersionValidationException("dubbo 2.6 does not support application scope dynamic config");
+        if (StringUtils.isNotEmpty(application)
+                && providerService.findVersionInApplication(application).equals("2.6")) {
+            throw new VersionValidationException(
+                    "dubbo 2.6 does not support application scope dynamic config");
         }
         overrideService.saveOverride(overrideDTO);
         return true;
     }
 
     @RequestMapping(value = "/{id}", method = RequestMethod.PUT)
-    public boolean updateOverride(@PathVariable String id, @RequestBody DynamicConfigDTO overrideDTO, @PathVariable String env) {
+    public boolean updateOverride(
+            @PathVariable String id,
+            @RequestBody DynamicConfigDTO overrideDTO,
+            @PathVariable String env) {
         id = id.replace(Constants.ANY_VALUE, Constants.PATH_SEPARATOR);
         DynamicConfigDTO old = overrideService.findOverride(id);
         if (old == null) {
@@ -80,14 +80,15 @@ public class OverridesController {
     }
 
     @RequestMapping(method = RequestMethod.GET)
-    public List<DynamicConfigDTO> searchOverride(@RequestParam(required = false) String service,
-                                                 @RequestParam(required = false) String application,
-                                                 @PathVariable String env) {
+    public List<DynamicConfigDTO> searchOverride(
+            @RequestParam(required = false) String service,
+            @RequestParam(required = false) String application,
+            @PathVariable String env) {
         DynamicConfigDTO override = null;
         List<DynamicConfigDTO> result = new ArrayList<>();
         if (StringUtils.isNotBlank(service)) {
             override = overrideService.findOverride(service);
-        } else if(StringUtils.isNotBlank(application)){
+        } else if (StringUtils.isNotBlank(application)) {
             override = overrideService.findOverride(application);
         } else {
             throw new ParamValidationException("Either Service or application is required.");

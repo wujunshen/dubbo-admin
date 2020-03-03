@@ -33,6 +33,24 @@ public class CommonResponse extends HashMap<String, Object> {
 
     private static final String EMPTY = "";
 
+    private CommonResponse() {
+        super();
+        this.put(SUCCESS, false);
+    }
+
+    public static CommonResponse createCommonResponse() {
+        CommonResponse commonResponse = new CommonResponse();
+        commonResponse.success();
+        return commonResponse;
+    }
+
+    public static CommonResponse createCommonResponse(Object data) {
+        CommonResponse commonResponse = new CommonResponse();
+        commonResponse.success();
+        commonResponse.setData(data);
+        return commonResponse;
+    }
+
     public boolean isSuccess() {
         return get(SUCCESS) != null && (Boolean) get(SUCCESS);
     }
@@ -42,11 +60,6 @@ public class CommonResponse extends HashMap<String, Object> {
             return (String) get(MESSAGE);
         }
         return EMPTY;
-    }
-
-    private CommonResponse() {
-        super();
-        this.put(SUCCESS, false);
     }
 
     public CommonResponse success() {
@@ -78,18 +91,5 @@ public class CommonResponse extends HashMap<String, Object> {
     public CommonResponse putData(String key, Object data) {
         this.put(key, data);
         return this;
-    }
-
-    public static CommonResponse createCommonResponse() {
-        CommonResponse commonResponse = new CommonResponse();
-        commonResponse.success();
-        return commonResponse;
-    }
-
-    public static CommonResponse createCommonResponse(Object data) {
-        CommonResponse commonResponse = new CommonResponse();
-        commonResponse.success();
-        commonResponse.setData(data);
-        return commonResponse;
     }
 }

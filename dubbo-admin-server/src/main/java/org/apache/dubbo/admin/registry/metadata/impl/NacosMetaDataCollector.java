@@ -17,16 +17,15 @@
 
 package org.apache.dubbo.admin.registry.metadata.impl;
 
+import com.alibaba.nacos.api.NacosFactory;
+import com.alibaba.nacos.api.config.ConfigService;
+import com.alibaba.nacos.api.exception.NacosException;
 import org.apache.dubbo.admin.common.util.Constants;
 import org.apache.dubbo.admin.registry.metadata.MetaDataCollector;
 import org.apache.dubbo.common.URL;
 import org.apache.dubbo.common.logger.Logger;
 import org.apache.dubbo.common.logger.LoggerFactory;
 import org.apache.dubbo.metadata.identifier.MetadataIdentifier;
-
-import com.alibaba.nacos.api.NacosFactory;
-import com.alibaba.nacos.api.config.ConfigService;
-import com.alibaba.nacos.api.exception.NacosException;
 
 import java.util.Properties;
 
@@ -37,14 +36,15 @@ public class NacosMetaDataCollector implements MetaDataCollector {
     private ConfigService configService;
     private String group;
     private URL url;
-    @Override
-    public void setUrl(URL url) {
-        this.url = url;
-    }
 
     @Override
     public URL getUrl() {
         return url;
+    }
+
+    @Override
+    public void setUrl(URL url) {
+        this.url = url;
     }
 
     @Override

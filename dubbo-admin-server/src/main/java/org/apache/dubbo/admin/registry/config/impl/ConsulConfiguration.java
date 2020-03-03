@@ -26,90 +26,89 @@ import org.apache.dubbo.common.logger.Logger;
 import org.apache.dubbo.common.logger.LoggerFactory;
 
 public class ConsulConfiguration implements GovernanceConfiguration {
-	private static final Logger logger = LoggerFactory.getLogger(ConsulConfiguration.class);
-	private static final int DEFAULT_PORT = 8500;
-	private static final String SLASH = "/";
-	private URL url;
-	private ConsulClient client;
+    private static final Logger logger = LoggerFactory.getLogger(ConsulConfiguration.class);
+    private static final int DEFAULT_PORT = 8500;
+    private static final String SLASH = "/";
+    private URL url;
+    private ConsulClient client;
 
-	@Override
-	public void init() {
-		String host = this.url.getHost();
-		int port = this.url.getPort() != 0 ? url.getPort() : DEFAULT_PORT;
-		this.client = new ConsulClient(host, port);
-	}
+    @Override
+    public void init() {
+        String host = this.url.getHost();
+        int port = this.url.getPort() != 0 ? url.getPort() : DEFAULT_PORT;
+        this.client = new ConsulClient(host, port);
+    }
 
-	@Override
-	public void setUrl(URL url) {
-		this.url = url;
-	}
+    @Override
+    public URL getUrl() {
+        return url;
+    }
 
-	@Override
-	public URL getUrl() {
-		return url;
-	}
+    @Override
+    public void setUrl(URL url) {
+        this.url = url;
+    }
 
-	@Override
-	public String setConfig(String key, String value) {
-		return setConfig(null, key, value);
-	}
+    @Override
+    public String setConfig(String key, String value) {
+        return setConfig(null, key, value);
+    }
 
-	@Override
-	public String getConfig(String key) {
-		return getConfig(null, key);
-	}
+    @Override
+    public String getConfig(String key) {
+        return getConfig(null, key);
+    }
 
-	@Override
-	public boolean deleteConfig(String key) {
-		return deleteConfig(null, key);
-	}
+    @Override
+    public boolean deleteConfig(String key) {
+        return deleteConfig(null, key);
+    }
 
-	@Override
-	public String setConfig(String group, String key, String value) {
-		if (group == null) {
-			client.setKVValue(key, value);
-			return value;
-		}
-		client.setKVValue(group + SLASH + key, value);
-		return value;
-	}
+    @Override
+    public String setConfig(String group, String key, String value) {
+        if (group == null) {
+            client.setKVValue(key, value);
+            return value;
+        }
+        client.setKVValue(group + SLASH + key, value);
+        return value;
+    }
 
-	@Override
-	public String getConfig(String group, String key) {
-		if (group == null) {
-			Response<GetValue> response = client.getKVValue(key);
-			if (response.getValue() == null) {
-				return null;
-			}
-			return response.getValue().getDecodedValue();
-		}
-		Response<GetValue> response = client.getKVValue(group + SLASH + key);
-		return response.getValue() == null ? null : response.getValue().getDecodedValue();
-	}
+    @Override
+    public String getConfig(String group, String key) {
+        if (group == null) {
+            Response<GetValue> response = client.getKVValue(key);
+            if (response.getValue() == null) {
+                return null;
+            }
+            return response.getValue().getDecodedValue();
+        }
+        Response<GetValue> response = client.getKVValue(group + SLASH + key);
+        return response.getValue() == null ? null : response.getValue().getDecodedValue();
+    }
 
-	@Override
-	public boolean deleteConfig(String group, String key) {
-		try {
-			if (group == null) {
-				client.deleteKVValue(key);
-				return true;
-			}
-			client.deleteKVValue(group + SLASH + key);
-		} catch (Exception e) {
-			logger.error(e.getMessage(), e);
-			return false;
-		}
-		return true;
-	}
+    @Override
+    public boolean deleteConfig(String group, String key) {
+        try {
+            if (group == null) {
+                client.deleteKVValue(key);
+                return true;
+            }
+            client.deleteKVValue(group + SLASH + key);
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+            return false;
+        }
+        return true;
+    }
 
-	@Override
-	public String getPath(String key) {
-		return null;
-	}
+    @Override
+    public String getPath(String key) {
+        return null;
+    }
 
-	@Override
-	public String getPath(String group, String key) {
-		return null;
-	}
-
+    @Override
+    public String getPath(String group, String key) {
+        return null;
+    }
 }

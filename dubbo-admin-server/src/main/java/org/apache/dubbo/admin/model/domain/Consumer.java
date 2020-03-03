@@ -27,7 +27,6 @@ import java.util.Map;
 
 /**
  * Consumer
- *
  */
 public class Consumer extends Entity {
 

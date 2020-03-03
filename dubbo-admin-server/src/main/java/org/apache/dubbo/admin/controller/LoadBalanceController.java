@@ -18,7 +18,6 @@
 package org.apache.dubbo.admin.controller;
 
 import org.apache.commons.lang3.StringUtils;
-
 import org.apache.dubbo.admin.annotation.Authority;
 import org.apache.dubbo.admin.common.exception.ParamValidationException;
 import org.apache.dubbo.admin.common.exception.ResourceNotFoundException;
@@ -29,13 +28,7 @@ import org.apache.dubbo.admin.service.OverrideService;
 import org.apache.dubbo.admin.service.ProviderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -56,20 +49,26 @@ public class LoadBalanceController {
 
     @RequestMapping(method = RequestMethod.POST)
     @ResponseStatus(HttpStatus.CREATED)
-    public boolean createLoadbalance(@RequestBody BalancingDTO balancingDTO, @PathVariable String env) throws ParamValidationException {
-        if (StringUtils.isBlank(balancingDTO.getService()) && StringUtils.isBlank(balancingDTO.getApplication())) {
+    public boolean createLoadbalance(@RequestBody BalancingDTO balancingDTO, @PathVariable String env)
+            throws ParamValidationException {
+        if (StringUtils.isBlank(balancingDTO.getService())
+                && StringUtils.isBlank(balancingDTO.getApplication())) {
             throw new ParamValidationException("Either Service or application is required.");
         }
         String application = balancingDTO.getApplication();
-        if (StringUtils.isNotEmpty(application) && this.providerService.findVersionInApplication(application).equals("2.6")) {
-            throw new VersionValidationException("dubbo 2.6 does not support application scope load balancing config");
+        if (StringUtils.isNotEmpty(application)
+                && this.providerService.findVersionInApplication(application).equals("2.6")) {
+            throw new VersionValidationException(
+                    "dubbo 2.6 does not support application scope load balancing config");
         }
         overrideService.saveBalance(balancingDTO);
         return true;
     }
 
     @RequestMapping(value = "/{id}", method = RequestMethod.PUT)
-    public boolean updateLoadbalance(@PathVariable String id, @RequestBody BalancingDTO balancingDTO, @PathVariable String env) throws ParamValidationException {
+    public boolean updateLoadbalance(
+            @PathVariable String id, @RequestBody BalancingDTO balancingDTO, @PathVariable String env)
+            throws ParamValidationException {
         if (id == null) {
             throw new ParamValidationException("Unknown ID!");
         }
@@ -84,9 +83,10 @@ public class LoadBalanceController {
     }
 
     @RequestMapping(method = RequestMethod.GET)
-    public List<BalancingDTO> searchLoadbalances(@RequestParam(required = false) String service,
-                                                 @RequestParam(required = false) String application,
-                                                 @PathVariable String env) {
+    public List<BalancingDTO> searchLoadbalances(
+            @RequestParam(required = false) String service,
+            @RequestParam(required = false) String application,
+            @PathVariable String env) {
 
         if (StringUtils.isBlank(service) && StringUtils.isBlank(application)) {
             throw new ParamValidationException("Either service or application is required");
@@ -105,7 +105,8 @@ public class LoadBalanceController {
     }
 
     @RequestMapping(value = "/{id}", method = RequestMethod.GET)
-    public BalancingDTO detailLoadBalance(@PathVariable String id, @PathVariable String env) throws ParamValidationException {
+    public BalancingDTO detailLoadBalance(@PathVariable String id, @PathVariable String env)
+            throws ParamValidationException {
         id = id.replace(Constants.ANY_VALUE, Constants.PATH_SEPARATOR);
         BalancingDTO balancingDTO = overrideService.findBalance(id);
         if (balancingDTO == null) {
@@ -123,6 +124,4 @@ public class LoadBalanceController {
         overrideService.deleteBalance(id);
         return true;
     }
-
-
 }

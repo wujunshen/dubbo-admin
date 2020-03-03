@@ -29,7 +29,6 @@ import java.util.Map;
 
 /**
  * OverrideUtils.java
- *
  */
 public class OverrideUtils {
     public static OverrideConfig weightDTOtoConfig(WeightDTO weightDTO) {
@@ -88,7 +87,7 @@ public class OverrideUtils {
         } else {
             weightDTO.setService(key);
         }
-        weightDTO.setWeight((int)config.getParameters().get(Constants.WEIGHT));
+        weightDTO.setWeight((int) config.getParameters().get(Constants.WEIGHT));
         weightDTO.setAddresses(config.getAddresses());
         return weightDTO;
     }
@@ -109,7 +108,7 @@ public class OverrideUtils {
                 method = "*";
             }
             balancingDTO.setMethodName(method);
-            balancingDTO.setStrategy((String)entry.getValue());
+            balancingDTO.setStrategy((String) entry.getValue());
         }
         return balancingDTO;
     }

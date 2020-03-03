@@ -54,8 +54,6 @@ public class ConsumerServiceImpl extends AbstractService implements ConsumerServ
     }
 
 
-
-
     @Override
     public List<Consumer> findByAddress(String consumerAddress) {
         return SyncUtils.url2ConsumerList(findConsumerUrlByAddress(consumerAddress));

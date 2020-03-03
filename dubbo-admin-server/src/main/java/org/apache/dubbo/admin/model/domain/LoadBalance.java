@@ -18,7 +18,6 @@ package org.apache.dubbo.admin.model.domain;
 
 /**
  * LoadBalance
- *
  */
 public class LoadBalance extends Entity {
 

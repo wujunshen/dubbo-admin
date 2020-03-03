@@ -23,28 +23,21 @@ import java.util.Map;
 
 public class MetricDTO {
 
-    private MetricDTO() {
-    }
-
     private String metric;
-
     private Long timestamp;
-
     private Object value;
-
     private MetricType metricType;
-
     private Map<String, String> tags = new HashMap<String, String>();
-
     private MetricLevel metricLevel;
-
     private transient String meterName;
-
-
     /**
      * 分桶统计时间间隔，目前针对Meter/Timer/Compass有效，-1表示此项无效
      */
     private int interval = -1;
+
+
+    private MetricDTO() {
+    }
 
     @Override
     public boolean equals(Object o) {
@@ -103,7 +96,7 @@ public class MetricDTO {
         return interval;
     }
 
-    public String getMeterName(){
+    public String getMeterName() {
         return meterName;
     }
 
@@ -144,6 +137,6 @@ public class MetricDTO {
 
         MAJOR,   // 重要指标
 
-        CRITICAL; // 关键指标
+        CRITICAL // 关键指标
     }
 }

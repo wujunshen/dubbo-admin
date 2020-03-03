@@ -25,9 +25,10 @@ import org.apache.dubbo.common.extension.SPI;
 public interface GovernanceConfiguration {
     void init();
 
+    URL getUrl();
+
     void setUrl(URL url);
 
-    URL getUrl();
     String setConfig(String key, String value);
 
     String getConfig(String key);

@@ -25,39 +25,32 @@ import org.apache.dubbo.metadata.identifier.MetadataIdentifier;
 import org.apache.dubbo.rpc.RpcException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import redis.clients.jedis.HostAndPort;
-import redis.clients.jedis.Jedis;
-import redis.clients.jedis.JedisCluster;
-import redis.clients.jedis.JedisPool;
-import redis.clients.jedis.JedisPoolConfig;
+import redis.clients.jedis.*;
 
 import java.util.HashSet;
 import java.util.Set;
 
-import static org.apache.dubbo.common.constants.CommonConstants.CLUSTER_KEY;
-import static org.apache.dubbo.common.constants.CommonConstants.COMMA_SPLIT_PATTERN;
-import static org.apache.dubbo.common.constants.CommonConstants.DEFAULT_TIMEOUT;
-import static org.apache.dubbo.common.constants.CommonConstants.TIMEOUT_KEY;
+import static org.apache.dubbo.common.constants.CommonConstants.*;
 import static org.apache.dubbo.metadata.identifier.MetadataIdentifier.META_DATA_STORE_TAG;
 
 public class RedisMetaDataCollector implements MetaDataCollector {
 
     private final static Logger logger = LoggerFactory.getLogger(RedisMetaDataCollector.class);
-    private URL url;
-    private JedisPool pool;
     private static final String META_DATA_SOTRE_TAG = ".metaData";
     Set<HostAndPort> jedisClusterNodes;
+    private URL url;
+    private JedisPool pool;
     private int timeout;
     private String password;
 
     @Override
-    public void setUrl(URL url) {
-        this.url = url;
+    public URL getUrl() {
+        return url;
     }
 
     @Override
-    public URL getUrl() {
-        return url;
+    public void setUrl(URL url) {
+        this.url = url;
     }
 
     @Override

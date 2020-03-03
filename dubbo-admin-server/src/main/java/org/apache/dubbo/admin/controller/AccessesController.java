@@ -16,6 +16,7 @@
  */
 package org.apache.dubbo.admin.controller;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.dubbo.admin.annotation.Authority;
 import org.apache.dubbo.admin.common.exception.ParamValidationException;
 import org.apache.dubbo.admin.common.exception.ResourceNotFoundException;
@@ -27,17 +28,9 @@ import org.apache.dubbo.admin.service.ProviderService;
 import org.apache.dubbo.admin.service.RouteService;
 import org.apache.dubbo.common.logger.Logger;
 import org.apache.dubbo.common.logger.LoggerFactory;
-
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -59,9 +52,10 @@ public class AccessesController {
     }
 
     @RequestMapping(method = RequestMethod.GET)
-    public List<AccessDTO> searchAccess(@RequestParam(required = false) String service,
-                                        @RequestParam(required = false) String application,
-                                        @PathVariable String env) {
+    public List<AccessDTO> searchAccess(
+            @RequestParam(required = false) String service,
+            @RequestParam(required = false) String application,
+            @PathVariable String env) {
         if (StringUtils.isBlank(service) && StringUtils.isBlank(application)) {
             throw new ParamValidationException("Either service or application is required");
         }
@@ -95,12 +89,15 @@ public class AccessesController {
     @RequestMapping(method = RequestMethod.POST)
     @ResponseStatus(HttpStatus.CREATED)
     public void createAccess(@RequestBody AccessDTO accessDTO, @PathVariable String env) {
-        if (StringUtils.isBlank(accessDTO.getService()) && StringUtils.isBlank(accessDTO.getApplication())) {
+        if (StringUtils.isBlank(accessDTO.getService())
+                && StringUtils.isBlank(accessDTO.getApplication())) {
             throw new ParamValidationException("Either Service or application is required.");
         }
         String application = accessDTO.getApplication();
-        if (StringUtils.isNotEmpty(application) && "2.6".equals(providerService.findVersionInApplication(application))) {
-            throw new VersionValidationException("dubbo 2.6 does not support application scope blackwhite list config");
+        if (StringUtils.isNotEmpty(application)
+                && "2.6".equals(providerService.findVersionInApplication(application))) {
+            throw new VersionValidationException(
+                    "dubbo 2.6 does not support application scope blackwhite list config");
         }
         if (accessDTO.getBlacklist() == null && accessDTO.getWhitelist() == null) {
             throw new ParamValidationException("One of Blacklist/Whitelist is required.");
@@ -109,7 +106,8 @@ public class AccessesController {
     }
 
     @RequestMapping(value = "/{id}", method = RequestMethod.PUT)
-    public void updateAccess(@PathVariable String id, @RequestBody AccessDTO accessDTO, @PathVariable String env) {
+    public void updateAccess(
+            @PathVariable String id, @RequestBody AccessDTO accessDTO, @PathVariable String env) {
 
         id = id.replace(Constants.ANY_VALUE, Constants.PATH_SEPARATOR);
         ConditionRouteDTO route = routeService.findConditionRoute(id);

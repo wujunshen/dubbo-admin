@@ -29,8 +29,8 @@ import javax.annotation.PostConstruct;
 
 @Component
 public class GenericServiceImpl {
-    private ApplicationConfig applicationConfig;
     private final Registry registry;
+    private ApplicationConfig applicationConfig;
 
     public GenericServiceImpl(Registry registry) {
         this.registry = registry;
@@ -73,7 +73,7 @@ public class GenericServiceImpl {
      *
      * @param parameterTypes
      */
-    private void removeGenericSymbol(String[] parameterTypes){
+    private void removeGenericSymbol(String[] parameterTypes) {
         for (int i = 0; i < parameterTypes.length; i++) {
             int index = parameterTypes[i].indexOf("<");
             if (index > -1) {

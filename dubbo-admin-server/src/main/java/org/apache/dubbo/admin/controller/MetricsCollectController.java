@@ -19,31 +19,25 @@ package org.apache.dubbo.admin.controller;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
-
 import org.apache.dubbo.admin.annotation.Authority;
 import org.apache.dubbo.admin.common.util.Constants;
 import org.apache.dubbo.admin.common.util.Tool;
 import org.apache.dubbo.admin.model.domain.Consumer;
 import org.apache.dubbo.admin.model.domain.Provider;
 import org.apache.dubbo.admin.model.dto.MetricDTO;
-import org.apache.dubbo.admin.model.dto.RelationDTO;
 import org.apache.dubbo.admin.service.ConsumerService;
-import org.apache.dubbo.admin.service.MetricsService;
 import org.apache.dubbo.admin.service.ProviderService;
 import org.apache.dubbo.admin.service.impl.MetrcisCollectServiceImpl;
 import org.apache.dubbo.metadata.definition.model.FullServiceDefinition;
 import org.apache.dubbo.metadata.identifier.MetadataIdentifier;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
 @Authority(needLogin = true)
 @RestController
 @RequestMapping("/api/{env}/metrics")
@@ -55,9 +49,6 @@ public class MetricsCollectController {
     @Autowired
     private ConsumerService consumerService;
 
-    @Autowired
-    private MetricsService metricsService;
-
     @RequestMapping(method = RequestMethod.POST)
     public String metricsCollect(@RequestParam String group, @PathVariable String env) {
         MetrcisCollectServiceImpl service = new MetrcisCollectServiceImpl();
@@ -66,25 +57,21 @@ public class MetricsCollectController {
         return service.invoke(group).toString();
     }
 
-    @RequestMapping(value = "/relation", method = RequestMethod.GET)
-    public RelationDTO getApplicationRelation(){
-        return metricsService.getApplicationRelation();
-    }
-
     private String getOnePortMessage(String group, String ip, String port, String protocol) {
         MetrcisCollectServiceImpl metrcisCollectService = new MetrcisCollectServiceImpl();
-        metrcisCollectService.setUrl(protocol + "://" + ip + ":" + port +"?scope=remote&cache=true");
+        metrcisCollectService.setUrl(protocol + "://" + ip + ":" + port + "?scope=remote&cache=true");
         String res = metrcisCollectService.invoke(group).toString();
         return res;
     }
 
-    @RequestMapping( value = "/ipAddr", method = RequestMethod.GET)
-    public List<MetricDTO> searchService(@RequestParam String ip, @RequestParam String group, @PathVariable String env) {
+    @RequestMapping(value = "/ipAddr", method = RequestMethod.GET)
+    public List<MetricDTO> searchService(
+            @RequestParam String ip, @RequestParam String group, @PathVariable String env) {
 
         Map<String, String> configMap = new HashMap<>();
         addMetricsConfigToMap(configMap, ip);
 
-//         default value
+        //         default value
         if (configMap.size() <= 0) {
             configMap.put("20880", "dubbo");
         }
@@ -92,7 +79,8 @@ public class MetricsCollectController {
         for (String port : configMap.keySet()) {
             String protocol = configMap.get(port);
             String res = getOnePortMessage(group, ip, port, protocol);
-            metricDTOS.addAll(new Gson().fromJson(res, new TypeToken<List<MetricDTO>>(){}.getType()));
+            metricDTOS.addAll(new Gson().fromJson(res, new TypeToken<List<MetricDTO>>() {
+            }.getType()));
         }
 
         return metricDTOS;
@@ -103,22 +91,36 @@ public class MetricsCollectController {
         if (providers.size() > 0) {
             Provider provider = providers.get(0);
             String service = provider.getService();
-            MetadataIdentifier providerIdentifier = new MetadataIdentifier(Tool.getInterface(service), Tool.getVersion(service), Tool.getGroup(service),
-                    Constants.PROVIDER_SIDE, provider.getApplication());
+            MetadataIdentifier providerIdentifier =
+                    new MetadataIdentifier(
+                            Tool.getInterface(service),
+                            Tool.getVersion(service),
+                            Tool.getGroup(service),
+                            Constants.PROVIDER_SIDE,
+                            provider.getApplication());
             String metaData = providerService.getProviderMetaData(providerIdentifier);
-            FullServiceDefinition providerServiceDefinition = new Gson().fromJson(metaData, FullServiceDefinition.class);
+            FullServiceDefinition providerServiceDefinition =
+                    new Gson().fromJson(metaData, FullServiceDefinition.class);
             Map<String, String> parameters = providerServiceDefinition.getParameters();
-            configMap.put(parameters.get(Constants.METRICS_PORT), parameters.get(Constants.METRICS_PROTOCOL));
+            configMap.put(
+                    parameters.get(Constants.METRICS_PORT), parameters.get(Constants.METRICS_PROTOCOL));
         } else {
             List<Consumer> consumers = consumerService.findByAddress(ip);
             if (consumers.size() > 0) {
                 Consumer consumer = consumers.get(0);
                 String service = consumer.getService();
-                MetadataIdentifier consumerIdentifier = new MetadataIdentifier(Tool.getInterface(service), Tool.getVersion(service), Tool.getGroup(service),
-                        Constants.CONSUMER_SIDE, consumer.getApplication());
+                MetadataIdentifier consumerIdentifier =
+                        new MetadataIdentifier(
+                                Tool.getInterface(service),
+                                Tool.getVersion(service),
+                                Tool.getGroup(service),
+                                Constants.CONSUMER_SIDE,
+                                consumer.getApplication());
                 String metaData = consumerService.getConsumerMetadata(consumerIdentifier);
                 Map<String, String> consumerParameters = new Gson().fromJson(metaData, Map.class);
-                configMap.put(consumerParameters.get(Constants.METRICS_PORT), consumerParameters.get(Constants.METRICS_PROTOCOL));
+                configMap.put(
+                        consumerParameters.get(Constants.METRICS_PORT),
+                        consumerParameters.get(Constants.METRICS_PROTOCOL));
             }
         }
     }

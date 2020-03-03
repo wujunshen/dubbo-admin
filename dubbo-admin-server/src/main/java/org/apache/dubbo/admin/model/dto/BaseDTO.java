@@ -18,7 +18,7 @@ package org.apache.dubbo.admin.model.dto;
 
 /**
  * BaseDTO
- *
+ * <p>
  * For receive ID parameter with @RequestBody
  */
 public abstract class BaseDTO {

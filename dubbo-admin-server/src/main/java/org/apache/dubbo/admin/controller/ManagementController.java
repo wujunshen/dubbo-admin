@@ -26,35 +26,32 @@ import org.apache.dubbo.admin.service.ManagementService;
 import org.apache.dubbo.admin.service.ProviderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.regex.Pattern;
+
 @Authority(needLogin = true)
 @RestController
 @RequestMapping("/api/{env}/manage")
 public class ManagementController {
 
+    private static Pattern CLASS_NAME_PATTERN =
+            Pattern.compile("([a-zA-Z_$][a-zA-Z\\d_$]*\\.)*[a-zA-Z_$][a-zA-Z\\d_$]*");
     private final ManagementService managementService;
     private final ProviderService providerService;
-    private static Pattern CLASS_NAME_PATTERN = Pattern.compile("([a-zA-Z_$][a-zA-Z\\d_$]*\\.)*[a-zA-Z_$][a-zA-Z\\d_$]*");
-
 
     @Autowired
-    public ManagementController(ManagementService managementService, ProviderService providerService) {
+    public ManagementController(
+            ManagementService managementService, ProviderService providerService) {
         this.managementService = managementService;
         this.providerService = providerService;
     }
 
-    @RequestMapping(value ="/config", method = RequestMethod.POST)
+    @RequestMapping(value = "/config", method = RequestMethod.POST)
     @ResponseStatus(HttpStatus.CREATED)
     public boolean createConfig(@RequestBody ConfigDTO config, @PathVariable String env) {
         managementService.setConfig(config);
@@ -62,13 +59,15 @@ public class ManagementController {
     }
 
     @RequestMapping(value = "/config/{key}", method = RequestMethod.PUT)
-    public boolean updateConfig(@PathVariable String key, @RequestBody ConfigDTO configDTO, @PathVariable String env) {
+    public boolean updateConfig(
+            @PathVariable String key, @RequestBody ConfigDTO configDTO, @PathVariable String env) {
         if (key == null) {
             throw new ParamValidationException("Unknown ID!");
         }
         String exitConfig = managementService.getConfig(key);
         if (exitConfig == null) {
-            throw new ResourceNotFoundException("Unknown ID!"); }
+            throw new ResourceNotFoundException("Unknown ID!");
+        }
         return managementService.updateConfig(configDTO);
     }
 
@@ -93,7 +92,7 @@ public class ManagementController {
             configDTO.setPath(managementService.getConfigPath(q));
             if (Constants.GLOBAL_CONFIG.equals(q)) {
                 configDTO.setScope(Constants.GLOBAL_CONFIG);
-            } else if(CLASS_NAME_PATTERN.matcher(q).matches()){
+            } else if (CLASS_NAME_PATTERN.matcher(q).matches()) {
                 configDTO.setScope(Constants.SERVICE);
             } else {
                 configDTO.setScope(Constants.APPLICATION);

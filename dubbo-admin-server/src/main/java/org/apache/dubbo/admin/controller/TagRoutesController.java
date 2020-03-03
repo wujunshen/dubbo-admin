@@ -18,7 +18,6 @@
 package org.apache.dubbo.admin.controller;
 
 import org.apache.commons.lang3.StringUtils;
-
 import org.apache.dubbo.admin.annotation.Authority;
 import org.apache.dubbo.admin.common.exception.ParamValidationException;
 import org.apache.dubbo.admin.common.exception.ResourceNotFoundException;
@@ -29,21 +28,15 @@ import org.apache.dubbo.admin.service.ProviderService;
 import org.apache.dubbo.admin.service.RouteService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
+
 @Authority(needLogin = true)
 @RestController
 @RequestMapping("/api/{env}/rules/route/tag")
 public class TagRoutesController {
-
 
     private final RouteService routeService;
     private final ProviderService providerService;
@@ -69,7 +62,8 @@ public class TagRoutesController {
     }
 
     @RequestMapping(value = "/{id}", method = RequestMethod.PUT)
-    public boolean updateRule(@PathVariable String id, @RequestBody TagRouteDTO routeDTO, @PathVariable String env) {
+    public boolean updateRule(
+            @PathVariable String id, @RequestBody TagRouteDTO routeDTO, @PathVariable String env) {
 
         id = id.replace(Constants.ANY_VALUE, Constants.PATH_SEPARATOR);
         String app = routeDTO.getApplication();
@@ -81,11 +75,11 @@ public class TagRoutesController {
         }
         routeService.updateTagRoute(routeDTO);
         return true;
-
     }
 
     @RequestMapping(method = RequestMethod.GET)
-    public List<TagRouteDTO> searchRoutes(@RequestParam String application, @PathVariable String env) {
+    public List<TagRouteDTO> searchRoutes(
+            @RequestParam String application, @PathVariable String env) {
         if (StringUtils.isBlank(application)) {
             throw new ParamValidationException("application is required.");
         }
@@ -94,7 +88,7 @@ public class TagRoutesController {
         try {
             version = providerService.findVersionInApplication(application);
         } catch (ParamValidationException e) {
-            //ignore
+            // ignore
         }
         if (version.equals("2.6")) {
             return result;
@@ -138,4 +132,3 @@ public class TagRoutesController {
         return true;
     }
 }
-

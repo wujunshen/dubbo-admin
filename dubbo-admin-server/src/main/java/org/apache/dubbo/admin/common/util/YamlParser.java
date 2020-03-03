@@ -33,8 +33,7 @@ public class YamlParser {
             protected NodeTuple representJavaBeanProperty(Object javaBean, Property property, Object propertyValue, Tag customTag) {
                 if (propertyValue == null) {
                     return null;
-                }
-                else {
+                } else {
                     return super.representJavaBeanProperty(javaBean, property, propertyValue, customTag);
                 }
             }

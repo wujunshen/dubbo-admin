@@ -25,15 +25,8 @@ import org.apache.dubbo.admin.model.store.TagRoute;
 import org.apache.dubbo.common.utils.StringUtils;
 
 import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
-import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -44,14 +37,13 @@ import java.util.regex.Pattern;
  * The process of using Conditions to match consumers and providers is called `Filter`.
  * When Condition are used to filter ConsumersController, while Then Condition are used to filter ProvidersController.
  * RouteUtils performs like this: If a Consumer matches When Condition, then only return the ProvidersController matches Then Condition. This means RouteUtils should be applied to current Consumer and the providers returned are filtered by RouteUtils.<br>
- *
+ * <p>
  * An example of ConditionRoute Rule：<code>
  * key1 = value11,value12 & key2 = value21 & key2 != value22 => key3 = value3 & key4 = value41,vlaue42 & key5 !=value51
  * </code>。
  * The part before <code>=></code> is called When Condition, it's a KV pair; the follower part is Then Condition, also a KV pair. V part in KV can have more than one value, separated by ','<br><br>
- *
+ * <p>
  * Value object, thread safe.
- *
  */
 public class RouteUtils {
     @SuppressWarnings("unchecked")
@@ -65,10 +57,10 @@ public class RouteUtils {
 
     // FIXME
     private RouteUtils(Map<String, MatchPair> when, Map<String, MatchPair> then) {
-        for (Map.Entry<String, MatchPair> entry : when.entrySet()) {
+        for (Entry<String, MatchPair> entry : when.entrySet()) {
             entry.getValue().freeze();
         }
-        for (Map.Entry<String, MatchPair> entry : then.entrySet()) {
+        for (Entry<String, MatchPair> entry : then.entrySet()) {
             entry.getValue().freeze();
         }
 
@@ -149,11 +141,11 @@ public class RouteUtils {
      * Parse the RouteUtils as a string into an object.
      *
      * @throws ParseException RouteUtils string format is wrong. The following input conditions, RouteUtils are illegal.
-     * <ul> <li> input is <code>null</code>。
-     * <li> input is "" or " "。
-     * <li> input Rule doesn't have a When Condition
-     * <li> input Rule doesn't have a Then Condition
-     * </ul>
+     *                        <ul> <li> input is <code>null</code>。
+     *                        <li> input is "" or " "。
+     *                        <li> input Rule doesn't have a When Condition
+     *                        <li> input Rule doesn't have a Then Condition
+     *                        </ul>
      */
     public static RouteUtils parse(Route conditionRoute) throws ParseException {
         if (conditionRoute == null)
@@ -190,8 +182,8 @@ public class RouteUtils {
     }
 
     /**
-     * @see #parse(String)
      * @throws RuntimeException This is an wrapper exception for the {@link ParseException} thrown by the {@link #parse (String)} method.
+     * @see #parse(String)
      */
     public static RouteUtils parseQuitely(Route conditionRoute) {
         try {
@@ -241,6 +233,7 @@ public class RouteUtils {
         existRule.setPriority(conditionRoute.getPriority());
         return existRule;
     }
+
     public static List<String> convertToBlackWhiteList(AccessDTO accessDTO) {
         if (accessDTO == null) {
             return null;
@@ -334,8 +327,8 @@ public class RouteUtils {
         route.setFilterRule("false");
         route.setEnabled(true);
 
-        Map<String, RouteUtils.MatchPair> when = new HashMap<>();
-        RouteUtils.MatchPair matchPair = new RouteUtils.MatchPair(new HashSet<>(), new HashSet<>());
+        Map<String, MatchPair> when = new HashMap<>();
+        MatchPair matchPair = new MatchPair(new HashSet<>(), new HashSet<>());
         when.put(Route.KEY_CONSUMER_HOST, matchPair);
 
         if (accessDTO.getWhitelist() != null) {
@@ -463,7 +456,7 @@ public class RouteUtils {
     /**
      * Replace with the new condition value.
      *
-     * @param copy Replace Base
+     * @param copy          Replace Base
      * @param whenCondition WhenCondition to replace, if Base does not have an item, insert it directly.
      * @param thenCondition ThenCondition to replace, if Base has no items, then insert directly.
      * @return RouteUtils after replacement
@@ -511,7 +504,7 @@ public class RouteUtils {
      */
     public static boolean matchCondition(Map<String, String> sample,
                                          Map<String, MatchPair> condition) {
-        for (Map.Entry<String, String> entry : sample.entrySet()) {
+        for (Entry<String, String> entry : sample.entrySet()) {
             String key = entry.getKey();
 
             MatchPair pair = condition.get(key);
@@ -558,6 +551,13 @@ public class RouteUtils {
         }
     }
 
+    private static boolean isBlackList(String address) {
+        return (address.startsWith("host = ") && address.endsWith(" =>"));
+    }
+
+    private static boolean isWhiteList(String address) {
+        return (address.startsWith("host != ") && address.endsWith(" =>"));
+    }
 
     public boolean isWhenContainValue(String key, String value) {
         MatchPair matchPair = whenCondition.get(key);
@@ -601,14 +601,6 @@ public class RouteUtils {
         return sb.toString();
     }
 
-    private static boolean isBlackList(String address) {
-        return (address.startsWith("host = ") && address.endsWith(" =>"));
-    }
-
-    private static boolean isWhiteList(String address) {
-        return (address.startsWith("host != ") && address.endsWith(" =>"));
-    }
-
     @Override
     public String toString() {
         if (tostring != null)
@@ -646,11 +638,8 @@ public class RouteUtils {
         } else if (!thenCondition.equals(other.thenCondition))
             return false;
         if (whenCondition == null) {
-            if (other.whenCondition != null)
-                return false;
-        } else if (!whenCondition.equals(other.whenCondition))
-            return false;
-        return true;
+            return other.whenCondition == null;
+        } else return whenCondition.equals(other.whenCondition);
     }
 
     public static class MatchPair {
@@ -744,11 +733,8 @@ public class RouteUtils {
             } else if (!matches.equals(other.matches))
                 return false;
             if (unmatches == null) {
-                if (other.unmatches != null)
-                    return false;
-            } else if (!unmatches.equals(other.unmatches))
-                return false;
-            return true;
+                return other.unmatches == null;
+            } else return unmatches.equals(other.unmatches);
         }
     }
 }

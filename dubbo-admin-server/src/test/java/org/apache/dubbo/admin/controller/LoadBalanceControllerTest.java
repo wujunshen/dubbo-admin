@@ -36,14 +36,10 @@ import java.net.URI;
 import java.util.List;
 import java.util.Map;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 
 public class LoadBalanceControllerTest extends AbstractSpringIntegrationTest {
@@ -70,17 +66,17 @@ public class LoadBalanceControllerTest extends AbstractSpringIntegrationTest {
         ResponseEntity<String> response;
 
         // service and application are all blank
-        response = restTemplate.postForEntity(url("/api/{env}/rules/balancing"), balancingDTO, String.class, env);
+        response = restTemplate.postForEntity(url("/dubbo-admin/api/{env}/rules/balancing"), balancingDTO, String.class, env);
         assertFalse("should return a fail response, when service and application are all blank", (Boolean) objectMapper.readValue(response.getBody(), Map.class).get("success"));
         // dubbo version is 2.6
         balancingDTO.setApplication("test application");
         balancingDTO.setService("test service");
         when(providerService.findVersionInApplication("test application")).thenReturn("2.6");
-        response = restTemplate.postForEntity(url("/api/{env}/rules/balancing"), balancingDTO, String.class, env);
+        response = restTemplate.postForEntity(url("/dubbo-admin/api/{env}/rules/balancing"), balancingDTO, String.class, env);
         assertFalse("should return a fail response, when dubbo version is 2.6", (Boolean) objectMapper.readValue(response.getBody(), Map.class).get("success"));
         // dubbo version is 2.7
         when(providerService.findVersionInApplication("test application")).thenReturn("2.7");
-        response = restTemplate.postForEntity(url("/api/{env}/rules/balancing"), balancingDTO, String.class, env);
+        response = restTemplate.postForEntity(url("/dubbo-admin/api/{env}/rules/balancing"), balancingDTO, String.class, env);
         assertEquals(HttpStatus.CREATED, response.getStatusCode());
         assertTrue(Boolean.valueOf(response.getBody()));
     }
@@ -92,12 +88,12 @@ public class LoadBalanceControllerTest extends AbstractSpringIntegrationTest {
         URI uri;
         ResponseEntity<String> response;
         // unknown id
-        response = restTemplate.exchange(url("/api/{env}/rules/balancing/{id}"), HttpMethod.PUT, new HttpEntity<>(balancingDTO, null), String.class, env, id);
+        response = restTemplate.exchange(url("/dubbo-admin/api/{env}/rules/balancing/{id}"), HttpMethod.PUT, new HttpEntity<>(balancingDTO, null), String.class, env, id);
         assertFalse("should return a fail response, when id is null", (Boolean) objectMapper.readValue(response.getBody(), Map.class).get("success"));
         // valid id
         BalancingDTO balancing = mock(BalancingDTO.class);
         when(overrideService.findBalance(id)).thenReturn(balancing);
-        assertTrue(restTemplate.exchange(url("/api/{env}/rules/balancing/{id}"), HttpMethod.PUT, new HttpEntity<>(balancingDTO, null), Boolean.class, env, id).getBody());
+        assertTrue(restTemplate.exchange(url("/dubbo-admin/api/{env}/rules/balancing/{id}"), HttpMethod.PUT, new HttpEntity<>(balancingDTO, null), Boolean.class, env, id).getBody());
         verify(overrideService).saveBalance(any(BalancingDTO.class));
     }
 
@@ -106,20 +102,20 @@ public class LoadBalanceControllerTest extends AbstractSpringIntegrationTest {
         String service = "test service", application = "test application";
         ResponseEntity<String> response;
         // service and application are all blank
-        response = restTemplate.getForEntity(url("/api/{env}/rules/balancing"), String.class, env);
+        response = restTemplate.getForEntity(url("/dubbo-admin/api/{env}/rules/balancing"), String.class, env);
         assertFalse("should return a fail response, when service and application are all blank", (Boolean) objectMapper.readValue(response.getBody(), Map.class).get("success"));
         // service is valid
-        response = restTemplate.getForEntity(url("/api/{env}/rules/balancing?service={service}&application={application}"), String.class, env, service, null);
+        response = restTemplate.getForEntity(url("/dubbo-admin/api/{env}/rules/balancing?service={service}&application={application}"), String.class, env, service, null);
         assertEquals(HttpStatus.OK, response.getStatusCode());
         verify(overrideService).findBalance(service);
         // application is valid
-        response = restTemplate.getForEntity(url("/api/{env}/rules/balancing?service={service}&application={application}"), String.class, env, null, application);
+        response = restTemplate.getForEntity(url("/dubbo-admin/api/{env}/rules/balancing?service={service}&application={application}"), String.class, env, null, application);
         assertEquals(HttpStatus.OK, response.getStatusCode());
         verify(overrideService).findBalance(application);
         // findBalance return a notnull
         BalancingDTO balancingDTO = new BalancingDTO();
         when(overrideService.findBalance(anyString())).thenReturn(balancingDTO);
-        response = restTemplate.getForEntity(url("/api/{env}/rules/balancing?service={service}&application={application}"), String.class, env, null, application);
+        response = restTemplate.getForEntity(url("/dubbo-admin/api/{env}/rules/balancing?service={service}&application={application}"), String.class, env, null, application);
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(1, objectMapper.readValue(response.getBody(), List.class).size());
     }
@@ -129,12 +125,12 @@ public class LoadBalanceControllerTest extends AbstractSpringIntegrationTest {
         String id = "1";
         ResponseEntity<String> response;
         // when balancing is not exist
-        response = restTemplate.getForEntity(url("/api/{env}/rules/balancing/{id}"), String.class, env, id);
+        response = restTemplate.getForEntity(url("/dubbo-admin/api/{env}/rules/balancing/{id}"), String.class, env, id);
         assertFalse("should return a fail response, when id is null", (Boolean) objectMapper.readValue(response.getBody(), Map.class).get("success"));
         // when balancing is not null
         BalancingDTO balancingDTO = new BalancingDTO();
         when(overrideService.findBalance(id)).thenReturn(balancingDTO);
-        response = restTemplate.getForEntity(url("/api/{env}/rules/balancing/{id}"), String.class, env, id);
+        response = restTemplate.getForEntity(url("/dubbo-admin/api/{env}/rules/balancing/{id}"), String.class, env, id);
         assertEquals(HttpStatus.OK, response.getStatusCode());
     }
 
@@ -144,7 +140,7 @@ public class LoadBalanceControllerTest extends AbstractSpringIntegrationTest {
         URI uri;
         ResponseEntity<String> response;
 
-        response = restTemplate.exchange(url("/api/{env}/rules/balancing/{id}"), HttpMethod.DELETE, new HttpEntity<>(null), String.class, env, id);
+        response = restTemplate.exchange(url("/dubbo-admin/api/{env}/rules/balancing/{id}"), HttpMethod.DELETE, new HttpEntity<>(null), String.class, env, id);
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertTrue(Boolean.valueOf(response.getBody()));
     }

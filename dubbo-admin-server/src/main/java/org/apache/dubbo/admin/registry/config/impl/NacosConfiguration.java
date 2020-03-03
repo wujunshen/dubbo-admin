@@ -17,16 +17,15 @@
 
 package org.apache.dubbo.admin.registry.config.impl;
 
+import com.alibaba.nacos.api.NacosFactory;
+import com.alibaba.nacos.api.config.ConfigService;
+import com.alibaba.nacos.api.exception.NacosException;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.dubbo.admin.common.util.Constants;
 import org.apache.dubbo.admin.registry.config.GovernanceConfiguration;
 import org.apache.dubbo.common.URL;
 import org.apache.dubbo.common.logger.Logger;
 import org.apache.dubbo.common.logger.LoggerFactory;
-
-import com.alibaba.nacos.api.NacosFactory;
-import com.alibaba.nacos.api.config.ConfigService;
-import com.alibaba.nacos.api.exception.NacosException;
-import org.apache.commons.lang3.StringUtils;
 
 import java.util.Properties;
 
@@ -74,15 +73,14 @@ public class NacosConfiguration implements GovernanceConfiguration {
         properties.put(SERVER_ADDR, serverAddr);
     }
 
+    @Override
+    public URL getUrl() {
+        return url;
+    }
 
     @Override
     public void setUrl(URL url) {
         this.url = url;
-    }
-
-    @Override
-    public URL getUrl() {
-        return url;
     }
 
     @Override
@@ -124,7 +122,7 @@ public class NacosConfiguration implements GovernanceConfiguration {
             return null;
         }
         try {
-            return configService.getConfig(groupAndDataId[1], groupAndDataId[0],1000 * 10);
+            return configService.getConfig(groupAndDataId[1], groupAndDataId[0], 1000 * 10);
         } catch (NacosException e) {
             logger.error(e.getMessage(), e);
         }
@@ -138,7 +136,7 @@ public class NacosConfiguration implements GovernanceConfiguration {
             return false;
         }
         try {
-           return configService.removeConfig(groupAndDataId[1], groupAndDataId[0]);
+            return configService.removeConfig(groupAndDataId[1], groupAndDataId[0]);
         } catch (NacosException e) {
             logger.error(e.getMessage(), e);
         }

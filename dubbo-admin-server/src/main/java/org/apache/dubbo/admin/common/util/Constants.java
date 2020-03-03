@@ -17,12 +17,10 @@
 
 package org.apache.dubbo.admin.common.util;
 
-
 import java.util.HashSet;
 import java.util.Set;
 
 public class Constants {
-
     public static final String REGISTRY_ADDRESS = "dubbo.registry.address";
     public static final String METADATA_ADDRESS = "dubbo.metadata-report.address";
     public static final String DEFAULT_ROOT = "dubbo";
@@ -82,5 +80,4 @@ public class Constants {
         CONFIGS.add(WEIGHT);
         CONFIGS.add(BALANCING);
     }
-
 }

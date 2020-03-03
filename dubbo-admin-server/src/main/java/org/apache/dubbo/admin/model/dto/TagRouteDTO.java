@@ -21,7 +21,7 @@ import org.apache.dubbo.admin.model.domain.Tag;
 
 import java.util.List;
 
-public class TagRouteDTO extends RouteDTO{
+public class TagRouteDTO extends RouteDTO {
     private List<Tag> tags;
 
     public List<Tag> getTags() {

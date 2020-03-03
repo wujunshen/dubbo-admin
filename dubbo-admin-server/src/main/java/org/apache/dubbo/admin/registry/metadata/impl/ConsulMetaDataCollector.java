@@ -18,11 +18,10 @@
 package org.apache.dubbo.admin.registry.metadata.impl;
 
 
-import org.apache.dubbo.admin.registry.metadata.MetaDataCollector;
-
 import com.ecwid.consul.v1.ConsulClient;
 import com.ecwid.consul.v1.Response;
 import com.ecwid.consul.v1.kv.model.GetValue;
+import org.apache.dubbo.admin.registry.metadata.MetaDataCollector;
 import org.apache.dubbo.common.URL;
 import org.apache.dubbo.common.logger.Logger;
 import org.apache.dubbo.common.logger.LoggerFactory;

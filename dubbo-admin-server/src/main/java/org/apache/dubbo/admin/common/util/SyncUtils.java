@@ -103,7 +103,7 @@ public class SyncUtils {
 
     // Map<category, Map<servicename, Map<Long, URL>>>
     public static <SM extends Map<String, Map<String, URL>>> Map<String, URL> filterFromCategory(Map<String, SM> urls, Map<String, String> filter) {
-        String c = (String) filter.get(Constants.CATEGORY_KEY);
+        String c = filter.get(Constants.CATEGORY_KEY);
         if (c == null) throw new IllegalArgumentException("no category");
 
         filter.remove(Constants.CATEGORY_KEY);
@@ -116,7 +116,7 @@ public class SyncUtils {
         Map<String, URL> ret = new HashMap<>();
         if (urls == null) return ret;
 
-        String s = (String) filter.remove(SERVICE_FILTER_KEY);
+        String s = filter.remove(SERVICE_FILTER_KEY);
         if (s == null) {
             for (Map.Entry<String, Map<String, URL>> entry : urls.entrySet()) {
                 filterFromUrls(entry.getValue(), ret, filter);
@@ -148,8 +148,7 @@ public class SyncUtils {
                             match = false;
                             break;
                         }
-                    }
-                    else {  // value is just address
+                    } else {  // value is just address
                         if (!value.equals(url.getIp())) {
                             match = false;
                             break;

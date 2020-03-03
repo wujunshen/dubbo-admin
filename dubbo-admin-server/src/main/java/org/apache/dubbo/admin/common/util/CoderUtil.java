@@ -27,8 +27,8 @@ import java.security.NoSuchAlgorithmException;
 public class CoderUtil {
 
     private static final Logger logger = LoggerFactory.getLogger(CoderUtil.class);
-    private static MessageDigest md;
     private static final char[] hexCode = "0123456789ABCDEF".toCharArray();
+    private static MessageDigest md;
 
     static {
         try {

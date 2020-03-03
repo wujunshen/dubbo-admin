@@ -17,7 +17,7 @@
 
 package org.apache.dubbo.admin.model.dto;
 
-public abstract class RouteDTO extends BaseDTO{
+public abstract class RouteDTO extends BaseDTO {
     private int priority;
     private boolean enabled;
     private boolean force;

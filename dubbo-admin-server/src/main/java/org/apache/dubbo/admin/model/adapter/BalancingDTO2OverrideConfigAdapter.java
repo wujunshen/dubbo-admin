@@ -24,16 +24,16 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class BalancingDTO2OverrideConfigAdapter extends OverrideConfig {
-  public BalancingDTO2OverrideConfigAdapter(BalancingDTO balancingDTO) {
-    setType(Constants.BALANCING);
-    setEnabled(true);
-    setSide(Constants.CONSUMER_SIDE);
-    Map<String, Object> parameters = new HashMap<>();
-    if (balancingDTO.getMethodName().equals("*")) {
-      parameters.put("loadbalance", balancingDTO.getStrategy());
-    } else {
-      parameters.put(balancingDTO.getMethodName() + ".loadbalance", balancingDTO.getStrategy());
+    public BalancingDTO2OverrideConfigAdapter(BalancingDTO balancingDTO) {
+        setType(Constants.BALANCING);
+        setEnabled(true);
+        setSide(Constants.CONSUMER_SIDE);
+        Map<String, Object> parameters = new HashMap<>();
+        if (balancingDTO.getMethodName().equals("*")) {
+            parameters.put("loadbalance", balancingDTO.getStrategy());
+        } else {
+            parameters.put(balancingDTO.getMethodName() + ".loadbalance", balancingDTO.getStrategy());
+        }
+        setParameters(parameters);
     }
-    setParameters(parameters);
-  }
 }

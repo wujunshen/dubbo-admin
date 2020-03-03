@@ -25,7 +25,6 @@ import java.util.Set;
 
 /**
  * ProviderService
- *
  */
 public interface ProviderService {
 
@@ -106,7 +105,7 @@ public interface ProviderService {
 
     /**
      * Get a set of service data object.
-     *
+     * <p>
      * ServiceDTO object contains base information include
      * service name , application, group and version.
      *

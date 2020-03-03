@@ -41,7 +41,7 @@
       axios
     },
     data: () => ({
-      baseURL: '/api/dev',
+      baseURL: '/dubbo-admin/api/dev',
       success: null,
       breads: [
         {

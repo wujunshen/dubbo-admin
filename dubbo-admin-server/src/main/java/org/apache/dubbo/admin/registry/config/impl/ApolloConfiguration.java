@@ -45,15 +45,14 @@ public class ApolloConfiguration implements GovernanceConfiguration {
     private URL url;
     private ApolloOpenApiClient client;
 
-
-    @Override
-    public void setUrl(URL url) {
-       this.url = url;
-    }
-
     @Override
     public URL getUrl() {
         return url;
+    }
+
+    @Override
+    public void setUrl(URL url) {
+        this.url = url;
     }
 
     @Override
@@ -93,7 +92,7 @@ public class ApolloConfiguration implements GovernanceConfiguration {
         if (group == null) {
             group = namespace;
         }
-        OpenItemDTO openItemDTO =  client.getItem(appId, env, cluster, group, key);
+        OpenItemDTO openItemDTO = client.getItem(appId, env, cluster, group, key);
         if (openItemDTO != null) {
             return openItemDTO.getValue();
         }

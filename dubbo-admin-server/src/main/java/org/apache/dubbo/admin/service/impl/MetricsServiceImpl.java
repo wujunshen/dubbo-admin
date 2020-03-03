@@ -22,18 +22,11 @@ import org.apache.dubbo.admin.model.dto.RelationDTO;
 import org.apache.dubbo.admin.service.ConsumerService;
 import org.apache.dubbo.admin.service.MetricsService;
 import org.apache.dubbo.admin.service.ProviderService;
-
 import org.apache.dubbo.common.utils.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Component
@@ -60,7 +53,7 @@ public class MetricsServiceImpl implements MetricsService {
         Map<String, Set<String>> consumerServiceApplicationMap = new HashMap<>();
         for (Consumer consumer : consumerList) {
             String application = consumer.getApplication();
-            if (!consumerNodeMap.keySet().contains(application)) {
+            if (!consumerNodeMap.containsKey(application)) {
                 RelationDTO.Node node = new RelationDTO.Node(index, application, RelationDTO.CONSUMER_CATEGORIES.getIndex());
                 consumerNodeMap.put(application, node);
                 index++;
@@ -76,7 +69,7 @@ public class MetricsServiceImpl implements MetricsService {
         Map<String, Set<String>> providerServiceApplicationMap = new HashMap<>();
         for (Provider provider : providerList) {
             String application = provider.getApplication();
-            if (!providerNodeMap.keySet().contains(application)) {
+            if (!providerNodeMap.containsKey(application)) {
                 RelationDTO.Node node = new RelationDTO.Node(index, application, RelationDTO.PROVIDER_CATEGORIES.getIndex());
                 providerNodeMap.put(application, node);
                 index++;

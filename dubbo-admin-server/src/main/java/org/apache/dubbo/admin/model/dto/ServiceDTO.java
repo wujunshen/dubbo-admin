@@ -21,7 +21,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import java.util.Objects;
 
-public class ServiceDTO implements Comparable<ServiceDTO>{
+public class ServiceDTO implements Comparable<ServiceDTO> {
     private String service;
     private String appName;
     private String group;
@@ -84,7 +84,7 @@ public class ServiceDTO implements Comparable<ServiceDTO>{
         }
         ServiceDTO that = (ServiceDTO) o;
         return Objects.equals(service, that.service) && Objects.equals(appName, that.appName) && Objects
-            .equals(group, that.group) && Objects.equals(version, that.version);
+                .equals(group, that.group) && Objects.equals(version, that.version);
     }
 
     @Override

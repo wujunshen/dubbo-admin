@@ -38,101 +38,109 @@ import java.util.Map;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 public class AccessesControllerTest extends AbstractSpringIntegrationTest {
 
-    private final String env = "whatever";
+  private final String env = "whatever";
 
-    @MockBean
-    private RouteService routeService;
-    @MockBean
-    private ProviderService providerService;
-    @Autowired
-    private ObjectMapper objectMapper;
+  @MockBean private RouteService routeService;
+  @MockBean private ProviderService providerService;
+  @Autowired private ObjectMapper objectMapper;
 
-    @After
-    public void tearDown() throws Exception {
-        if (zkClient.checkExists().forPath("/dubbo") != null) {
-            zkClient.delete().deletingChildrenIfNeeded().forPath("/dubbo");
-        }
+  @After
+  public void tearDown() throws Exception {
+    if (zkClient.checkExists().forPath("/dubbo") != null) {
+      zkClient.delete().deletingChildrenIfNeeded().forPath("/dubbo");
     }
+  }
 
-    @Test
-    public void searchAccess() throws IOException {
-        AccessDTO accessDTO = new AccessDTO();
-        ResponseEntity<String> response;
-        String exceptResponseBody;
-        // application and service is all empty
-        response = restTemplate.getForEntity(url("/api/{env}/rules/access"), String.class, env);
-        Map map = objectMapper.readValue(response.getBody(), Map.class);
-        assertFalse("should return a fail response", (Boolean) map.get("success"));
+  @Test
+  public void searchAccess() throws IOException {
+    AccessDTO accessDTO = new AccessDTO();
+    ResponseEntity<String> response;
+    String exceptResponseBody;
+    // application and service is all empty
+    response =
+        restTemplate.getForEntity(url("/dubbo-admin/api/{env}/rules/access"), String.class, env);
+    Map map = objectMapper.readValue(response.getBody(), Map.class);
+    assertFalse("should return a fail response", (Boolean) map.get("success"));
 
-        // when application is present
-        String application = "applicationName";
-        when(routeService.findAccess(application)).thenReturn(accessDTO);
-        response = restTemplate.getForEntity(url("/api/{env}/rules/access?application={application}"), String.class, env, application);
-        exceptResponseBody = objectMapper.writeValueAsString(Collections.singletonList(accessDTO));
-        assertEquals(exceptResponseBody, response.getBody());
+    // when application is present
+    String application = "applicationName";
+    when(routeService.findAccess(application)).thenReturn(accessDTO);
+    response =
+        restTemplate.getForEntity(
+            url("/dubbo-admin/api/{env}/rules/access?application={application}"),
+            String.class,
+            env,
+            application);
+    exceptResponseBody = objectMapper.writeValueAsString(Collections.singletonList(accessDTO));
+    assertEquals(exceptResponseBody, response.getBody());
 
-        // when service is present
-        String service = "serviceName";
-        when(routeService.findAccess(service)).thenReturn(accessDTO);
-        response = restTemplate.getForEntity(url("/api/{env}/rules/access?service={service}"), String.class, env, service);
-        exceptResponseBody = objectMapper.writeValueAsString(Collections.singletonList(accessDTO));
-        assertEquals(exceptResponseBody, response.getBody());
-    }
+    // when service is present
+    String service = "serviceName";
+    when(routeService.findAccess(service)).thenReturn(accessDTO);
+    response =
+        restTemplate.getForEntity(
+            url("/dubbo-admin/api/{env}/rules/access?service={service}"),
+            String.class,
+            env,
+            service);
+    exceptResponseBody = objectMapper.writeValueAsString(Collections.singletonList(accessDTO));
+    assertEquals(exceptResponseBody, response.getBody());
+  }
 
-    @Test
-    public void detailAccess() throws JsonProcessingException {
-        String id = "1";
-        AccessDTO accessDTO = new AccessDTO();
-        when(routeService.findAccess(id)).thenReturn(accessDTO);
-        ResponseEntity<String> response = restTemplate.getForEntity(url("/api/{env}/rules/access/{id}"), String.class, env, id);
-        String exceptResponseBody = objectMapper.writeValueAsString(accessDTO);
-        assertEquals(exceptResponseBody, response.getBody());
-    }
+  @Test
+  public void detailAccess() throws JsonProcessingException {
+    String id = "1";
+    AccessDTO accessDTO = new AccessDTO();
+    when(routeService.findAccess(id)).thenReturn(accessDTO);
+    ResponseEntity<String> response =
+        restTemplate.getForEntity(
+            url("/dubbo-admin/api/{env}/rules/access/{id}"), String.class, env, id);
+    String exceptResponseBody = objectMapper.writeValueAsString(accessDTO);
+    assertEquals(exceptResponseBody, response.getBody());
+  }
 
-    @Test
-    public void deleteAccess() {
-        String id = "1";
-        restTemplate.delete(url("/api/{env}/rules/access/{id}"), env, id);
-        verify(routeService).deleteAccess(id);
-    }
+  @Test
+  public void deleteAccess() {
+    String id = "1";
+    restTemplate.delete(url("/dubbo-admin/api/{env}/rules/access/{id}"), env, id);
+    verify(routeService).deleteAccess(id);
+  }
 
-    @Test
-    public void createAccess() {
-        AccessDTO accessDTO = new AccessDTO();
-        String application = "applicationName";
+  @Test
+  public void createAccess() {
+    AccessDTO accessDTO = new AccessDTO();
+    String application = "applicationName";
 
-        restTemplate.postForLocation(url("/api/{env}/rules/access"), accessDTO, env);
-        // when application is present & dubbo's version is 2.6
-        accessDTO.setApplication(application);
-        when(providerService.findVersionInApplication(application)).thenReturn("2.6");
-        restTemplate.postForLocation(url("/api/{env}/rules/access"), accessDTO, env);
-        // dubbo's version is 2.7
-        when(providerService.findVersionInApplication(application)).thenReturn("2.7");
-        restTemplate.postForLocation(url("/api/{env}/rules/access"), accessDTO, env);
-        // black white list is not null
-        accessDTO.setBlacklist(new HashSet<>());
-        accessDTO.setWhitelist(new HashSet<>());
-        restTemplate.postForLocation(url("/api/{env}/rules/access"), accessDTO, env);
-        verify(routeService).createAccess(any(AccessDTO.class));
-    }
+    restTemplate.postForLocation(url("/dubbo-admin/api/{env}/rules/access"), accessDTO, env);
+    // when application is present & dubbo's version is 2.6
+    accessDTO.setApplication(application);
+    when(providerService.findVersionInApplication(application)).thenReturn("2.6");
+    restTemplate.postForLocation(url("/dubbo-admin/api/{env}/rules/access"), accessDTO, env);
+    // dubbo's version is 2.7
+    when(providerService.findVersionInApplication(application)).thenReturn("2.7");
+    restTemplate.postForLocation(url("/dubbo-admin/api/{env}/rules/access"), accessDTO, env);
+    // black white list is not null
+    accessDTO.setBlacklist(new HashSet<>());
+    accessDTO.setWhitelist(new HashSet<>());
+    restTemplate.postForLocation(url("/dubbo-admin/api/{env}/rules/access"), accessDTO, env);
+    verify(routeService).createAccess(any(AccessDTO.class));
+  }
 
-    @Test
-    public void updateAccess() throws IOException {
-        AccessDTO accessDTO = new AccessDTO();
-        String id = "1";
-        // when id is 'Unknown ID'
-        restTemplate.put(url("/api/{env}/rules/access/{id}"), accessDTO, env, id);
-        verify(routeService).findConditionRoute(id);
-        //
-        ConditionRouteDTO conditionRouteDTO = mock(ConditionRouteDTO.class);
-        when(routeService.findConditionRoute(id)).thenReturn(conditionRouteDTO);
-        restTemplate.put(url("/api/{env}/rules/access/{id}"), accessDTO, env, id);
-        verify(routeService).updateAccess(any(AccessDTO.class));
-    }
+  @Test
+  public void updateAccess() throws IOException {
+    AccessDTO accessDTO = new AccessDTO();
+    String id = "1";
+    // when id is 'Unknown ID'
+    restTemplate.put(url("/dubbo-admin/api/{env}/rules/access/{id}"), accessDTO, env, id);
+    verify(routeService).findConditionRoute(id);
+    //
+    ConditionRouteDTO conditionRouteDTO = mock(ConditionRouteDTO.class);
+    when(routeService.findConditionRoute(id)).thenReturn(conditionRouteDTO);
+    restTemplate.put(url("/dubbo-admin/api/{env}/rules/access/{id}"), accessDTO, env, id);
+    verify(routeService).updateAccess(any(AccessDTO.class));
+  }
 }

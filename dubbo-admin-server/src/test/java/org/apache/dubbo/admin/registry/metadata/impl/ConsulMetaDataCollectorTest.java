@@ -17,7 +17,6 @@
 
 package org.apache.dubbo.admin.registry.metadata.impl;
 
-
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.pszymczyk.consul.ConsulProcess;
@@ -70,10 +69,13 @@ public class ConsulMetaDataCollectorTest {
         params.put("key1", "value1");
         params.put("key2", "true");
 
-        FullServiceDefinition definition = ServiceDefinitionBuilder.buildFullDefinition(ServiceA.class, params);
+        FullServiceDefinition definition =
+                ServiceDefinitionBuilder.buildFullDefinition(ServiceA.class, params);
 
         String metadata = gson.toJson(definition);
-        consulMetaDataCollector.getClient().setKVValue(identifier.getUniqueKey(MetadataIdentifier.KeyTypeEnum.UNIQUE_KEY), metadata);
+        consulMetaDataCollector
+                .getClient()
+                .setKVValue(identifier.getUniqueKey(MetadataIdentifier.KeyTypeEnum.UNIQUE_KEY), metadata);
 
         String providerMetaData = consulMetaDataCollector.getProviderMetaData(identifier);
         Assert.assertEquals(metadata, providerMetaData);
@@ -83,15 +85,18 @@ public class ConsulMetaDataCollectorTest {
         Assert.assertEquals(ClassUtils.getCodeSource(ServiceA.class), retDef.getCodeSource());
         Assert.assertEquals(params, retDef.getParameters());
 
-        //method def assertions
+        // method def assertions
         Assert.assertNotNull(retDef.getMethods());
         Assert.assertEquals(3, retDef.getMethods().size());
-        List<String> methodNames = retDef.getMethods().stream().map(MethodDefinition::getName).sorted().collect(Collectors.toList());
+        List<String> methodNames =
+                retDef.getMethods().stream()
+                        .map(MethodDefinition::getName)
+                        .sorted()
+                        .collect(Collectors.toList());
         Assert.assertEquals("method1", methodNames.get(0));
         Assert.assertEquals("method2", methodNames.get(1));
         Assert.assertEquals("method3", methodNames.get(2));
     }
-
 
     @Test
     public void testGetConsumerMetaData() {
@@ -102,25 +107,27 @@ public class ConsulMetaDataCollectorTest {
         consumerParams.put("k2", "1");
         consumerParams.put("k3", "true");
         String metadata = gson.toJson(consumerParams);
-        consulMetaDataCollector.getClient().setKVValue(identifier.getUniqueKey(MetadataIdentifier.KeyTypeEnum.UNIQUE_KEY), metadata);
+        consulMetaDataCollector
+                .getClient()
+                .setKVValue(identifier.getUniqueKey(MetadataIdentifier.KeyTypeEnum.UNIQUE_KEY), metadata);
 
         String consumerMetaData = consulMetaDataCollector.getConsumerMetaData(identifier);
-        Map<String, String> retParams = gson.fromJson(consumerMetaData, new TypeToken<Map<String, String>>() {
-        }.getType());
+        Map<String, String> retParams =
+                gson.fromJson(consumerMetaData, new TypeToken<Map<String, String>>() {
+                }.getType());
         Assert.assertEquals(consumerParams, retParams);
     }
 
-
     private MetadataIdentifier buildIdentifier(boolean isProducer) {
         MetadataIdentifier identifier = new MetadataIdentifier();
-        identifier.setApplication(String.format("metadata-%s-test", isProducer ? "provider" : "consumer"));
+        identifier.setApplication(
+                String.format("metadata-%s-test", isProducer ? "provider" : "consumer"));
         identifier.setGroup("group");
         identifier.setServiceInterface(ServiceA.class.getName());
         identifier.setSide(isProducer ? PROVIDER_SIDE : CONSUMER_SIDE);
         identifier.setVersion("1.0.0");
         return identifier;
     }
-
 
     interface ServiceA {
         void method1();
@@ -129,5 +136,4 @@ public class ConsulMetaDataCollectorTest {
 
         String method3();
     }
-
 }

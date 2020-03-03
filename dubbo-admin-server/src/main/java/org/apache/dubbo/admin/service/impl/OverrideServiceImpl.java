@@ -436,7 +436,7 @@ public class OverrideServiceImpl extends AbstractService implements OverrideServ
 
     private OverrideDTO insertConfig(String config, OverrideConfig overrideConfig, String key, String scope, String configType) {
         OverrideDTO overrideDTO = null;
-        if(config == null) {
+        if (config == null) {
             overrideDTO = new OverrideDTO();
             overrideDTO.setKey(key);
             overrideDTO.setScope(scope);
@@ -481,6 +481,7 @@ public class OverrideServiceImpl extends AbstractService implements OverrideServ
         }
         override.setParams(params.toString());
     }
+
     private List<Override> convertDTOtoOldOverride(DynamicConfigDTO overrideDTO) {
         List<Override> result = new ArrayList<>();
         List<OverrideConfig> configs = overrideDTO.getConfigs();
@@ -513,6 +514,7 @@ public class OverrideServiceImpl extends AbstractService implements OverrideServ
         }
         return result;
     }
+
     private String getPath(String key) {
         key = key.replace("/", "*");
         return prefix + Constants.PATH_SEPARATOR + key + Constants.CONFIGURATOR_RULE_SUFFIX;

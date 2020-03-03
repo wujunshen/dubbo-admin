@@ -75,7 +75,7 @@ module.exports = {
     // Paths
     assetsRoot: path.resolve(__dirname, '../target/dist'),
     assetsSubDirectory: 'static',
-    assetsPublicPath: '/',
+    assetsPublicPath: '/dubbo-admin/',
 
     /**
      * Source Maps

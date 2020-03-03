@@ -34,13 +34,13 @@ public class ZookeeperConfiguration implements GovernanceConfiguration {
     private String root;
 
     @Override
-    public void setUrl(URL url) {
-        this.url = url;
+    public URL getUrl() {
+        return url;
     }
 
     @Override
-    public URL getUrl() {
-        return url;
+    public void setUrl(URL url) {
+        this.url = url;
     }
 
     @Override

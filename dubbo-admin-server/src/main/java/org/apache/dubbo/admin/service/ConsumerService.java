@@ -23,7 +23,6 @@ import java.util.List;
 
 /**
  * Query service for consumer info
- *
  */
 public interface ConsumerService {
 

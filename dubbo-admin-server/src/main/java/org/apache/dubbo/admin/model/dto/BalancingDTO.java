@@ -17,7 +17,7 @@
 
 package org.apache.dubbo.admin.model.dto;
 
-public class BalancingDTO extends BaseDTO{
+public class BalancingDTO extends BaseDTO {
 
     private String methodName;
     private String strategy;

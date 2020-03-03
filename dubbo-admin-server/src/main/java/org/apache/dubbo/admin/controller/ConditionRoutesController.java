@@ -18,7 +18,6 @@
 package org.apache.dubbo.admin.controller;
 
 import org.apache.commons.lang3.StringUtils;
-
 import org.apache.dubbo.admin.annotation.Authority;
 import org.apache.dubbo.admin.common.exception.ParamValidationException;
 import org.apache.dubbo.admin.common.exception.ResourceNotFoundException;
@@ -29,16 +28,11 @@ import org.apache.dubbo.admin.service.ProviderService;
 import org.apache.dubbo.admin.service.RouteService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
+
 @Authority(needLogin = true)
 @RestController
 @RequestMapping("/api/{env}/rules/route/condition")
@@ -61,15 +55,20 @@ public class ConditionRoutesController {
         if (StringUtils.isEmpty(serviceName) && StringUtils.isEmpty(app)) {
             throw new ParamValidationException("serviceName and app is Empty!");
         }
-        if (StringUtils.isNotEmpty(app) && providerService.findVersionInApplication(app).equals("2.6")) {
-            throw new VersionValidationException("dubbo 2.6 does not support application scope routing rule");
+        if (StringUtils.isNotEmpty(app)
+                && providerService.findVersionInApplication(app).equals("2.6")) {
+            throw new VersionValidationException(
+                    "dubbo 2.6 does not support application scope routing rule");
         }
         routeService.createConditionRoute(routeDTO);
         return true;
     }
 
     @RequestMapping(value = "/{id}", method = RequestMethod.PUT)
-    public boolean updateRule(@PathVariable String id, @RequestBody ConditionRouteDTO newConditionRoute, @PathVariable String env) {
+    public boolean updateRule(
+            @PathVariable String id,
+            @RequestBody ConditionRouteDTO newConditionRoute,
+            @PathVariable String env) {
         id = id.replace(Constants.ANY_VALUE, Constants.PATH_SEPARATOR);
         ConditionRouteDTO oldConditionRoute = routeService.findConditionRoute(id);
         if (oldConditionRoute == null) {
@@ -80,8 +79,10 @@ public class ConditionRoutesController {
     }
 
     @RequestMapping(method = RequestMethod.GET)
-    public List<ConditionRouteDTO> searchRoutes(@RequestParam(required = false) String application,
-                                                @RequestParam(required = false) String service, @PathVariable String env) {
+    public List<ConditionRouteDTO> searchRoutes(
+            @RequestParam(required = false) String application,
+            @RequestParam(required = false) String service,
+            @PathVariable String env) {
         ConditionRouteDTO conditionRoute = null;
         List<ConditionRouteDTO> result = new ArrayList<>();
         if (StringUtils.isNotBlank(application)) {
@@ -127,5 +128,4 @@ public class ConditionRoutesController {
         routeService.disableConditionRoute(id);
         return true;
     }
-
 }

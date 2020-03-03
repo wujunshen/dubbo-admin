@@ -32,27 +32,27 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 @ActiveProfiles("test")
 @RunWith(SpringJUnit4ClassRunner.class)
-@SpringBootTest(classes = DubboAdminApplication.class, webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@SpringBootTest(
+    classes = DubboAdminApplication.class,
+    webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ContextConfiguration(classes = DubboAdminApplication.class)
 public abstract class AbstractSpringIntegrationTest {
-  @Autowired
-  protected TestRestTemplate restTemplate;
-
   protected static final TestingServer zkServer;
   protected static final CuratorFramework zkClient;
 
   static {
     try {
       zkServer = new TestingServer(2182, true);
-      zkClient = CuratorFrameworkFactory.newClient(zkServer.getConnectString(), new RetryOneTime(2000));
+      zkClient =
+          CuratorFrameworkFactory.newClient(zkServer.getConnectString(), new RetryOneTime(2000));
       zkClient.start();
     } catch (Exception e) {
       throw new ExceptionInInitializerError(e);
     }
   }
 
-  @LocalServerPort
-  protected int port;
+  @Autowired protected TestRestTemplate restTemplate;
+  @LocalServerPort protected int port;
 
   protected String url(final String path) {
     return "http://localhost:" + port + path;

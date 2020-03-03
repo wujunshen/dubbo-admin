@@ -24,13 +24,13 @@ import org.apache.dubbo.metadata.identifier.MetadataIdentifier;
 public class NoOpMetadataCollector implements MetaDataCollector {
 
     @Override
-    public void setUrl(URL url) {
-
+    public URL getUrl() {
+        return null;
     }
 
     @Override
-    public URL getUrl() {
-        return null;
+    public void setUrl(URL url) {
+
     }
 
     @Override

@@ -30,19 +30,19 @@ import org.apache.dubbo.metadata.identifier.MetadataIdentifier;
 public class ZookeeperMetaDataCollector implements MetaDataCollector {
 
     private static final Logger logger = LoggerFactory.getLogger(ZookeeperMetaDataCollector.class);
+    private final static String DEFAULT_ROOT = "dubbo";
     private CuratorFramework client;
     private URL url;
     private String root;
-    private final static String DEFAULT_ROOT = "dubbo";
-
-    @Override
-    public void setUrl(URL url) {
-        this.url = url;
-    }
 
     @Override
     public URL getUrl() {
         return url;
+    }
+
+    @Override
+    public void setUrl(URL url) {
+        this.url = url;
     }
 
     @Override

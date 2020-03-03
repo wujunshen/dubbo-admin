@@ -17,11 +17,7 @@
 package org.apache.dubbo.admin.service.impl;
 
 import org.apache.dubbo.admin.common.exception.ParamValidationException;
-import org.apache.dubbo.admin.common.util.Constants;
-import org.apache.dubbo.admin.common.util.Pair;
-import org.apache.dubbo.admin.common.util.ParseUtils;
-import org.apache.dubbo.admin.common.util.SyncUtils;
-import org.apache.dubbo.admin.common.util.Tool;
+import org.apache.dubbo.admin.common.util.*;
 import org.apache.dubbo.admin.model.domain.Provider;
 import org.apache.dubbo.admin.model.dto.ServiceDTO;
 import org.apache.dubbo.admin.service.OverrideService;
@@ -31,15 +27,8 @@ import org.apache.dubbo.metadata.identifier.MetadataIdentifier;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
-import java.util.Set;
-import java.util.TreeSet;
 import java.util.concurrent.ConcurrentMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -103,7 +92,7 @@ public class ProviderServiceImpl extends AbstractService implements ProviderServ
     public Set<String> findServices() {
         Set<String> ret = new HashSet<>();
         ConcurrentMap<String, Map<String, URL>> providerUrls = getRegistryCache().get(Constants.PROVIDERS_CATEGORY);
-        if (providerUrls != null){
+        if (providerUrls != null) {
             ret.addAll(providerUrls.keySet());
         }
         return ret;
@@ -118,9 +107,9 @@ public class ProviderServiceImpl extends AbstractService implements ProviderServ
             return ret;
         }
 
-        for (Map.Entry<String, Map<String, URL>> e1 : providerUrls.entrySet()) {
+        for (Entry<String, Map<String, URL>> e1 : providerUrls.entrySet()) {
             Map<String, URL> value = e1.getValue();
-            for (Map.Entry<String, URL> e2 : value.entrySet()) {
+            for (Entry<String, URL> e2 : value.entrySet()) {
                 URL u = e2.getValue();
                 String app = u.getAddress();
                 if (app != null) {
@@ -136,9 +125,9 @@ public class ProviderServiceImpl extends AbstractService implements ProviderServ
     public List<String> findAddressesByApplication(String application) {
         List<String> ret = new ArrayList<String>();
         ConcurrentMap<String, Map<String, URL>> providerUrls = getRegistryCache().get(Constants.PROVIDERS_CATEGORY);
-        for (Map.Entry<String, Map<String, URL>> e1 : providerUrls.entrySet()) {
+        for (Entry<String, Map<String, URL>> e1 : providerUrls.entrySet()) {
             Map<String, URL> value = e1.getValue();
-            for (Map.Entry<String, URL> e2 : value.entrySet()) {
+            for (Entry<String, URL> e2 : value.entrySet()) {
                 URL u = e2.getValue();
                 if (application.equals(u.getParameter(Constants.APPLICATION))) {
                     String addr = u.getAddress();
@@ -160,7 +149,7 @@ public class ProviderServiceImpl extends AbstractService implements ProviderServ
             return ret;
         }
 
-        for (Map.Entry<String, URL> e2 : providerUrls.get(service).entrySet()) {
+        for (Entry<String, URL> e2 : providerUrls.get(service).entrySet()) {
             URL u = e2.getValue();
             String app = u.getAddress();
             if (app != null) {
@@ -183,10 +172,10 @@ public class ProviderServiceImpl extends AbstractService implements ProviderServ
         if (value == null) {
             return ret;
         }
-        for (Map.Entry<String, URL> e2 : value.entrySet()) {
+        for (Entry<String, URL> e2 : value.entrySet()) {
             URL u = e2.getValue();
             String app = u.getParameter(Constants.APPLICATION);
-            if (app != null){
+            if (app != null) {
                 ret.add(app);
             }
         }
@@ -245,9 +234,9 @@ public class ProviderServiceImpl extends AbstractService implements ProviderServ
             return ret;
         }
 
-        for (Map.Entry<String, Map<String, URL>> e1 : providerUrls.entrySet()) {
+        for (Entry<String, Map<String, URL>> e1 : providerUrls.entrySet()) {
             Map<String, URL> value = e1.getValue();
-            for (Map.Entry<String, URL> e2 : value.entrySet()) {
+            for (Entry<String, URL> e2 : value.entrySet()) {
                 URL u = e2.getValue();
                 if (address.equals(u.getAddress())) {
                     ret.add(e1.getKey());
@@ -263,13 +252,13 @@ public class ProviderServiceImpl extends AbstractService implements ProviderServ
     public Set<String> findApplications() {
         Set<String> ret = new HashSet<>();
         ConcurrentMap<String, Map<String, URL>> providerUrls = getRegistryCache().get(Constants.PROVIDERS_CATEGORY);
-        if (providerUrls == null){
+        if (providerUrls == null) {
             return ret;
         }
 
-        for (Map.Entry<String, Map<String, URL>> e1 : providerUrls.entrySet()) {
+        for (Entry<String, Map<String, URL>> e1 : providerUrls.entrySet()) {
             Map<String, URL> value = e1.getValue();
-            for (Map.Entry<String, URL> e2 : value.entrySet()) {
+            for (Entry<String, URL> e2 : value.entrySet()) {
                 URL u = e2.getValue();
                 String app = u.getParameter(Constants.APPLICATION);
                 if (app != null) {
@@ -317,7 +306,6 @@ public class ProviderServiceImpl extends AbstractService implements ProviderServ
     }
 
 
-
     private Map<String, URL> findProviderUrlByApplication(String application) {
         Map<String, String> filter = new HashMap<>();
         filter.put(Constants.CATEGORY_KEY, Constants.PROVIDERS_CATEGORY);
@@ -334,9 +322,9 @@ public class ProviderServiceImpl extends AbstractService implements ProviderServ
             return ret;
         }
 
-        for (Map.Entry<String, Map<String, URL>> e1 : providerUrls.entrySet()) {
+        for (Entry<String, Map<String, URL>> e1 : providerUrls.entrySet()) {
             Map<String, URL> value = e1.getValue();
-            for (Map.Entry<String, URL> e2 : value.entrySet()) {
+            for (Entry<String, URL> e2 : value.entrySet()) {
                 URL u = e2.getValue();
                 if (application.equals(u.getParameter(Constants.APPLICATION))) {
                     ret.add(e1.getKey());
@@ -353,7 +341,7 @@ public class ProviderServiceImpl extends AbstractService implements ProviderServ
         List<String> ret = new ArrayList<String>();
 
         ConcurrentMap<String, Map<String, URL>> providerUrls = getRegistryCache().get(Constants.PROVIDERS_CATEGORY);
-        if (providerUrls == null || service == null || service.length() == 0){
+        if (providerUrls == null || service == null || service.length() == 0) {
             return ret;
         }
 
@@ -420,15 +408,14 @@ public class ProviderServiceImpl extends AbstractService implements ProviderServ
                 candidates = findServices();
             } else if (Constants.APPLICATION.equals(pattern)) {
                 candidates = findApplications();
-            }
-            else if (Constants.IP.equals(pattern)) {
+            } else if (Constants.IP.equals(pattern)) {
                 candidates = findAddresses().stream().collect(Collectors.toSet());
             }
             // replace dot symbol and asterisk symbol to java-based regex pattern
             filter = filter.toLowerCase().replace(Constants.PUNCTUATION_POINT, Constants.PUNCTUATION_SEPARATOR_POINT);
             // filter start with [* 、? 、+] will triggering PatternSyntaxException
             if (filter.startsWith(Constants.ANY_VALUE)
-                || filter.startsWith(Constants.INTERROGATION_POINT) || filter.startsWith(Constants.PLUS_SIGNS)) {
+                    || filter.startsWith(Constants.INTERROGATION_POINT) || filter.startsWith(Constants.PLUS_SIGNS)) {
                 filter = Constants.PUNCTUATION_POINT + filter;
             }
             // search with no case insensitive
@@ -438,11 +425,9 @@ public class ProviderServiceImpl extends AbstractService implements ProviderServ
                 if (matcher.matches() || matcher.lookingAt()) {
                     if (Constants.SERVICE.equals(pattern)) {
                         providers.addAll(findByService(candidate));
-                    }
-                    else if (Constants.IP.equals(pattern)) {
+                    } else if (Constants.IP.equals(pattern)) {
                         providers.addAll(findByAddress(candidate));
-                    }
-                    else {
+                    } else {
                         providers.addAll(findByApplication(candidate));
                     }
                 }

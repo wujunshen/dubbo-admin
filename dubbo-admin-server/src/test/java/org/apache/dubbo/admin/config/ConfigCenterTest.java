@@ -34,10 +34,7 @@ import org.springframework.test.util.ReflectionTestUtils;
 
 import java.io.IOException;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
 
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -46,6 +43,8 @@ public class ConfigCenterTest {
     private String zkAddress;
     private TestingServer zkServer;
     private CuratorFramework zkClient;
+    @InjectMocks
+    private ConfigCenter configCenter;
 
     @Before
     public void setup() throws Exception {
@@ -61,9 +60,6 @@ public class ConfigCenterTest {
         zkServer.close();
         zkServer.stop();
     }
-
-    @InjectMocks
-    private ConfigCenter configCenter;
 
     @Test
     public void testGetDynamicConfiguration() throws Exception {

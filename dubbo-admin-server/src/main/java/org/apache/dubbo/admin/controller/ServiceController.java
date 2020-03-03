@@ -18,7 +18,6 @@
 package org.apache.dubbo.admin.controller;
 
 import com.google.gson.Gson;
-
 import org.apache.dubbo.admin.annotation.Authority;
 import org.apache.dubbo.admin.common.util.Constants;
 import org.apache.dubbo.admin.common.util.Tool;
@@ -34,16 +33,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
+
 @Authority(needLogin = true)
 @RestController
 @RequestMapping("/api/{env}")
@@ -60,11 +56,12 @@ public class ServiceController {
         this.gson = new Gson();
     }
 
-    @RequestMapping( value = "/service", method = RequestMethod.GET)
-    public Page<ServiceDTO> searchService(@RequestParam String pattern,
-                                          @RequestParam String filter,
-                                          @PathVariable String env,
-                                          Pageable pageable) {
+    @RequestMapping(value = "/service", method = RequestMethod.GET)
+    public Page<ServiceDTO> searchService(
+            @RequestParam String pattern,
+            @RequestParam String filter,
+            @PathVariable String env,
+            Pageable pageable) {
         final Set<ServiceDTO> serviceDTOS = providerService.getServiceDTOS(pattern, filter, env);
 
         final int total = serviceDTOS.size();
@@ -92,13 +89,15 @@ public class ServiceController {
         if (providers != null && providers.size() > 0) {
             application = providers.get(0).getApplication();
         }
-        MetadataIdentifier identifier = new MetadataIdentifier(interfaze, version, group, Constants.PROVIDER_SIDE, application);
+        MetadataIdentifier identifier =
+                new MetadataIdentifier(interfaze, version, group, Constants.PROVIDER_SIDE, application);
         String metadata = providerService.getProviderMetaData(identifier);
         ServiceDetailDTO serviceDetailDTO = new ServiceDetailDTO();
         serviceDetailDTO.setConsumers(consumers);
         serviceDetailDTO.setProviders(providers);
         if (metadata != null) {
-            FullServiceDefinition serviceDefinition = gson.fromJson(metadata, FullServiceDefinition.class);
+            FullServiceDefinition serviceDefinition =
+                    gson.fromJson(metadata, FullServiceDefinition.class);
             serviceDetailDTO.setMetadata(serviceDefinition);
         }
         serviceDetailDTO.setConsumers(consumers);

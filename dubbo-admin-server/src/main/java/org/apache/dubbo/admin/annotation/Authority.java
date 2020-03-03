@@ -16,17 +16,16 @@
  */
 package org.apache.dubbo.admin.annotation;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Inherited;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import java.lang.annotation.*;
 
+/**
+ * 增加的注解表明何时需要进行登录验证
+ *
+ * @author wujunshen
+ */
 @Inherited
 @Target({ElementType.METHOD, ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)
-
 public @interface Authority {
-
     boolean needLogin() default false;
 }

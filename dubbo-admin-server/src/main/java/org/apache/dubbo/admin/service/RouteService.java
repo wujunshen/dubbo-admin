@@ -22,7 +22,6 @@ import org.apache.dubbo.admin.model.dto.TagRouteDTO;
 
 /**
  * RouteService
- *
  */
 public interface RouteService {
 

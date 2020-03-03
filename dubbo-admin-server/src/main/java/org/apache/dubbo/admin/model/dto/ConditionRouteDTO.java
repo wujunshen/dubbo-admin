@@ -19,7 +19,7 @@ package org.apache.dubbo.admin.model.dto;
 
 import java.util.List;
 
-public class ConditionRouteDTO extends RouteDTO{
+public class ConditionRouteDTO extends RouteDTO {
     private List<String> conditions;
 
     public List<String> getConditions() {

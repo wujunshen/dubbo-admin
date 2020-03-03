@@ -18,7 +18,6 @@ package org.apache.dubbo.admin.common.util;
 
 /**
  * Tool
- *
  */
 public class Tool {
 

@@ -37,6 +37,7 @@ import Login from '@/Login'
 Vue.use(Router)
 
 export default new Router({
+  base: '/dubbo-admin/',
   routes: [
     {
       path: '/',

@@ -24,9 +24,9 @@ import org.apache.dubbo.metadata.identifier.MetadataIdentifier;
 @SPI("zookeeper")
 public interface MetaDataCollector {
 
-    void setUrl(URL url);
-
     URL getUrl();
+
+    void setUrl(URL url);
 
     void init();
 

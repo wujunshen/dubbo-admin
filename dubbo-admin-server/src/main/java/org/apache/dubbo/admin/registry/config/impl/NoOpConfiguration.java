@@ -28,13 +28,13 @@ public class NoOpConfiguration implements GovernanceConfiguration {
     }
 
     @Override
-    public void setUrl(URL url) {
-
+    public URL getUrl() {
+        return null;
     }
 
     @Override
-    public URL getUrl() {
-        return null;
+    public void setUrl(URL url) {
+
     }
 
     @Override

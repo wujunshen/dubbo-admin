@@ -26,7 +26,6 @@ import java.util.Map;
 
 /**
  * Provider
- *
  */
 public class Provider extends Entity {
 

@@ -19,7 +19,7 @@ import Vue from 'vue'
 import HttpStatus from 'http-status'
 
 let instance = axios.create({
-  baseURL: '/api/dev'
+  baseURL: '/dubbo-admin/api/dev'
 })
 
 instance.interceptors.request.use(config => {

@@ -25,15 +25,13 @@ import java.util.Objects;
  */
 public class RelationDTO {
 
+    public static final Categories CONSUMER_CATEGORIES = new Categories(0, "consumer", "consumer");
+    public static final Categories PROVIDER_CATEGORIES = new Categories(1, "provider", "provider");
+    public static final Categories CONSUMER_AND_PROVIDER_CATEGORIES = new Categories(2, "consumer and provider", "consumer and provider");
+    public static final List<Categories> CATEGORIES_LIST = Arrays.asList(CONSUMER_CATEGORIES, PROVIDER_CATEGORIES, CONSUMER_AND_PROVIDER_CATEGORIES);
     private List<Categories> categories;
     private List<Node> nodes;
     private List<Link> links;
-
-    public static final Categories CONSUMER_CATEGORIES = new RelationDTO.Categories(0, "consumer", "consumer");;
-    public static final Categories PROVIDER_CATEGORIES = new RelationDTO.Categories(1, "provider", "provider");
-    public static final Categories CONSUMER_AND_PROVIDER_CATEGORIES = new RelationDTO.Categories(2, "consumer and provider", "consumer and provider");
-
-    public static final List<RelationDTO.Categories> CATEGORIES_LIST = Arrays.asList(CONSUMER_CATEGORIES, PROVIDER_CATEGORIES, CONSUMER_AND_PROVIDER_CATEGORIES);
 
     public RelationDTO() {
     }
@@ -41,6 +39,30 @@ public class RelationDTO {
     public RelationDTO(List<Node> nodes, List<Link> links) {
         this.categories = CATEGORIES_LIST;
         this.nodes = nodes;
+        this.links = links;
+    }
+
+    public List<Categories> getCategories() {
+        return categories;
+    }
+
+    public void setCategories(List<Categories> categories) {
+        this.categories = categories;
+    }
+
+    public List<Node> getNodes() {
+        return nodes;
+    }
+
+    public void setNodes(List<Node> nodes) {
+        this.nodes = nodes;
+    }
+
+    public List<Link> getLinks() {
+        return links;
+    }
+
+    public void setLinks(List<Link> links) {
         this.links = links;
     }
 
@@ -188,29 +210,5 @@ public class RelationDTO {
                     ", target=" + target +
                     '}';
         }
-    }
-
-    public List<Categories> getCategories() {
-        return categories;
-    }
-
-    public void setCategories(List<Categories> categories) {
-        this.categories = categories;
-    }
-
-    public List<Node> getNodes() {
-        return nodes;
-    }
-
-    public void setNodes(List<Node> nodes) {
-        this.nodes = nodes;
-    }
-
-    public List<Link> getLinks() {
-        return links;
-    }
-
-    public void setLinks(List<Link> links) {
-        this.links = links;
     }
 }

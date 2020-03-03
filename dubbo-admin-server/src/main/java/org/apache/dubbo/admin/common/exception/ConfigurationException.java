@@ -17,7 +17,7 @@
 
 package org.apache.dubbo.admin.common.exception;
 
-public class ConfigurationException extends RuntimeException{
+public class ConfigurationException extends RuntimeException {
 
     public ConfigurationException(String message) {
         super(message);

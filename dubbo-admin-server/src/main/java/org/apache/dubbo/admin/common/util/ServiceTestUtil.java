@@ -24,11 +24,7 @@ import org.apache.dubbo.metadata.definition.model.MethodDefinition;
 import org.apache.dubbo.metadata.definition.model.ServiceDefinition;
 import org.apache.dubbo.metadata.definition.model.TypeDefinition;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -99,6 +95,7 @@ public class ServiceTestUtil {
             }
         }
     }
+
     private static Object generateComplexType(ServiceDefinition sd, TypeDefinition td) {
         Map<String, Object> holder = new HashMap<>();
         generateComplexType(sd, td, holder);
@@ -198,11 +195,12 @@ public class ServiceTestUtil {
         type = StringUtils.substringBefore(type, ">");
         if (StringUtils.isEmpty(type)) {
             // 如果 collection 类型未声明，则生成空 collection
-            return new Object[] {};
+            return new Object[]{};
         }
         return new Object[]{generateType(sd, type)};
 
     }
+
     private static Object generateArrayType(ServiceDefinition sd, TypeDefinition td) {
         String type = StringUtils.substringBeforeLast(td.getType(), "[]");
         return new Object[]{generateType(sd, type)};

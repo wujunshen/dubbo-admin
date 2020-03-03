@@ -40,43 +40,29 @@ import static org.apache.dubbo.common.constants.CommonConstants.CLUSTER_KEY;
 
 @Configuration
 public class ConfigCenter {
-
-
-
-    //centers in dubbo 2.7
+    private static final Logger logger = LoggerFactory.getLogger(ConfigCenter.class);
+    // centers in dubbo 2.7
     @Value("${admin.config-center:}")
     private String configCenter;
-
     @Value("${admin.registry.address:}")
     private String registryAddress;
-
     @Value("${admin.metadata-report.address:}")
     private String metadataAddress;
-
     @Value("${admin.metadata-report.cluster:false}")
     private boolean cluster;
-
     @Value("${admin.registry.group:dubbo}")
     private String registryGroup;
-
     @Value("${admin.config-center.group:dubbo}")
     private String configCenterGroup;
-
     @Value("${admin.metadata-report.group:dubbo}")
     private String metadataGroup;
-
     @Value("${admin.config-center.username:}")
     private String username;
     @Value("${admin.config-center.password:}")
     private String password;
-
-    private static final Logger logger = LoggerFactory.getLogger(ConfigCenter.class);
-
     private URL configCenterUrl;
     private URL registryUrl;
     private URL metadataUrl;
-
-
 
     /*
      * generate dynamic configuration client
@@ -87,32 +73,41 @@ public class ConfigCenter {
 
         if (StringUtils.isNotEmpty(configCenter)) {
             configCenterUrl = formUrl(configCenter, configCenterGroup, username, password);
-            dynamicConfiguration = ExtensionLoader.getExtensionLoader(GovernanceConfiguration.class).getExtension(configCenterUrl.getProtocol());
+            dynamicConfiguration =
+                    ExtensionLoader.getExtensionLoader(GovernanceConfiguration.class)
+                            .getExtension(configCenterUrl.getProtocol());
             dynamicConfiguration.setUrl(configCenterUrl);
             dynamicConfiguration.init();
             String config = dynamicConfiguration.getConfig(Constants.GLOBAL_CONFIG_PATH);
 
             if (StringUtils.isNotEmpty(config)) {
-                Arrays.stream(config.split("\n")).forEach( s -> {
-                    if(s.startsWith(Constants.REGISTRY_ADDRESS)) {
-                        String registryAddress = s.split("=")[1].trim();
-                        registryUrl = formUrl(registryAddress, configCenterGroup, username, password);
-                    } else if (s.startsWith(Constants.METADATA_ADDRESS)) {
-                        metadataUrl = formUrl(s.split("=")[1].trim(), configCenterGroup, username, password);
-                    }
-                });
+                Arrays.stream(config.split("\n"))
+                        .forEach(
+                                s -> {
+                                    if (s.startsWith(Constants.REGISTRY_ADDRESS)) {
+                                        String registryAddress = s.split("=")[1].trim();
+                                        registryUrl = formUrl(registryAddress, configCenterGroup, username, password);
+                                    } else if (s.startsWith(Constants.METADATA_ADDRESS)) {
+                                        metadataUrl =
+                                                formUrl(s.split("=")[1].trim(), configCenterGroup, username, password);
+                                    }
+                                });
             }
         }
         if (dynamicConfiguration == null) {
             if (StringUtils.isNotEmpty(registryAddress)) {
                 registryUrl = formUrl(registryAddress, registryGroup, username, password);
-                dynamicConfiguration = ExtensionLoader.getExtensionLoader(GovernanceConfiguration.class).getExtension(registryUrl.getProtocol());
+                dynamicConfiguration =
+                        ExtensionLoader.getExtensionLoader(GovernanceConfiguration.class)
+                                .getExtension(registryUrl.getProtocol());
                 dynamicConfiguration.setUrl(registryUrl);
                 dynamicConfiguration.init();
-                logger.warn("you are using dubbo.registry.address, which is not recommend, please refer to: https://github.com/apache/incubator-dubbo-admin/wiki/Dubbo-Admin-configuration");
+                logger.warn(
+                        "you are using dubbo.registry.address, which is not recommend, please refer to: https://github.com/apache/incubator-dubbo-admin/wiki/Dubbo-Admin-configuration");
             } else {
-                throw new ConfigurationException("Either config center or registry address is needed, please refer to https://github.com/apache/incubator-dubbo-admin/wiki/Dubbo-Admin-configuration");
-                //throw exception
+                throw new ConfigurationException(
+                        "Either config center or registry address is needed, please refer to https://github.com/apache/incubator-dubbo-admin/wiki/Dubbo-Admin-configuration");
+                // throw exception
             }
         }
         return dynamicConfiguration;
@@ -127,11 +122,13 @@ public class ConfigCenter {
         Registry registry = null;
         if (registryUrl == null) {
             if (StringUtils.isBlank(registryAddress)) {
-                throw new ConfigurationException("Either config center or registry address is needed, please refer to https://github.com/apache/incubator-dubbo-admin/wiki/Dubbo-Admin-configuration");
+                throw new ConfigurationException(
+                        "Either config center or registry address is needed, please refer to https://github.com/apache/incubator-dubbo-admin/wiki/Dubbo-Admin-configuration");
             }
             registryUrl = formUrl(registryAddress, registryGroup, username, password);
         }
-        RegistryFactory registryFactory = ExtensionLoader.getExtensionLoader(RegistryFactory.class).getAdaptiveExtension();
+        RegistryFactory registryFactory =
+                ExtensionLoader.getExtensionLoader(RegistryFactory.class).getAdaptiveExtension();
         registry = registryFactory.getRegistry(registryUrl);
         return registry;
     }
@@ -150,11 +147,14 @@ public class ConfigCenter {
             }
         }
         if (metadataUrl != null) {
-            metaDataCollector = ExtensionLoader.getExtensionLoader(MetaDataCollector.class).getExtension(metadataUrl.getProtocol());
+            metaDataCollector =
+                    ExtensionLoader.getExtensionLoader(MetaDataCollector.class)
+                            .getExtension(metadataUrl.getProtocol());
             metaDataCollector.setUrl(metadataUrl);
             metaDataCollector.init();
         } else {
-            logger.warn("you are using dubbo.registry.address, which is not recommend, please refer to: https://github.com/apache/incubator-dubbo-admin/wiki/Dubbo-Admin-configuration");
+            logger.warn(
+                    "you are using dubbo.registry.address, which is not recommend, please refer to: https://github.com/apache/incubator-dubbo-admin/wiki/Dubbo-Admin-configuration");
         }
         return metaDataCollector;
     }

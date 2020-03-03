@@ -33,9 +33,7 @@ import java.util.concurrent.ConcurrentMap;
 
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 public class RegistryServerSyncTest {
@@ -84,9 +82,9 @@ public class RegistryServerSyncTest {
         registryServerSync.notify(Arrays.asList(consumerUrl, consumerUrl, providerUrl));
 
         ConcurrentMap<String, Map<String, URL>> consumerMap = registryServerSync.getRegistryCache().get(Constants.CONSUMER_PROTOCOL);
-        assertTrue(consumerMap.keySet().contains("org.apache.dubbo.consumer"));
+        assertTrue(consumerMap.containsKey("org.apache.dubbo.consumer"));
         ConcurrentMap<String, Map<String, URL>> providerMap = registryServerSync.getRegistryCache().get(Constants.PROVIDER_PROTOCOL);
-        assertTrue(providerMap.keySet().contains("org.apache.dubbo.provider"));
+        assertTrue(providerMap.containsKey("org.apache.dubbo.provider"));
 
         // when url.getProtocol is empty protocol
         when(consumerUrl.getProtocol()).thenReturn(Constants.EMPTY_PROTOCOL);
@@ -94,13 +92,13 @@ public class RegistryServerSyncTest {
         when(consumerUrl.getParameter(Constants.VERSION_KEY)).thenReturn("2.7.0");
         registryServerSync.notify(Collections.singletonList(consumerUrl));
 
-        assertTrue(!consumerMap.keySet().contains("org.apache.dubbo.consumer"));
+        assertTrue(!consumerMap.containsKey("org.apache.dubbo.consumer"));
 
         // when url's group or version is ANY_VALUE (*)
         when(providerUrl.getProtocol()).thenReturn(Constants.EMPTY_PROTOCOL);
         when(providerUrl.getParameter(Constants.GROUP_KEY)).thenReturn(Constants.ANY_VALUE);
         registryServerSync.notify(Collections.singletonList(providerUrl));
 
-        assertTrue(!providerMap.keySet().contains("org.apache.dubbo.provider"));
+        assertTrue(!providerMap.containsKey("org.apache.dubbo.provider"));
     }
 }

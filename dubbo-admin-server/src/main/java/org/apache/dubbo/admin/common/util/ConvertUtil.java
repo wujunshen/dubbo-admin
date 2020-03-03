@@ -59,9 +59,9 @@ public class ConvertUtil {
 
     public static String getScopeFromDTO(BaseDTO baseDTO) {
         if (StringUtils.isNotEmpty(baseDTO.getApplication())) {
-            return org.apache.dubbo.admin.common.util.Constants.APPLICATION;
+            return Constants.APPLICATION;
         } else {
-            return org.apache.dubbo.admin.common.util.Constants.SERVICE;
+            return Constants.SERVICE;
         }
     }
 

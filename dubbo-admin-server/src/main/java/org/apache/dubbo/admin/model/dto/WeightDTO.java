@@ -19,7 +19,7 @@ package org.apache.dubbo.admin.model.dto;
 
 import java.util.List;
 
-public class WeightDTO extends BaseDTO{
+public class WeightDTO extends BaseDTO {
 
     private int weight;
     private List<String> addresses;
