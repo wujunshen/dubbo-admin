@@ -26,7 +26,7 @@ import static org.junit.Assert.assertNull;
 public class CoderUtilsTest {
 
     @Test
-    public void MD5_16bit() {
+    public void MD516Bit() {
         assertNull(CoderUtils.md516Bit(null));
 
         String input = "dubbo";
@@ -35,7 +35,7 @@ public class CoderUtilsTest {
     }
 
     @Test
-    public void MD5_32bit() {
+    public void MD532Bit() {
         String input = null;
         assertNull(CoderUtils.md532Bit(input));
 
@@ -45,7 +45,7 @@ public class CoderUtilsTest {
     }
 
     @Test
-    public void MD5_32bit1() {
+    public void MD532Bit1() {
         byte[] input = null;
         assertNull(CoderUtils.md532Bit(input));
 

@@ -20,167 +20,164 @@ package org.apache.dubbo.admin.registry.config.impl;
 import com.alibaba.nacos.api.NacosFactory;
 import com.alibaba.nacos.api.config.ConfigService;
 import com.alibaba.nacos.api.exception.NacosException;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.dubbo.admin.common.utils.Constants;
 import org.apache.dubbo.admin.registry.config.GovernanceConfiguration;
 import org.apache.dubbo.common.URL;
-import org.apache.dubbo.common.logger.Logger;
-import org.apache.dubbo.common.logger.LoggerFactory;
 
 import java.util.Properties;
 
 import static com.alibaba.nacos.api.PropertyKeyConst.SERVER_ADDR;
 
-/**
- * @author wujunshen
- */
+/** @author wujunshen */
+@Slf4j
 public class NacosConfiguration implements GovernanceConfiguration {
-    private static final Logger logger = LoggerFactory.getLogger(NacosConfiguration.class);
+  private ConfigService configService;
+  private String group;
+  private URL url;
 
-    private ConfigService configService;
-    private String group;
-    private URL url;
+  @Override
+  public void init() {
+    group = url.getParameter(Constants.GROUP_KEY, "DEFAULT_GROUP");
 
-    @Override
-    public void init() {
-        group = url.getParameter(Constants.GROUP_KEY, "DEFAULT_GROUP");
+    configService = buildConfigService(url);
+  }
 
-        configService = buildConfigService(url);
+  private ConfigService buildConfigService(URL url) {
+    Properties nacosProperties = buildNacosProperties(url);
+    try {
+      configService = NacosFactory.createConfigService(nacosProperties);
+    } catch (NacosException e) {
+      if (log.isErrorEnabled()) {
+        log.error(e.getErrMsg(), e);
+      }
+      throw new IllegalStateException(e);
+    }
+    return configService;
+  }
+
+  private Properties buildNacosProperties(URL url) {
+    Properties properties = new Properties();
+    setServerAddr(url, properties);
+    return properties;
+  }
+
+  private void setServerAddr(URL url, Properties properties) {
+
+    String serverAddr =
+        url.getHost()
+            + // Host
+            ":"
+            + url.getPort() // Port
+        ;
+    properties.put(SERVER_ADDR, serverAddr);
+  }
+
+  @Override
+  public URL getUrl() {
+    return url;
+  }
+
+  @Override
+  public void setUrl(URL url) {
+    this.url = url;
+  }
+
+  @Override
+  public String setConfig(String key, String value) {
+    return setConfig(group, key, value);
+  }
+
+  @Override
+  public String getConfig(String key) {
+    return getConfig(group, key);
+  }
+
+  @Override
+  public boolean deleteConfig(String key) {
+    return deleteConfig(group, key);
+  }
+
+  @Override
+  public String setConfig(String group, String key, String value) {
+    String[] groupAndDataId = parseGroupAndDataId(key, group);
+    if (null == groupAndDataId) {
+      return null;
     }
 
-    private ConfigService buildConfigService(URL url) {
-        Properties nacosProperties = buildNacosProperties(url);
-        try {
-            configService = NacosFactory.createConfigService(nacosProperties);
-        } catch (NacosException e) {
-            if (logger.isErrorEnabled()) {
-                logger.error(e.getErrMsg(), e);
-            }
-            throw new IllegalStateException(e);
-        }
-        return configService;
+    try {
+      configService.publishConfig(groupAndDataId[1], groupAndDataId[0], value);
+      return value;
+    } catch (NacosException e) {
+      log.error(e.getMessage(), e);
     }
+    return null;
+  }
 
-    private Properties buildNacosProperties(URL url) {
-        Properties properties = new Properties();
-        setServerAddr(url, properties);
-        return properties;
+  @Override
+  public String getConfig(String group, String key) {
+    String[] groupAndDataId = parseGroupAndDataId(key, group);
+    if (null == groupAndDataId) {
+      return null;
     }
-
-    private void setServerAddr(URL url, Properties properties) {
-
-        String serverAddr = url.getHost() + // Host
-                ":" +
-                url.getPort() // Port
-                ;
-        properties.put(SERVER_ADDR, serverAddr);
+    try {
+      return configService.getConfig(groupAndDataId[1], groupAndDataId[0], 1000 * 10);
+    } catch (NacosException e) {
+      log.error(e.getMessage(), e);
     }
+    return null;
+  }
 
-    @Override
-    public URL getUrl() {
-        return url;
+  @Override
+  public boolean deleteConfig(String group, String key) {
+    String[] groupAndDataId = parseGroupAndDataId(key, group);
+    if (null == groupAndDataId) {
+      return false;
     }
-
-    @Override
-    public void setUrl(URL url) {
-        this.url = url;
+    try {
+      return configService.removeConfig(groupAndDataId[1], groupAndDataId[0]);
+    } catch (NacosException e) {
+      log.error(e.getMessage(), e);
     }
+    return false;
+  }
 
-    @Override
-    public String setConfig(String key, String value) {
-        return setConfig(group, key, value);
-    }
+  @Override
+  public String getPath(String key) {
+    return null;
+  }
 
-    @Override
-    public String getConfig(String key) {
-        return getConfig(group, key);
-    }
+  @Override
+  public String getPath(String group, String key) {
+    return null;
+  }
 
-    @Override
-    public boolean deleteConfig(String key) {
-        return deleteConfig(group, key);
-    }
-
-    @Override
-    public String setConfig(String group, String key, String value) {
-        String[] groupAndDataId = parseGroupAndDataId(key, group);
-        if (null == groupAndDataId) {
-            return null;
-        }
-
-        try {
-            configService.publishConfig(groupAndDataId[1], groupAndDataId[0], value);
-            return value;
-        } catch (NacosException e) {
-            logger.error(e.getMessage(), e);
-
-        }
+  private String[] parseGroupAndDataId(String key, String group) {
+    if (StringUtils.isBlank(key) || StringUtils.isBlank(group)) {
+      if (log.isWarnEnabled()) {
+        log.warn("key or group is blank");
         return null;
+      }
     }
 
-    @Override
-    public String getConfig(String group, String key) {
-        String[] groupAndDataId = parseGroupAndDataId(key, group);
-        if (null == groupAndDataId) {
-            return null;
-        }
-        try {
-            return configService.getConfig(groupAndDataId[1], groupAndDataId[0], 1000 * 10);
-        } catch (NacosException e) {
-            logger.error(e.getMessage(), e);
-        }
-        return null;
+    String[] groupAndDataId = new String[2];
+    String[] split = key.split("/");
+    if (split.length != 3) {
+      return null;
     }
+    if (Constants.DUBBO_PROPERTY.equals(split[2])) {
 
-    @Override
-    public boolean deleteConfig(String group, String key) {
-        String[] groupAndDataId = parseGroupAndDataId(key, group);
-        if (null == groupAndDataId) {
-            return false;
-        }
-        try {
-            return configService.removeConfig(groupAndDataId[1], groupAndDataId[0]);
-        } catch (NacosException e) {
-            logger.error(e.getMessage(), e);
-        }
-        return false;
+      if (this.group.equals(split[1])) {
+        groupAndDataId[0] = this.group;
+      } else {
+        groupAndDataId[0] = split[1];
+      }
+      groupAndDataId[1] = split[2];
+    } else {
+      groupAndDataId[0] = group;
+      groupAndDataId[1] = split[1] + Constants.PUNCTUATION_POINT + split[2];
     }
-
-    @Override
-    public String getPath(String key) {
-        return null;
-    }
-
-    @Override
-    public String getPath(String group, String key) {
-        return null;
-    }
-
-    private String[] parseGroupAndDataId(String key, String group) {
-        if (StringUtils.isBlank(key) || StringUtils.isBlank(group)) {
-            if (logger.isWarnEnabled()) {
-                logger.warn("key or group is blank");
-                return null;
-            }
-        }
-
-        String[] groupAndDataId = new String[2];
-        String[] split = key.split("/");
-        if (split.length != 3) {
-            return null;
-        }
-        if (Constants.DUBBO_PROPERTY.equals(split[2])) {
-
-            if (this.group.equals(split[1])) {
-                groupAndDataId[0] = this.group;
-            } else {
-                groupAndDataId[0] = split[1];
-            }
-            groupAndDataId[1] = split[2];
-        } else {
-            groupAndDataId[0] = group;
-            groupAndDataId[1] = split[1] + Constants.PUNCTUATION_POINT + split[2];
-        }
-        return groupAndDataId;
-    }
+    return groupAndDataId;
+  }
 }

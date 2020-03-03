@@ -36,121 +36,131 @@ import java.io.IOException;
 
 import static org.junit.Assert.*;
 
-
 @RunWith(SpringJUnit4ClassRunner.class)
 public class ConfigCenterTest {
 
-    private String zkAddress;
-    private TestingServer zkServer;
-    private CuratorFramework zkClient;
-    @InjectMocks
-    private ConfigCenter configCenter;
+  private String zkAddress;
+  private TestingServer zkServer;
+  private CuratorFramework zkClient;
+  @InjectMocks private ConfigCenter configCenter;
 
-    @Before
-    public void setup() throws Exception {
-        int zkServerPort = NetUtils.getAvailablePort();
-        zkAddress = "zookeeper://127.0.0.1:" + zkServerPort;
-        zkServer = new TestingServer(zkServerPort, true);
-        zkClient = CuratorFrameworkFactory.builder().connectString(zkServer.getConnectString()).retryPolicy(new ExponentialBackoffRetry(1000, 3)).build();
-        zkClient.start();
+  @Before
+  public void setup() throws Exception {
+    int zkServerPort = NetUtils.getAvailablePort();
+    zkAddress = "zookeeper://127.0.0.1:" + zkServerPort;
+    zkServer = new TestingServer(zkServerPort, true);
+    zkClient =
+        CuratorFrameworkFactory.builder()
+            .connectString(zkServer.getConnectString())
+            .retryPolicy(new ExponentialBackoffRetry(1000, 3))
+            .build();
+    zkClient.start();
+  }
+
+  @After
+  public void tearDown() throws IOException {
+    zkServer.close();
+    zkServer.stop();
+  }
+
+  @Test
+  public void testGetDynamicConfiguration() throws Exception {
+    // mock @value inject
+    ReflectionTestUtils.setField(configCenter, "configCenter", zkAddress);
+    ReflectionTestUtils.setField(configCenter, "configCenterGroup", "dubbo");
+    ReflectionTestUtils.setField(configCenter, "username", "username");
+    ReflectionTestUtils.setField(configCenter, "password", "password");
+
+    // config is null
+    configCenter.getDynamicConfiguration();
+
+    // config is registry address
+    zkClient.createContainers("/dubbo/config/dubbo/dubbo.properties");
+    zkClient
+        .setData()
+        .forPath(
+            "/dubbo/config/dubbo/dubbo.properties",
+            "dubbo.registry.address=zookeeper://test-registry.com:2181".getBytes());
+    configCenter.getDynamicConfiguration();
+    Object registryUrl = ReflectionTestUtils.getField(configCenter, "registryUrl");
+    assertNotNull(registryUrl);
+    assertEquals("test-registry.com", ((URL) registryUrl).getHost());
+
+    // config is meta date address
+    zkClient
+        .setData()
+        .forPath(
+            "/dubbo/config/dubbo/dubbo.properties",
+            "dubbo.metadata-report.address=zookeeper://test-metadata.com:2181".getBytes());
+    configCenter.getDynamicConfiguration();
+    Object metadataUrl = ReflectionTestUtils.getField(configCenter, "metadataUrl");
+    assertNotNull(metadataUrl);
+    assertEquals("test-metadata.com", ((URL) metadataUrl).getHost());
+
+    // config is empty
+    zkClient.setData().forPath("/dubbo/config/dubbo/dubbo.properties", "".getBytes());
+    ReflectionTestUtils.setField(configCenter, "registryUrl", null);
+    ReflectionTestUtils.setField(configCenter, "metadataUrl", null);
+    configCenter.getDynamicConfiguration();
+    assertNull(ReflectionTestUtils.getField(configCenter, "registryUrl"));
+    assertNull(ReflectionTestUtils.getField(configCenter, "metadataUrl"));
+
+    // configCenter is null
+    ReflectionTestUtils.setField(configCenter, "configCenter", null);
+    // registryAddress is not null
+    ReflectionTestUtils.setField(configCenter, "registryAddress", zkAddress);
+    configCenter.getDynamicConfiguration();
+    registryUrl = ReflectionTestUtils.getField(configCenter, "registryUrl");
+    assertNotNull(registryUrl);
+    assertEquals("127.0.0.1", ((URL) registryUrl).getHost());
+
+    // configCenter & registryAddress are null
+    try {
+      ReflectionTestUtils.setField(configCenter, "configCenter", null);
+      ReflectionTestUtils.setField(configCenter, "registryAddress", null);
+      configCenter.getDynamicConfiguration();
+      fail("should throw exception when configCenter, registryAddress are all null");
+    } catch (ConfigurationException e) {
     }
+  }
 
-    @After
-    public void tearDown() throws IOException {
-        zkServer.close();
-        zkServer.stop();
+  @Test
+  public void testGetRegistry() {
+    try {
+      configCenter.getRegistry();
+      fail("should throw exception when registryAddress is blank");
+    } catch (ConfigurationException e) {
     }
+    assertNull(ReflectionTestUtils.getField(configCenter, "registryUrl"));
 
-    @Test
-    public void testGetDynamicConfiguration() throws Exception {
-        // mock @value inject
-        ReflectionTestUtils.setField(configCenter, "configCenter", zkAddress);
-        ReflectionTestUtils.setField(configCenter, "configCenterGroup", "dubbo");
-        ReflectionTestUtils.setField(configCenter, "username", "username");
-        ReflectionTestUtils.setField(configCenter, "password", "password");
+    // mock @value inject
+    ReflectionTestUtils.setField(configCenter, "registryAddress", zkAddress);
+    ReflectionTestUtils.setField(configCenter, "registryGroup", "dubbo");
+    ReflectionTestUtils.setField(configCenter, "username", "username");
+    ReflectionTestUtils.setField(configCenter, "password", "password");
 
-        // config is null
-        configCenter.getDynamicConfiguration();
+    configCenter.getRegistry();
+    Object registryUrl = ReflectionTestUtils.getField(configCenter, "registryUrl");
+    assertNotNull(registryUrl);
+    assertEquals("127.0.0.1", ((URL) registryUrl).getHost());
+  }
 
-        // config is registry address
-        zkClient.createContainers("/dubbo/config/dubbo/dubbo.properties");
-        zkClient.setData().forPath("/dubbo/config/dubbo/dubbo.properties", "dubbo.registry.address=zookeeper://test-registry.com:2181".getBytes());
-        configCenter.getDynamicConfiguration();
-        Object registryUrl = ReflectionTestUtils.getField(configCenter, "registryUrl");
-        assertNotNull(registryUrl);
-        assertEquals("test-registry.com", ((URL) registryUrl).getHost());
+  @Test
+  public void testGetMetadataCollector() {
+    // when metadataAddress is empty
+    ReflectionTestUtils.setField(configCenter, "metadataAddress", "");
+    configCenter.getMetadataCollector();
+    assertNull(ReflectionTestUtils.getField(configCenter, "metadataUrl"));
 
-        // config is meta date address
-        zkClient.setData().forPath("/dubbo/config/dubbo/dubbo.properties", "dubbo.metadata-report.address=zookeeper://test-metadata.com:2181".getBytes());
-        configCenter.getDynamicConfiguration();
-        Object metadataUrl = ReflectionTestUtils.getField(configCenter, "metadataUrl");
-        assertNotNull(metadataUrl);
-        assertEquals("test-metadata.com", ((URL) metadataUrl).getHost());
+    // mock @value inject
+    ReflectionTestUtils.setField(configCenter, "metadataAddress", zkAddress);
+    ReflectionTestUtils.setField(configCenter, "metadataGroup", "dubbo");
+    ReflectionTestUtils.setField(configCenter, "username", "username");
+    ReflectionTestUtils.setField(configCenter, "password", "password");
 
-        // config is empty
-        zkClient.setData().forPath("/dubbo/config/dubbo/dubbo.properties", "".getBytes());
-        ReflectionTestUtils.setField(configCenter, "registryUrl", null);
-        ReflectionTestUtils.setField(configCenter, "metadataUrl", null);
-        configCenter.getDynamicConfiguration();
-        assertNull(ReflectionTestUtils.getField(configCenter, "registryUrl"));
-        assertNull(ReflectionTestUtils.getField(configCenter, "metadataUrl"));
-
-        // configCenter is null
-        ReflectionTestUtils.setField(configCenter, "configCenter", null);
-        // registryAddress is not null
-        ReflectionTestUtils.setField(configCenter, "registryAddress", zkAddress);
-        configCenter.getDynamicConfiguration();
-        registryUrl = ReflectionTestUtils.getField(configCenter, "registryUrl");
-        assertNotNull(registryUrl);
-        assertEquals("127.0.0.1", ((URL) registryUrl).getHost());
-
-        // configCenter & registryAddress are null
-        try {
-            ReflectionTestUtils.setField(configCenter, "configCenter", null);
-            ReflectionTestUtils.setField(configCenter, "registryAddress", null);
-            configCenter.getDynamicConfiguration();
-            fail("should throw exception when configCenter, registryAddress are all null");
-        } catch (ConfigurationException e) {
-        }
-    }
-
-    @Test
-    public void testGetRegistry() throws Exception {
-        try {
-            configCenter.getRegistry();
-            fail("should throw exception when registryAddress is blank");
-        } catch (ConfigurationException e) {
-        }
-        assertNull(ReflectionTestUtils.getField(configCenter, "registryUrl"));
-
-        // mock @value inject
-        ReflectionTestUtils.setField(configCenter, "registryAddress", zkAddress);
-        ReflectionTestUtils.setField(configCenter, "registryGroup", "dubbo");
-        ReflectionTestUtils.setField(configCenter, "username", "username");
-        ReflectionTestUtils.setField(configCenter, "password", "password");
-
-        configCenter.getRegistry();
-        Object registryUrl = ReflectionTestUtils.getField(configCenter, "registryUrl");
-        assertNotNull(registryUrl);
-        assertEquals("127.0.0.1", ((URL) registryUrl).getHost());
-    }
-
-    @Test
-    public void testGetMetadataCollector() throws Exception {
-        // when metadataAddress is empty
-        ReflectionTestUtils.setField(configCenter, "metadataAddress", "");
-        configCenter.getMetadataCollector();
-        assertNull(ReflectionTestUtils.getField(configCenter, "metadataUrl"));
-
-        // mock @value inject
-        ReflectionTestUtils.setField(configCenter, "metadataAddress", zkAddress);
-        ReflectionTestUtils.setField(configCenter, "metadataGroup", "dubbo");
-        ReflectionTestUtils.setField(configCenter, "username", "username");
-        ReflectionTestUtils.setField(configCenter, "password", "password");
-
-        configCenter.getMetadataCollector();
-        Object metadataUrl = ReflectionTestUtils.getField(configCenter, "metadataUrl");
-        assertNotNull(metadataUrl);
-        assertEquals("127.0.0.1", ((URL) metadataUrl).getHost());
-    }
+    configCenter.getMetadataCollector();
+    Object metadataUrl = ReflectionTestUtils.getField(configCenter, "metadataUrl");
+    assertNotNull(metadataUrl);
+    assertEquals("127.0.0.1", ((URL) metadataUrl).getHost());
+  }
 }

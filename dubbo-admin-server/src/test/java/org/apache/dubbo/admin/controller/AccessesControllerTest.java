@@ -41,7 +41,6 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 public class AccessesControllerTest extends AbstractSpringIntegrationTest {
-
   private final String env = "whatever";
 
   @MockBean private RouteService routeService;
@@ -131,7 +130,7 @@ public class AccessesControllerTest extends AbstractSpringIntegrationTest {
   }
 
   @Test
-  public void updateAccess() throws IOException {
+  public void updateAccess() {
     AccessDTO accessDTO = new AccessDTO();
     String id = "1";
     // when id is 'Unknown ID'

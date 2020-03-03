@@ -32,7 +32,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 import java.io.IOException;
-import java.net.URI;
 import java.util.List;
 import java.util.Map;
 
@@ -41,107 +40,165 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 
-
 public class LoadBalanceControllerTest extends AbstractSpringIntegrationTest {
+  private final String env = "whatever";
 
-    private final String env = "whatever";
+  @MockBean private OverrideService overrideService;
+  @MockBean private ProviderService providerService;
+  @Autowired private ObjectMapper objectMapper;
 
-    @MockBean
-    private OverrideService overrideService;
-    @MockBean
-    private ProviderService providerService;
-    @Autowired
-    private ObjectMapper objectMapper;
-
-    @After
-    public void tearDown() throws Exception {
-        if (zkClient.checkExists().forPath("/dubbo") != null) {
-            zkClient.delete().deletingChildrenIfNeeded().forPath("/dubbo");
-        }
+  @After
+  public void tearDown() throws Exception {
+    if (zkClient.checkExists().forPath("/dubbo") != null) {
+      zkClient.delete().deletingChildrenIfNeeded().forPath("/dubbo");
     }
+  }
 
-    @Test
-    public void createLoadbalance() throws IOException {
-        BalancingDTO balancingDTO = new BalancingDTO();
-        ResponseEntity<String> response;
+  @Test
+  public void createLoadBalance() throws IOException {
+    BalancingDTO balancingDTO = new BalancingDTO();
+    ResponseEntity<String> response;
 
-        // service and application are all blank
-        response = restTemplate.postForEntity(url("/dubbo-admin/api/{env}/rules/balancing"), balancingDTO, String.class, env);
-        assertFalse("should return a fail response, when service and application are all blank", (Boolean) objectMapper.readValue(response.getBody(), Map.class).get("success"));
-        // dubbo version is 2.6
-        balancingDTO.setApplication("test application");
-        balancingDTO.setService("test service");
-        when(providerService.findVersionInApplication("test application")).thenReturn("2.6");
-        response = restTemplate.postForEntity(url("/dubbo-admin/api/{env}/rules/balancing"), balancingDTO, String.class, env);
-        assertFalse("should return a fail response, when dubbo version is 2.6", (Boolean) objectMapper.readValue(response.getBody(), Map.class).get("success"));
-        // dubbo version is 2.7
-        when(providerService.findVersionInApplication("test application")).thenReturn("2.7");
-        response = restTemplate.postForEntity(url("/dubbo-admin/api/{env}/rules/balancing"), balancingDTO, String.class, env);
-        assertEquals(HttpStatus.CREATED, response.getStatusCode());
-        assertTrue(Boolean.valueOf(response.getBody()));
-    }
+    // service and application are all blank
+    response =
+        restTemplate.postForEntity(
+            url("/dubbo-admin/api/{env}/rules/balancing"), balancingDTO, String.class, env);
+    assertFalse(
+        "should return a fail response, when service and application are all blank",
+        (Boolean) objectMapper.readValue(response.getBody(), Map.class).get("success"));
+    // dubbo version is 2.6
+    balancingDTO.setApplication("test application");
+    balancingDTO.setService("test service");
+    when(providerService.findVersionInApplication("test application")).thenReturn("2.6");
+    response =
+        restTemplate.postForEntity(
+            url("/dubbo-admin/api/{env}/rules/balancing"), balancingDTO, String.class, env);
+    assertFalse(
+        "should return a fail response, when dubbo version is 2.6",
+        (Boolean) objectMapper.readValue(response.getBody(), Map.class).get("success"));
+    // dubbo version is 2.7
+    when(providerService.findVersionInApplication("test application")).thenReturn("2.7");
+    response =
+        restTemplate.postForEntity(
+            url("/dubbo-admin/api/{env}/rules/balancing"), balancingDTO, String.class, env);
+    assertEquals(HttpStatus.CREATED, response.getStatusCode());
+    assertTrue(Boolean.parseBoolean(response.getBody()));
+  }
 
-    @Test
-    public void updateLoadbalance() throws IOException {
-        String id = "1";
-        BalancingDTO balancingDTO = new BalancingDTO();
-        URI uri;
-        ResponseEntity<String> response;
-        // unknown id
-        response = restTemplate.exchange(url("/dubbo-admin/api/{env}/rules/balancing/{id}"), HttpMethod.PUT, new HttpEntity<>(balancingDTO, null), String.class, env, id);
-        assertFalse("should return a fail response, when id is null", (Boolean) objectMapper.readValue(response.getBody(), Map.class).get("success"));
-        // valid id
-        BalancingDTO balancing = mock(BalancingDTO.class);
-        when(overrideService.findBalance(id)).thenReturn(balancing);
-        assertTrue(restTemplate.exchange(url("/dubbo-admin/api/{env}/rules/balancing/{id}"), HttpMethod.PUT, new HttpEntity<>(balancingDTO, null), Boolean.class, env, id).getBody());
-        verify(overrideService).saveBalance(any(BalancingDTO.class));
-    }
+  @Test
+  public void updateLoadBalance() throws IOException {
+    String id = "1";
+    BalancingDTO balancingDTO = new BalancingDTO();
+    ResponseEntity<String> response;
+    // unknown id
+    response =
+        restTemplate.exchange(
+            url("/dubbo-admin/api/{env}/rules/balancing/{id}"),
+            HttpMethod.PUT,
+            new HttpEntity<>(balancingDTO, null),
+            String.class,
+            env,
+            id);
+    assertFalse(
+        "should return a fail response, when id is null",
+        (Boolean) objectMapper.readValue(response.getBody(), Map.class).get("success"));
+    // valid id
+    BalancingDTO balancing = mock(BalancingDTO.class);
+    when(overrideService.findBalance(id)).thenReturn(balancing);
+    assertTrue(
+        restTemplate
+            .exchange(
+                url("/dubbo-admin/api/{env}/rules/balancing/{id}"),
+                HttpMethod.PUT,
+                new HttpEntity<>(balancingDTO, null),
+                Boolean.class,
+                env,
+                id)
+            .getBody());
+    verify(overrideService).saveBalance(any(BalancingDTO.class));
+  }
 
-    @Test
-    public void searchLoadbalances() throws IOException {
-        String service = "test service", application = "test application";
-        ResponseEntity<String> response;
-        // service and application are all blank
-        response = restTemplate.getForEntity(url("/dubbo-admin/api/{env}/rules/balancing"), String.class, env);
-        assertFalse("should return a fail response, when service and application are all blank", (Boolean) objectMapper.readValue(response.getBody(), Map.class).get("success"));
-        // service is valid
-        response = restTemplate.getForEntity(url("/dubbo-admin/api/{env}/rules/balancing?service={service}&application={application}"), String.class, env, service, null);
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        verify(overrideService).findBalance(service);
-        // application is valid
-        response = restTemplate.getForEntity(url("/dubbo-admin/api/{env}/rules/balancing?service={service}&application={application}"), String.class, env, null, application);
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        verify(overrideService).findBalance(application);
-        // findBalance return a notnull
-        BalancingDTO balancingDTO = new BalancingDTO();
-        when(overrideService.findBalance(anyString())).thenReturn(balancingDTO);
-        response = restTemplate.getForEntity(url("/dubbo-admin/api/{env}/rules/balancing?service={service}&application={application}"), String.class, env, null, application);
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals(1, objectMapper.readValue(response.getBody(), List.class).size());
-    }
+  @Test
+  public void searchLoadBalances() throws IOException {
+    String service = "test service", application = "test application";
+    ResponseEntity<String> response;
+    // service and application are all blank
+    response =
+        restTemplate.getForEntity(url("/dubbo-admin/api/{env}/rules/balancing"), String.class, env);
+    assertFalse(
+        "should return a fail response, when service and application are all blank",
+        (Boolean) objectMapper.readValue(response.getBody(), Map.class).get("success"));
+    // service is valid
+    response =
+        restTemplate.getForEntity(
+            url(
+                "/dubbo-admin/api/{env}/rules/balancing?service={service}&application={application}"),
+            String.class,
+            env,
+            service,
+            null);
+    assertEquals(HttpStatus.OK, response.getStatusCode());
+    verify(overrideService).findBalance(service);
+    // application is valid
+    response =
+        restTemplate.getForEntity(
+            url(
+                "/dubbo-admin/api/{env}/rules/balancing?service={service}&application={application}"),
+            String.class,
+            env,
+            null,
+            application);
+    assertEquals(HttpStatus.OK, response.getStatusCode());
+    verify(overrideService).findBalance(application);
+    // findBalance return a notnull
+    BalancingDTO balancingDTO = new BalancingDTO();
+    when(overrideService.findBalance(anyString())).thenReturn(balancingDTO);
+    response =
+        restTemplate.getForEntity(
+            url(
+                "/dubbo-admin/api/{env}/rules/balancing?service={service}&application={application}"),
+            String.class,
+            env,
+            null,
+            application);
+    assertEquals(HttpStatus.OK, response.getStatusCode());
+    assertEquals(1, objectMapper.readValue(response.getBody(), List.class).size());
+  }
 
-    @Test
-    public void detailLoadBalance() throws IOException {
-        String id = "1";
-        ResponseEntity<String> response;
-        // when balancing is not exist
-        response = restTemplate.getForEntity(url("/dubbo-admin/api/{env}/rules/balancing/{id}"), String.class, env, id);
-        assertFalse("should return a fail response, when id is null", (Boolean) objectMapper.readValue(response.getBody(), Map.class).get("success"));
-        // when balancing is not null
-        BalancingDTO balancingDTO = new BalancingDTO();
-        when(overrideService.findBalance(id)).thenReturn(balancingDTO);
-        response = restTemplate.getForEntity(url("/dubbo-admin/api/{env}/rules/balancing/{id}"), String.class, env, id);
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-    }
+  @Test
+  public void detailLoadBalance() throws IOException {
+    String id = "1";
+    ResponseEntity<String> response;
+    // when balancing is not exist
+    response =
+        restTemplate.getForEntity(
+            url("/dubbo-admin/api/{env}/rules/balancing/{id}"), String.class, env, id);
+    assertFalse(
+        "should return a fail response, when id is null",
+        (Boolean) objectMapper.readValue(response.getBody(), Map.class).get("success"));
+    // when balancing is not null
+    BalancingDTO balancingDTO = new BalancingDTO();
+    when(overrideService.findBalance(id)).thenReturn(balancingDTO);
+    response =
+        restTemplate.getForEntity(
+            url("/dubbo-admin/api/{env}/rules/balancing/{id}"), String.class, env, id);
+    assertEquals(HttpStatus.OK, response.getStatusCode());
+  }
 
-    @Test
-    public void deleteLoadBalance() {
-        String id = "1";
-        URI uri;
-        ResponseEntity<String> response;
+  @Test
+  public void deleteLoadBalance() {
+    String id = "1";
+    ResponseEntity<String> response;
 
-        response = restTemplate.exchange(url("/dubbo-admin/api/{env}/rules/balancing/{id}"), HttpMethod.DELETE, new HttpEntity<>(null), String.class, env, id);
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertTrue(Boolean.valueOf(response.getBody()));
-    }
+    response =
+        restTemplate.exchange(
+            url("/dubbo-admin/api/{env}/rules/balancing/{id}"),
+            HttpMethod.DELETE,
+            new HttpEntity<>(null),
+            String.class,
+            env,
+            id);
+    assertEquals(HttpStatus.OK, response.getStatusCode());
+    assertTrue(Boolean.parseBoolean(response.getBody()));
+  }
 }

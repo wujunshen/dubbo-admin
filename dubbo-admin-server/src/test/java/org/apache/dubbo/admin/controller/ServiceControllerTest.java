@@ -40,138 +40,132 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 
 public class ServiceControllerTest extends AbstractSpringIntegrationTest {
-    @Autowired
-    private Registry registry;
+  @Autowired private Registry registry;
 
-    @After
-    public void tearDown() throws Exception {
-        final Set<URL> registered = ((AbstractRegistry) registry).getRegistered();
-        for (final URL url : registered) {
-            try {
-                registry.unregister(url);
-            } catch (Exception ignored) {
-            }
-        }
-        TimeUnit.SECONDS.sleep(1);
+  @After
+  public void tearDown() throws Exception {
+    final Set<URL> registered = ((AbstractRegistry) registry).getRegistered();
+    for (final URL url : registered) {
+      try {
+        registry.unregister(url);
+      } catch (Exception ignored) {
+      }
     }
+    TimeUnit.SECONDS.sleep(1);
+  }
 
-    @Test
-    public void shouldGetAllServices() throws Exception {
-        final int num = 10;
-        for (int i = 0; i < num; i++) {
-            final String service = "org.apache.dubbo.admin.test.service" + i;
-            final URL url =
-                    i % 2 == 0
-                            ? generateProviderServiceUrl("dubbo-admin", service)
-                            : generateConsumerServiceUrl("dubbo-admin", service);
-            registry.register(url);
-        }
-        TimeUnit.SECONDS.sleep(1);
-
-        final ResponseEntity<Set<String>> response =
-                restTemplate.exchange(
-                        url("/dubbo-admin/api/{env}/services"),
-                        HttpMethod.GET,
-                        null,
-                        new ParameterizedTypeReference<Set<String>>() {
-                        },
-                        "whatever");
-        assertThat(response.getStatusCode(), is(HttpStatus.OK));
-        assertThat(response.getBody(), hasSize(num));
+  @Test
+  public void shouldGetAllServices() throws Exception {
+    final int num = 10;
+    for (int i = 0; i < num; i++) {
+      final String service = "org.apache.dubbo.admin.test.service" + i;
+      final URL url =
+          i % 2 == 0
+              ? generateProviderServiceUrl("dubbo-admin", service)
+              : generateConsumerServiceUrl("dubbo-admin", service);
+      registry.register(url);
     }
+    TimeUnit.SECONDS.sleep(1);
 
-    @Test
-    public void shouldGetAllApplications() throws Exception {
-        final int num = 10;
-        for (int i = 0; i < num; i++) {
-            final String service = "org.apache.dubbo.admin.test.service";
-            final URL url = generateProviderServiceUrl("dubbo-admin-" + i, service);
-            registry.register(url);
-        }
-        TimeUnit.SECONDS.sleep(1);
+    final ResponseEntity<Set<String>> response =
+        restTemplate.exchange(
+            url("/dubbo-admin/api/{env}/services"),
+            HttpMethod.GET,
+            null,
+            new ParameterizedTypeReference<Set<String>>() {},
+            "whatever");
+    assertThat(response.getStatusCode(), is(HttpStatus.OK));
+    assertThat(response.getBody(), hasSize(num));
+  }
 
-        final ResponseEntity<Set<String>> responseEntity =
-                restTemplate.exchange(
-                        url("/dubbo-admin/api/{env}/applications"),
-                        HttpMethod.GET,
-                        null,
-                        new ParameterizedTypeReference<Set<String>>() {
-                        },
-                        "whatever");
-        assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
-        assertThat(responseEntity.getBody(), hasSize(num));
+  @Test
+  public void shouldGetAllApplications() throws Exception {
+    final int num = 10;
+    for (int i = 0; i < num; i++) {
+      final String service = "org.apache.dubbo.admin.test.service";
+      final URL url = generateProviderServiceUrl("dubbo-admin-" + i, service);
+      registry.register(url);
     }
+    TimeUnit.SECONDS.sleep(1);
 
-    @Ignore
-    @Test
-    public void shouldFilterUsingPattern() throws InterruptedException {
-        final int num = 10;
-        final String application = "dubbo-admin";
-        for (int i = 0; i < num; i++) {
-            final String service = "org.apache.dubbo.admin.test.service" + i + ".pattern" + (i % 2);
-            registry.register(generateProviderServiceUrl(application, service));
-        }
-        TimeUnit.SECONDS.sleep(1);
+    final ResponseEntity<Set<String>> responseEntity =
+        restTemplate.exchange(
+            url("/dubbo-admin/api/{env}/applications"),
+            HttpMethod.GET,
+            null,
+            new ParameterizedTypeReference<Set<String>>() {},
+            "whatever");
+    assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
+    assertThat(responseEntity.getBody(), hasSize(num));
+  }
 
-        ResponseEntity<Set<ServiceDTO>> responseEntity =
-                restTemplate.exchange(
-                        url("/dubbo-admin/api/{env}/service?pattern={pattern}&filter={filter}"),
-                        HttpMethod.GET,
-                        null,
-                        new ParameterizedTypeReference<Set<ServiceDTO>>() {
-                        },
-                        "whatever",
-                        Constants.SERVICE,
-                        "*");
-        assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
-        assertThat(responseEntity.getBody(), hasSize(num));
-
-        responseEntity =
-                restTemplate.exchange(
-                        url("/dubbo-admin/api/{env}/service?pattern={pattern}&filter={filter}"),
-                        HttpMethod.GET,
-                        null,
-                        new ParameterizedTypeReference<Set<ServiceDTO>>() {
-                        },
-                        "whatever",
-                        Constants.SERVICE,
-                        "*pattern0");
-        assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
-        assertThat(responseEntity.getBody(), hasSize(num / 2));
-
-        responseEntity =
-                restTemplate.exchange(
-                        url("/dubbo-admin/api/{env}/service?pattern={pattern}&filter={filter}"),
-                        HttpMethod.GET,
-                        null,
-                        new ParameterizedTypeReference<Set<ServiceDTO>>() {
-                        },
-                        "whatever",
-                        Constants.SERVICE,
-                        "*pattern1");
-        assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
-        assertThat(responseEntity.getBody(), hasSize(num / 2));
+  @Ignore
+  @Test
+  public void shouldFilterUsingPattern() throws InterruptedException {
+    final int num = 10;
+    final String application = "dubbo-admin";
+    for (int i = 0; i < num; i++) {
+      final String service = "org.apache.dubbo.admin.test.service" + i + ".pattern" + (i % 2);
+      registry.register(generateProviderServiceUrl(application, service));
     }
+    TimeUnit.SECONDS.sleep(1);
 
-    private URL generateProviderServiceUrl(final String application, final String serviceName) {
-        return URL.valueOf(
-                "dubbo://127.0.0.1:20881/"
-                        + serviceName
-                        + "?application="
-                        + application
-                        + "&interface="
-                        + serviceName
-                        + "&side=provider");
-    }
+    ResponseEntity<Set<ServiceDTO>> responseEntity =
+        restTemplate.exchange(
+            url("/dubbo-admin/api/{env}/service?pattern={pattern}&filter={filter}"),
+            HttpMethod.GET,
+            null,
+            new ParameterizedTypeReference<Set<ServiceDTO>>() {},
+            "whatever",
+            Constants.SERVICE,
+            "*");
+    assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
+    assertThat(responseEntity.getBody(), hasSize(num));
 
-    private URL generateConsumerServiceUrl(final String application, final String serviceName) {
-        return URL.valueOf(
-                "dubbo://127.0.0.1:20881/"
-                        + serviceName
-                        + "?application="
-                        + application
-                        + "&interface="
-                        + serviceName
-                        + "&side=consumer");
-    }
+    responseEntity =
+        restTemplate.exchange(
+            url("/dubbo-admin/api/{env}/service?pattern={pattern}&filter={filter}"),
+            HttpMethod.GET,
+            null,
+            new ParameterizedTypeReference<Set<ServiceDTO>>() {},
+            "whatever",
+            Constants.SERVICE,
+            "*pattern0");
+    assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
+    assertThat(responseEntity.getBody(), hasSize(num / 2));
+
+    responseEntity =
+        restTemplate.exchange(
+            url("/dubbo-admin/api/{env}/service?pattern={pattern}&filter={filter}"),
+            HttpMethod.GET,
+            null,
+            new ParameterizedTypeReference<Set<ServiceDTO>>() {},
+            "whatever",
+            Constants.SERVICE,
+            "*pattern1");
+    assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
+    assertThat(responseEntity.getBody(), hasSize(num / 2));
+  }
+
+  private URL generateProviderServiceUrl(final String application, final String serviceName) {
+    return URL.valueOf(
+        "dubbo://127.0.0.1:20881/"
+            + serviceName
+            + "?application="
+            + application
+            + "&interface="
+            + serviceName
+            + "&side=provider");
+  }
+
+  private URL generateConsumerServiceUrl(final String application, final String serviceName) {
+    return URL.valueOf(
+        "dubbo://127.0.0.1:20881/"
+            + serviceName
+            + "?application="
+            + application
+            + "&interface="
+            + serviceName
+            + "&side=consumer");
+  }
 }

@@ -33,7 +33,6 @@ import java.util.concurrent.ConcurrentMap;
  */
 public class AbstractService {
 
-    protected static final Logger logger = LoggerFactory.getLogger(AbstractService.class);
 
     @Autowired
     protected Registry registry;

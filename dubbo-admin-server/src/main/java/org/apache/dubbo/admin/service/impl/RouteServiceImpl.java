@@ -246,10 +246,10 @@ public class RouteServiceImpl extends AbstractService implements RouteService {
             if (routeRule.getScope().equals(Constants.SERVICE)) {
                 //for 2.6
                 for (Route oldRoute : convertRouteToOldRoute(RouteUtils.createConditionRouteFromRule(routeRule))) {
-                    URL oldURL = oldRoute.toUrl();
-                    registry.unregister(oldURL);
-                    oldURL = oldURL.addParameter("enabled", false);
-                    registry.register(oldURL);
+                    URL oldUrl = oldRoute.toUrl();
+                    registry.unregister(oldUrl);
+                    oldUrl = oldUrl.addParameter("enabled", false);
+                    registry.register(oldUrl);
                 }
             }
 
