@@ -142,9 +142,7 @@ public class ConfigCenter {
     return registry;
   }
 
-  /*
-   * generate metadata client
-   */
+  /** generate metadata client */
   @Bean
   @DependsOn("governanceConfiguration")
   MetaDataCollector getMetadataCollector() {

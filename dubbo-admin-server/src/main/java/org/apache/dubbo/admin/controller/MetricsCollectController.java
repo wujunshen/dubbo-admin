@@ -37,6 +37,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * @author wujunshen
@@ -71,7 +72,7 @@ public class MetricsCollectController {
     public List<MetricDTO> searchService(
             @RequestParam String ip, @RequestParam String group, @PathVariable String env) {
 
-        Map<String, String> configMap = new HashMap<>();
+        Map<String, String> configMap = new ConcurrentHashMap<>(8);
         addMetricsConfigToMap(configMap, ip);
 
         //         default value

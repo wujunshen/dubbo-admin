@@ -70,7 +70,7 @@ public class OverrideServiceImpl extends AbstractService implements OverrideServ
 
     // for2.6
     if (StringUtils.isNotEmpty(override.getService())) {
-      List<Override> result = convertDTOtoOldOverride(override);
+      List<Override> result = convertDto2OldOverride(override);
       for (Override o : result) {
         registry.register(o.toUrl().addParameter(Constants.COMPATIBLE_CONFIG, true));
       }
@@ -103,8 +103,8 @@ public class OverrideServiceImpl extends AbstractService implements OverrideServ
 
     // for 2.6
     if (StringUtils.isNotEmpty(update.getService())) {
-      List<Override> oldOverrides = convertDTOtoOldOverride(old);
-      List<Override> updatedOverrides = convertDTOtoOldOverride(update);
+      List<Override> oldOverrides = convertDto2OldOverride(old);
+      List<Override> updatedOverrides = convertDto2OldOverride(update);
       for (Override o : oldOverrides) {
         registry.unregister(o.toUrl().addParameter(Constants.COMPATIBLE_CONFIG, true));
       }
@@ -145,7 +145,7 @@ public class OverrideServiceImpl extends AbstractService implements OverrideServ
 
     // for 2.6
     if (overrideDTO.getScope().equals(Constants.SERVICE)) {
-      List<Override> overrides = convertDTOtoOldOverride(old);
+      List<Override> overrides = convertDto2OldOverride(old);
       for (Override o : overrides) {
         registry.unregister(o.toUrl().addParameter(Constants.COMPATIBLE_CONFIG, true));
       }
@@ -169,7 +169,7 @@ public class OverrideServiceImpl extends AbstractService implements OverrideServ
 
     // 2.6
     if (override.getScope().equals(Constants.SERVICE)) {
-      List<Override> overrides = convertDTOtoOldOverride(old);
+      List<Override> overrides = convertDto2OldOverride(old);
       for (Override o : overrides) {
         o.setEnabled(false);
         registry.unregister(o.toUrl().addParameter(Constants.COMPATIBLE_CONFIG, true));
@@ -196,7 +196,7 @@ public class OverrideServiceImpl extends AbstractService implements OverrideServ
 
     // for 2.6
     if (override.getScope().equals(Constants.SERVICE)) {
-      List<Override> overrides = convertDTOtoOldOverride(old);
+      List<Override> overrides = convertDto2OldOverride(old);
       for (Override o : overrides) {
         o.setEnabled(true);
         registry.unregister(o.toUrl().addParameter(Constants.COMPATIBLE_CONFIG, true));
@@ -487,7 +487,7 @@ public class OverrideServiceImpl extends AbstractService implements OverrideServ
     override.setParams(params.toString());
   }
 
-  private List<Override> convertDTOtoOldOverride(DynamicConfigDTO overrideDTO) {
+  private List<Override> convertDto2OldOverride(DynamicConfigDTO overrideDTO) {
     List<Override> result = new ArrayList<>();
     List<OverrideConfig> configs = overrideDTO.getConfigs();
     for (OverrideConfig config : configs) {

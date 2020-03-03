@@ -36,22 +36,24 @@ public class Route extends AbstractEntity {
   public static final String ALL_METHOD = "*";
   public static final String KEY_METHOD = "method";
 
-  // WHEN KEY
+  /** WHEN KEY */
   public static final String KEY_CONSUMER_APPLICATION = "consumer.application";
+
   public static final String KEY_CONSUMER_GROUP = "consumer.cluster";
   public static final String KEY_CONSUMER_VERSION = "consumer.version";
   public static final String KEY_CONSUMER_HOST = "host";
   public static final String KEY_CONSUMER_METHODS = "consumer.methods";
   public static final String KEY_PROVIDER_APPLICATION = "provider.application";
-
-  // THEN KEY
+  /** THEN KEY */
   public static final String KEY_PROVIDER_GROUP = "provider.cluster";
+
   public static final String KEY_PROVIDER_PROTOCOL = "provider.protocol";
   public static final String KEY_PROVIDER_VERSION = "provider.version";
   public static final String KEY_PROVIDER_HOST = "provider.host";
   public static final String KEY_PROVIDER_PORT = "provider.port";
   private static final long serialVersionUID = -7630589008164140656L;
-  private long parentId; // default 0
+  /** default 0 */
+  private long parentId;
 
   private String name;
 

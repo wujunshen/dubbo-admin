@@ -27,12 +27,13 @@ import org.apache.dubbo.common.utils.StringUtils;
 import java.text.ParseException;
 import java.util.*;
 import java.util.Map.Entry;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
  * Router rule can be divided into two parts, When Condition and Then Condition <br>
- * When/Then Confition is expressed in a style of (KV) pair, the V part of the condition pair can
+ * When/Then Condition is expressed in a style of (KV) pair, the V part of the condition pair can
  * contain multiple values (a list) <br>
  * The meaning of Rule: If a request matches When Condition, then use Then Condition to filter
  * providers (only providers match Then Condition will be returned). <br>
@@ -43,19 +44,19 @@ import java.util.regex.Pattern;
  * applied to current Consumer and the providers returned are filtered by RouteUtils.<br>
  *
  * <p>An example of ConditionRoute Rule：<code>
- * key1 = value11,value12 & key2 = value21 & key2 != value22 => key3 = value3 & key4 = value41,vlaue42 & key5 !=value51
+ * key1 = value11,value12 & key2 = value21 & key2 != value22 => key3 = value3 & key4 = value41,value42 & key5 !=value51
  * </code>。 The part before <code>=></code> is called When Condition, it's a KV pair; the follower
  * part is Then Condition, also a KV pair. V part in KV can have more than one value, separated by
  * ','<br>
  * <br>
  *
  * <p>Value object, thread safe.
+ *
  * @author wujunshen
  */
 public class RouteUtils {
   private static Pattern ROUTE_PATTERN = Pattern.compile("([&!=,]*)\\s*([^&!=,\\s]+)");
-  private static Pattern CONDITION_SEPERATOR = Pattern.compile("(.*)=>(.*)");
-  private static Pattern valueListSeparator = Pattern.compile("\\s*,\\s*");
+  private static Pattern CONDITION_SEPRATOR = Pattern.compile("(.*)=>(.*)");
   final Map<String, MatchPair> whenCondition;
   final Map<String, MatchPair> thenCondition;
   private volatile String tostring = null;
@@ -75,7 +76,7 @@ public class RouteUtils {
   }
 
   public static Map<String, MatchPair> parseRule(String rule) throws ParseException {
-    Map<String, MatchPair> condition = new HashMap<>();
+    Map<String, MatchPair> condition = new ConcurrentHashMap<>(8);
     if (StringUtils.isBlank(rule)) {
       return condition;
     }
@@ -189,7 +190,7 @@ public class RouteUtils {
       throw new ParseException("Illegal blank route rule", 0);
     }
 
-    final Matcher matcher = CONDITION_SEPERATOR.matcher(rule);
+    final Matcher matcher = CONDITION_SEPRATOR.matcher(rule);
     if (!matcher.matches()) {
       throw new ParseException("condition seperator => not found!", 0);
     }
@@ -337,7 +338,7 @@ public class RouteUtils {
     route.setFilterRule("false");
     route.setEnabled(true);
 
-    Map<String, MatchPair> when = new HashMap<>();
+    Map<String, MatchPair> when = new ConcurrentHashMap<>(8);
     MatchPair matchPair = new MatchPair(new HashSet<>(), new HashSet<>());
     when.put(Route.KEY_CONSUMER_HOST, matchPair);
 
@@ -349,7 +350,7 @@ public class RouteUtils {
     }
 
     StringBuilder sb = new StringBuilder();
-    RouteUtils.contidionToString(sb, when);
+    RouteUtils.condition2String(sb, when);
     route.setMatchRule(sb.toString());
     return route;
   }
@@ -398,7 +399,7 @@ public class RouteUtils {
   }
 
   // TODO At present, the multiple Key of Condition is in disorder. Should we sort it?
-  public static void contidionToString(StringBuilder sb, Map<String, MatchPair> condition) {
+  public static void condition2String(StringBuilder sb, Map<String, MatchPair> condition) {
     boolean isFirst = true;
     for (Entry<String, MatchPair> entry : condition.entrySet()) {
       String keyName = entry.getKey();
@@ -439,9 +440,9 @@ public class RouteUtils {
       return tostring;
     }
     StringBuilder sb = new StringBuilder(512);
-    contidionToString(sb, whenCondition);
+    condition2String(sb, whenCondition);
     sb.append(" => ");
-    contidionToString(sb, thenCondition);
+    condition2String(sb, thenCondition);
     return tostring = sb.toString();
   }
 

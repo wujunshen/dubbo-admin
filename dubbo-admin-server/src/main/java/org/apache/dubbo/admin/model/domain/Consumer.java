@@ -16,6 +16,10 @@
  */
 package org.apache.dubbo.admin.model.domain;
 
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 import org.apache.dubbo.admin.common.utils.Constants;
 import org.apache.dubbo.admin.common.utils.Tool;
 import org.apache.dubbo.common.URL;
@@ -30,26 +34,30 @@ import java.util.Map;
  *
  * @author wujunshen
  */
+@EqualsAndHashCode(callSuper = true)
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class Consumer extends AbstractEntity {
   private static final long serialVersionUID = -1140894843784583237L;
   /** The name of the service referenced by the consumer */
   private String service;
 
   private String parameters;
-
-  private String result; /*route result*/
-
-  private String address; /* address of consumer */
-
-  private String registry; /* Consumer connected registry address */
-
-  private String application; /* application name */
-
-  private String username; /* user name of consumer */
-
-  private String statistics; /* Service call statistics */
-
-  private Date collected; /* Date statistics was recorded */
+  /** route result */
+  private String result;
+  /** address of consumer */
+  private String address;
+  /** Consumer connected registry address */
+  private String registry;
+  /** application name */
+  private String application;
+  /** user name of consumer */
+  private String username;
+  /** Service call statistics */
+  private String statistics;
+  /** Date statistics was recorded */
+  private Date collected;
 
   private Override override;
 
@@ -60,135 +68,14 @@ public class Consumer extends AbstractEntity {
   private List<Provider> providers;
 
   private Date expired;
-
-  private long alived; /*Time to live in milliseconds*/
-
-  public Consumer() {}
+  /** Time to live in milliseconds */
+  private long alived;
 
   public Consumer(Long id) {
     super(id);
   }
 
-  public String getService() {
-    return service;
-  }
-
-  public void setService(String service) {
-    this.service = service;
-  }
-
-  public String getParameters() {
-    return parameters;
-  }
-
-  public void setParameters(String parameters) {
-    this.parameters = parameters;
-  }
-
-  public String getAddress() {
-    return address;
-  }
-
-  public void setAddress(String address) {
-    this.address = address;
-  }
-
-  public String getRegistry() {
-    return registry;
-  }
-
-  public void setRegistry(String registry) {
-    this.registry = registry;
-  }
-
-  public String getUsername() {
-    return username;
-  }
-
-  public void setUsername(String username) {
-    this.username = username;
-  }
-
-  public String getStatistics() {
-    return statistics;
-  }
-
-  public void setStatistics(String statistics) {
-    this.statistics = statistics;
-  }
-
-  public Date getCollected() {
-    return collected;
-  }
-
-  public void setCollected(Date collected) {
-    this.collected = collected;
-  }
-
-  public String getResult() {
-    return result;
-  }
-
-  public void setResult(String result) {
-    this.result = result;
-  }
-
-  public String getApplication() {
-    return application;
-  }
-
-  public void setApplication(String application) {
-    this.application = application;
-  }
-
-  public Date getExpired() {
-    return expired;
-  }
-
-  public void setExpired(Date expired) {
-    this.expired = expired;
-  }
-
-  public long getAlived() {
-    return alived;
-  }
-
-  public void setAlived(long alived) {
-    this.alived = alived;
-  }
-
-  public Override getOverride() {
-    return override;
-  }
-
-  public void setOverride(Override override) {
-    this.override = override;
-  }
-
-  public List<Override> getOverrides() {
-    return overrides;
-  }
-
-  public void setOverrides(List<Override> overrides) {
-    this.overrides = overrides;
-  }
-
-  public List<Route> getConditionRoutes() {
-    return conditionRoutes;
-  }
-
-  public void setConditionRoutes(List<Route> conditionRoutes) {
-    this.conditionRoutes = conditionRoutes;
-  }
-
-  public List<Provider> getProviders() {
-    return providers;
-  }
-
-  public void setProviders(List<Provider> providers) {
-    this.providers = providers;
-  }
-
+  @java.lang.Override
   public String toString() {
     return "Consumer [service="
         + service

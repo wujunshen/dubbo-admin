@@ -150,7 +150,12 @@ public class SyncUtils {
     return ret;
   }
 
-  // Map<Long, URL>
+  /**
+   * Map<Long, URL>
+   * @param from
+   * @param to
+   * @param filter
+   */
   static void filterFromUrls(
       Map<String, URL> from, Map<String, URL> to, Map<String, String> filter) {
     if (from == null || from.isEmpty()) {

@@ -38,9 +38,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.atomic.AtomicLong;
 
-/**
- * @author wujunshen
- */
+/** @author wujunshen */
 @Slf4j
 @Component
 public class RegistryServerSync implements InitializingBean, DisposableBean, NotifyListener {
@@ -98,7 +96,11 @@ public class RegistryServerSync implements InitializingBean, DisposableBean, Not
     registry.unsubscribe(SUBSCRIBE, this);
   }
 
-  // Notification of of any service with any type (override、subcribe、route、provider) is full.
+  /**
+   * Notification of of any service with any type (override、subscribe、route、provider) is full.
+   *
+   * @param urls
+   */
   @Override
   public void notify(List<URL> urls) {
     if (urls == null || urls.isEmpty()) {
