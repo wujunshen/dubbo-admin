@@ -35,6 +35,8 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
+import static org.apache.dubbo.admin.common.utils.Constants.NEW_DUBBO_VERSION;
+import static org.apache.dubbo.admin.common.utils.Constants.OLD_DUBBO_VERSION;
 import static org.junit.Assert.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -69,7 +71,7 @@ public class LoadBalanceControllerTest extends AbstractSpringIntegrationTest {
     // dubbo version is 2.6
     balancingDTO.setApplication("test application");
     balancingDTO.setService("test service");
-    when(providerService.findVersionInApplication("test application")).thenReturn("2.6");
+    when(providerService.findVersionInApplication("test application")).thenReturn(OLD_DUBBO_VERSION);
     response =
         restTemplate.postForEntity(
             url("/dubbo-admin/api/{env}/rules/balancing"), balancingDTO, String.class, env);
@@ -77,7 +79,7 @@ public class LoadBalanceControllerTest extends AbstractSpringIntegrationTest {
         "should return a fail response, when dubbo version is 2.6",
         (Boolean) objectMapper.readValue(response.getBody(), Map.class).get("success"));
     // dubbo version is 2.7
-    when(providerService.findVersionInApplication("test application")).thenReturn("2.7");
+    when(providerService.findVersionInApplication("test application")).thenReturn(NEW_DUBBO_VERSION);
     response =
         restTemplate.postForEntity(
             url("/dubbo-admin/api/{env}/rules/balancing"), balancingDTO, String.class, env);

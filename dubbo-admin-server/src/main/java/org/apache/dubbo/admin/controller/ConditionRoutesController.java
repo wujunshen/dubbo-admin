@@ -26,109 +26,96 @@ import org.apache.dubbo.admin.common.utils.Constants;
 import org.apache.dubbo.admin.model.dto.ConditionRouteDTO;
 import org.apache.dubbo.admin.service.ProviderService;
 import org.apache.dubbo.admin.service.RouteService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
+import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * @author wujunshen
- */
+import static org.apache.dubbo.admin.common.utils.Constants.OLD_DUBBO_VERSION;
+
+/** @author wujunshen */
 @Authority(needLogin = true)
 @RestController
 @RequestMapping("/api/{env}/rules/route/condition")
 public class ConditionRoutesController {
+  @Resource private RouteService routeService;
+  @Resource private ProviderService providerService;
 
-    private final RouteService routeService;
-    private final ProviderService providerService;
-
-    @Autowired
-    public ConditionRoutesController(RouteService routeService, ProviderService providerService) {
-        this.routeService = routeService;
-        this.providerService = providerService;
+  @PostMapping
+  @ResponseStatus(HttpStatus.CREATED)
+  public boolean createRule(@RequestBody ConditionRouteDTO routeDTO) {
+    String serviceName = routeDTO.getService();
+    String app = routeDTO.getApplication();
+    if (StringUtils.isEmpty(serviceName) && StringUtils.isEmpty(app)) {
+      throw new ParamValidationException("serviceName and app is Empty!");
     }
-
-    @RequestMapping(method = RequestMethod.POST)
-    @ResponseStatus(HttpStatus.CREATED)
-    public boolean createRule(@RequestBody ConditionRouteDTO routeDTO, @PathVariable String env) {
-        String serviceName = routeDTO.getService();
-        String app = routeDTO.getApplication();
-        if (StringUtils.isEmpty(serviceName) && StringUtils.isEmpty(app)) {
-            throw new ParamValidationException("serviceName and app is Empty!");
-        }
-        if (StringUtils.isNotEmpty(app)
-                && providerService.findVersionInApplication(app).equals("2.6")) {
-            throw new VersionValidationException(
-                    "dubbo 2.6 does not support application scope routing rule");
-        }
-        routeService.createConditionRoute(routeDTO);
-        return true;
+    if (StringUtils.isNotEmpty(app)
+        && providerService.findVersionInApplication(app).equals(OLD_DUBBO_VERSION)) {
+      throw new VersionValidationException(
+          "dubbo 2.6 does not support application scope routing rule");
     }
+    routeService.createConditionRoute(routeDTO);
+    return true;
+  }
 
-    @RequestMapping(value = "/{id}", method = RequestMethod.PUT)
-    public boolean updateRule(
-            @PathVariable String id,
-            @RequestBody ConditionRouteDTO newConditionRoute,
-            @PathVariable String env) {
-        id = id.replace(Constants.ANY_VALUE, Constants.PATH_SEPARATOR);
-        ConditionRouteDTO oldConditionRoute = routeService.findConditionRoute(id);
-        if (oldConditionRoute == null) {
-            throw new ResourceNotFoundException("can not find route rule for: " + id);
-        }
-        routeService.updateConditionRoute(newConditionRoute);
-        return true;
+  @PutMapping(value = "/{id}")
+  public boolean updateRule(
+      @PathVariable String id, @RequestBody ConditionRouteDTO newConditionRoute) {
+    id = id.replace(Constants.ANY_VALUE, Constants.PATH_SEPARATOR);
+    ConditionRouteDTO oldConditionRoute = routeService.findConditionRoute(id);
+    if (oldConditionRoute == null) {
+      throw new ResourceNotFoundException("can not find route rule for: " + id);
     }
+    routeService.updateConditionRoute(newConditionRoute);
+    return true;
+  }
 
-    @RequestMapping(method = RequestMethod.GET)
-    public List<ConditionRouteDTO> searchRoutes(
-            @RequestParam(required = false) String application,
-            @RequestParam(required = false) String service,
-            @PathVariable String env) {
-        ConditionRouteDTO conditionRoute = null;
-        List<ConditionRouteDTO> result = new ArrayList<>();
-        if (StringUtils.isNotBlank(application)) {
-            conditionRoute = routeService.findConditionRoute(application);
-        } else if (StringUtils.isNotBlank(service)) {
-            conditionRoute = routeService.findConditionRoute(service);
-        } else {
-            throw new ParamValidationException("Either Service or application is required.");
-        }
-        if (conditionRoute != null && conditionRoute.getConditions() != null) {
-            result.add(conditionRoute);
-        }
-        return result;
+  @GetMapping
+  public List<ConditionRouteDTO> searchRoutes(
+      @RequestParam(required = false) String application,
+      @RequestParam(required = false) String service) {
+    ConditionRouteDTO conditionRoute;
+    List<ConditionRouteDTO> result = new ArrayList<>();
+    if (StringUtils.isNotBlank(application)) {
+      conditionRoute = routeService.findConditionRoute(application);
+    } else if (StringUtils.isNotBlank(service)) {
+      conditionRoute = routeService.findConditionRoute(service);
+    } else {
+      throw new ParamValidationException("Either Service or application is required.");
     }
+    if (conditionRoute != null && conditionRoute.getConditions() != null) {
+      result.add(conditionRoute);
+    }
+    return result;
+  }
 
-    @RequestMapping(value = "/{id}", method = RequestMethod.GET)
-    public ConditionRouteDTO detailRoute(@PathVariable String id, @PathVariable String env) {
-        id = id.replace(Constants.ANY_VALUE, Constants.PATH_SEPARATOR);
-        ConditionRouteDTO conditionRoute = routeService.findConditionRoute(id);
-        if (conditionRoute == null || conditionRoute.getConditions() == null) {
-            throw new ResourceNotFoundException("Unknown ID!");
-        }
-        return conditionRoute;
+  @GetMapping(value = "/{id}")
+  public ConditionRouteDTO detailRoute(@PathVariable String id) {
+    ConditionRouteDTO conditionRoute =
+        routeService.findConditionRoute(id.replace(Constants.ANY_VALUE, Constants.PATH_SEPARATOR));
+    if (conditionRoute == null || conditionRoute.getConditions() == null) {
+      throw new ResourceNotFoundException("Unknown ID!");
     }
+    return conditionRoute;
+  }
 
-    @RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
-    public boolean deleteRoute(@PathVariable String id, @PathVariable String env) {
-        id = id.replace(Constants.ANY_VALUE, Constants.PATH_SEPARATOR);
-        routeService.deleteConditionRoute(id);
-        return true;
-    }
+  @DeleteMapping(value = "/{id}")
+  public boolean deleteRoute(@PathVariable String id) {
+    routeService.deleteConditionRoute(id.replace(Constants.ANY_VALUE, Constants.PATH_SEPARATOR));
+    return true;
+  }
 
-    @RequestMapping(value = "/enable/{id}", method = RequestMethod.PUT)
-    public boolean enableRoute(@PathVariable String id, @PathVariable String env) {
-        id = id.replace(Constants.ANY_VALUE, Constants.PATH_SEPARATOR);
-        routeService.enableConditionRoute(id);
-        return true;
-    }
+  @PutMapping(value = "/enable/{id}")
+  public boolean enableRoute(@PathVariable String id) {
+    routeService.enableConditionRoute(id.replace(Constants.ANY_VALUE, Constants.PATH_SEPARATOR));
+    return true;
+  }
 
-    @RequestMapping(value = "/disable/{id}", method = RequestMethod.PUT)
-    public boolean disableRoute(@PathVariable String id, @PathVariable String env) {
-        id = id.replace(Constants.ANY_VALUE, Constants.PATH_SEPARATOR);
-        routeService.disableConditionRoute(id);
-        return true;
-    }
+  @PutMapping(value = "/disable/{id}")
+  public boolean disableRoute(@PathVariable String id) {
+    routeService.disableConditionRoute(id.replace(Constants.ANY_VALUE, Constants.PATH_SEPARATOR));
+    return true;
+  }
 }

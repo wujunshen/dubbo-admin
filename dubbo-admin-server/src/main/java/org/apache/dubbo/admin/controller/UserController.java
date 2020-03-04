@@ -31,63 +31,59 @@ import java.util.Objects;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
-/**
- * @author wujunshen
- */
+/** @author wujunshen */
 @RestController
 @RequestMapping("/api/{env}/user")
 public class UserController {
-    /**
-     * key:token value:user info
-     */
-    public static Map<String, User> tokenMap = new ConcurrentHashMap<>();
+  /** key:token value:user info */
+  public static Map<String, User> tokenMap = new ConcurrentHashMap<>();
 
-    @Value("${admin.root.user.name:}")
-    private String rootUserName;
+  @Value("${admin.root.user.name:}")
+  private String rootUserName;
 
-    @Value("${admin.root.user.password:}")
-    private String rootUserPassword;
+  @Value("${admin.root.user.password:}")
+  private String rootUserPassword;
 
-    @GetMapping(value = "/login")
-    public String login(@RequestParam String userName, @RequestParam String password) {
-        if (!rootUserName.equals(userName)
-                || !rootUserPassword.equals(Sha256Utils.getSha256(password))) {
-            return null;
-        }
-        UUID uuid = UUID.randomUUID();
-        String token = uuid.toString();
-        User user = new User();
-        user.setUserName(userName);
-        user.setLastUpdateTime(System.currentTimeMillis());
-        tokenMap.put(token, user);
-        return token;
+  @GetMapping(value = "/login")
+  public String login(@RequestParam String userName, @RequestParam String password) {
+    if (!rootUserName.equals(userName)
+        || !rootUserPassword.equals(Sha256Utils.getSha256(password))) {
+      return null;
     }
+    UUID uuid = UUID.randomUUID();
+    String token = uuid.toString();
+    User user = new User();
+    user.setUserName(userName);
+    user.setLastUpdateTime(System.currentTimeMillis());
+    tokenMap.put(token, user);
+    return token;
+  }
 
-    @Authority(needLogin = true)
-    @DeleteMapping(value = "/logout")
-    public boolean logout() {
-        HttpServletRequest request =
-                ((ServletRequestAttributes)
-                        Objects.requireNonNull(RequestContextHolder.getRequestAttributes()))
-                        .getRequest();
-        String token = request.getHeader("Authorization");
-        return null != tokenMap.remove(token);
-    }
+  @Authority(needLogin = true)
+  @DeleteMapping(value = "/logout")
+  public boolean logout() {
+    HttpServletRequest request =
+        ((ServletRequestAttributes)
+                Objects.requireNonNull(RequestContextHolder.getRequestAttributes()))
+            .getRequest();
+    String token = request.getHeader("Authorization");
+    return null != tokenMap.remove(token);
+  }
 
-    @Scheduled(cron = "0 5 * * * ?")
-    public void clearExpiredToken() {
-        tokenMap
-                .entrySet()
-                .removeIf(
-                        entry ->
-                                entry.getValue() == null
-                                        || System.currentTimeMillis() - entry.getValue().getLastUpdateTime()
-                                        > 1000 * 60 * 15);
-    }
+  @Scheduled(cron = "0 5 * * * ?")
+  public void clearExpiredToken() {
+    tokenMap
+        .entrySet()
+        .removeIf(
+            entry ->
+                entry.getValue() == null
+                    || System.currentTimeMillis() - entry.getValue().getLastUpdateTime()
+                        > 1000 * 60 * 15);
+  }
 
-    @Data
-    public static class User {
-        private String userName;
-        private long lastUpdateTime;
-    }
+  @Data
+  public static class User {
+    private String userName;
+    private long lastUpdateTime;
+  }
 }

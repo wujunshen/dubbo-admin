@@ -26,7 +26,6 @@ import org.apache.dubbo.admin.service.ProviderService;
 import org.apache.dubbo.admin.service.RouteService;
 import org.junit.After;
 import org.junit.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.ResponseEntity;
 
@@ -36,6 +35,8 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Map;
 
+import static org.apache.dubbo.admin.common.utils.Constants.NEW_DUBBO_VERSION;
+import static org.apache.dubbo.admin.common.utils.Constants.OLD_DUBBO_VERSION;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.mockito.ArgumentMatchers.any;
@@ -46,8 +47,7 @@ public class AccessesControllerTest extends AbstractSpringIntegrationTest {
 
   @MockBean private RouteService routeService;
   @MockBean private ProviderService providerService;
-  @Resource
-  private ObjectMapper objectMapper;
+  @Resource private ObjectMapper objectMapper;
 
   @After
   public void tearDown() throws Exception {
@@ -119,10 +119,10 @@ public class AccessesControllerTest extends AbstractSpringIntegrationTest {
     restTemplate.postForLocation(url("/dubbo-admin/api/{env}/rules/access"), accessDTO, env);
     // when application is present & dubbo's version is 2.6
     accessDTO.setApplication(application);
-    when(providerService.findVersionInApplication(application)).thenReturn("2.6");
+    when(providerService.findVersionInApplication(application)).thenReturn(OLD_DUBBO_VERSION);
     restTemplate.postForLocation(url("/dubbo-admin/api/{env}/rules/access"), accessDTO, env);
     // dubbo's version is 2.7
-    when(providerService.findVersionInApplication(application)).thenReturn("2.7");
+    when(providerService.findVersionInApplication(application)).thenReturn(NEW_DUBBO_VERSION);
     restTemplate.postForLocation(url("/dubbo-admin/api/{env}/rules/access"), accessDTO, env);
     // black white list is not null
     accessDTO.setBlacklist(new HashSet<>());

@@ -31,67 +31,54 @@ import org.apache.dubbo.metadata.definition.model.MethodDefinition;
 import org.apache.dubbo.metadata.identifier.MetadataIdentifier;
 import org.springframework.web.bind.annotation.*;
 
+import javax.annotation.Resource;
 import java.util.List;
 import java.util.Map;
 
-/**
- * @author wujunshen
- */
+/** @author wujunshen */
 @Authority(needLogin = true)
 @RestController
 @RequestMapping("/api/{env}/test")
 public class ServiceTestController {
-    private final GenericServiceImpl genericService;
-    private final ProviderService providerService;
+  @Resource private GenericServiceImpl genericService;
+  @Resource private ProviderService providerService;
 
-    public ServiceTestController(GenericServiceImpl genericService, ProviderService providerService) {
-        this.genericService = genericService;
-        this.providerService = providerService;
-    }
+  @PostMapping
+  public Object test(@RequestBody ServiceTestDTO serviceTestDTO) {
+    return genericService.invoke(
+        serviceTestDTO.getService(),
+        serviceTestDTO.getMethod(),
+        serviceTestDTO.getParameterTypes(),
+        serviceTestDTO.getParams());
+  }
 
-    @RequestMapping(method = RequestMethod.POST)
-    public Object test(@PathVariable String env, @RequestBody ServiceTestDTO serviceTestDTO) {
-        try {
-            return genericService.invoke(
-                    serviceTestDTO.getService(),
-                    serviceTestDTO.getMethod(),
-                    serviceTestDTO.getParameterTypes(),
-                    serviceTestDTO.getParams());
-        } catch (Exception e) {
-            throw e;
+  @GetMapping(value = "/method")
+  public MethodMetadata methodDetail(
+      @RequestParam String application, @RequestParam String service, @RequestParam String method) {
+    Map<String, String> info = ConvertUtils.serviceName2Map(service);
+    MetadataIdentifier identifier =
+        new MetadataIdentifier(
+            info.get(Constants.INTERFACE_KEY),
+            info.get(Constants.VERSION_KEY),
+            info.get(Constants.GROUP_KEY),
+            Constants.PROVIDER_SIDE,
+            application);
+    String metadata = providerService.getProviderMetaData(identifier);
+    MethodMetadata methodMetadata = null;
+    if (metadata != null) {
+      Gson gson = new Gson();
+      FullServiceDefinition serviceDefinition =
+          gson.fromJson(metadata, FullServiceDefinition.class);
+      List<MethodDefinition> methods = serviceDefinition.getMethods();
+      if (methods != null) {
+        for (MethodDefinition m : methods) {
+          if (ServiceTestUtils.sameMethod(m, method)) {
+            methodMetadata = ServiceTestUtils.generateMethodMeta(serviceDefinition, m);
+            break;
+          }
         }
+      }
     }
-
-    @RequestMapping(value = "/method", method = RequestMethod.GET)
-    public MethodMetadata methodDetail(
-            @PathVariable String env,
-            @RequestParam String application,
-            @RequestParam String service,
-            @RequestParam String method) {
-        Map<String, String> info = ConvertUtils.serviceName2Map(service);
-        MetadataIdentifier identifier =
-                new MetadataIdentifier(
-                        info.get(Constants.INTERFACE_KEY),
-                        info.get(Constants.VERSION_KEY),
-                        info.get(Constants.GROUP_KEY),
-                        Constants.PROVIDER_SIDE,
-                        application);
-        String metadata = providerService.getProviderMetaData(identifier);
-        MethodMetadata methodMetadata = null;
-        if (metadata != null) {
-            Gson gson = new Gson();
-            FullServiceDefinition serviceDefinition =
-                    gson.fromJson(metadata, FullServiceDefinition.class);
-            List<MethodDefinition> methods = serviceDefinition.getMethods();
-            if (methods != null) {
-                for (MethodDefinition m : methods) {
-                    if (ServiceTestUtils.sameMethod(m, method)) {
-                        methodMetadata = ServiceTestUtils.generateMethodMeta(serviceDefinition, m);
-                        break;
-                    }
-                }
-            }
-        }
-        return methodMetadata;
-    }
+    return methodMetadata;
+  }
 }

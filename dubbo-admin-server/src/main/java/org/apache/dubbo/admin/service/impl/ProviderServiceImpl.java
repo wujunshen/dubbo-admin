@@ -33,6 +33,8 @@ import java.util.concurrent.ConcurrentMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import static org.apache.dubbo.admin.common.utils.Constants.OLD_DUBBO_VERSION;
+
 /** @author wujunshen */
 @Component
 public class ProviderServiceImpl extends AbstractService implements ProviderService {
@@ -287,7 +289,7 @@ public class ProviderServiceImpl extends AbstractService implements ProviderServ
 
   @Override
   public String findServiceVersion(String serviceName, String application) {
-    String version = "2.6";
+    String version = OLD_DUBBO_VERSION;
     Map<String, URL> result = findProviderUrlByAppAndService(application, serviceName);
     if (result.isEmpty()) {
       return version;

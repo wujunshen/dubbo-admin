@@ -27,96 +27,82 @@ import org.apache.dubbo.admin.model.dto.AccessDTO;
 import org.apache.dubbo.admin.model.dto.ConditionRouteDTO;
 import org.apache.dubbo.admin.service.ProviderService;
 import org.apache.dubbo.admin.service.RouteService;
-import org.apache.dubbo.common.logger.Logger;
-import org.apache.dubbo.common.logger.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
+import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-/**
- * @author wujunshen
- */
+import static org.apache.dubbo.admin.common.utils.Constants.OLD_DUBBO_VERSION;
+
+/** @author wujunshen */
 @Slf4j
 @Authority(needLogin = true)
 @RestController
 @RequestMapping("/api/{env}/rules/access")
 public class AccessesController {
-    private final RouteService routeService;
-    private final ProviderService providerService;
+  @Resource private RouteService routeService;
+  @Resource private ProviderService providerService;
 
-    @Autowired
-    public AccessesController(RouteService routeService, ProviderService providerService) {
-        this.routeService = routeService;
-        this.providerService = providerService;
+  @GetMapping
+  public List<AccessDTO> searchAccess(
+      @RequestParam(required = false) String service,
+      @RequestParam(required = false) String application) {
+    if (StringUtils.isBlank(service) && StringUtils.isBlank(application)) {
+      throw new ParamValidationException("Either service or application is required");
     }
-
-    @RequestMapping(method = RequestMethod.GET)
-    public List<AccessDTO> searchAccess(
-            @RequestParam(required = false) String service,
-            @RequestParam(required = false) String application,
-            @PathVariable String env) {
-        if (StringUtils.isBlank(service) && StringUtils.isBlank(application)) {
-            throw new ParamValidationException("Either service or application is required");
-        }
-        List<AccessDTO> accessDtoList = new ArrayList<>();
-        AccessDTO accessDTO;
-        if (StringUtils.isNotBlank(application)) {
-            accessDTO = routeService.findAccess(application);
-        } else {
-            accessDTO = routeService.findAccess(service);
-        }
-        if (accessDTO != null) {
-            accessDTO.setEnabled(true);
-            accessDtoList.add(accessDTO);
-        }
-        return accessDtoList;
+    List<AccessDTO> accessDtoList = new ArrayList<>();
+    AccessDTO accessDTO;
+    if (StringUtils.isNotBlank(application)) {
+      accessDTO = routeService.findAccess(application);
+    } else {
+      accessDTO = routeService.findAccess(service);
     }
-
-    @RequestMapping(value = "/{id}", method = RequestMethod.GET)
-    public AccessDTO detailAccess(@PathVariable String id, @PathVariable String env) {
-        id = id.replace(Constants.ANY_VALUE, Constants.PATH_SEPARATOR);
-        AccessDTO accessDTO = routeService.findAccess(id);
-        return accessDTO;
+    if (accessDTO != null) {
+      accessDTO.setEnabled(true);
+      accessDtoList.add(accessDTO);
     }
+    return accessDtoList;
+  }
 
-    @RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
-    public void deleteAccess(@PathVariable String id, @PathVariable String env) {
-        id = id.replace(Constants.ANY_VALUE, Constants.PATH_SEPARATOR);
-        routeService.deleteAccess(id);
+  @GetMapping(value = "/{id}")
+  public AccessDTO detailAccess(@PathVariable String id) {
+    return routeService.findAccess(id.replace(Constants.ANY_VALUE, Constants.PATH_SEPARATOR));
+  }
+
+  @DeleteMapping(value = "/{id}")
+  public void deleteAccess(@PathVariable String id) {
+    routeService.deleteAccess(id.replace(Constants.ANY_VALUE, Constants.PATH_SEPARATOR));
+  }
+
+  @PostMapping
+  @ResponseStatus(HttpStatus.CREATED)
+  public void createAccess(@RequestBody AccessDTO accessDTO) {
+    if (StringUtils.isBlank(accessDTO.getService())
+        && StringUtils.isBlank(accessDTO.getApplication())) {
+      throw new ParamValidationException("Either Service or application is required.");
     }
-
-    @RequestMapping(method = RequestMethod.POST)
-    @ResponseStatus(HttpStatus.CREATED)
-    public void createAccess(@RequestBody AccessDTO accessDTO, @PathVariable String env) {
-        if (StringUtils.isBlank(accessDTO.getService())
-                && StringUtils.isBlank(accessDTO.getApplication())) {
-            throw new ParamValidationException("Either Service or application is required.");
-        }
-        String application = accessDTO.getApplication();
-        if (StringUtils.isNotEmpty(application)
-                && "2.6".equals(providerService.findVersionInApplication(application))) {
-            throw new VersionValidationException(
-                    "dubbo 2.6 does not support application scope blackwhite list config");
-        }
-        if (accessDTO.getBlacklist() == null && accessDTO.getWhitelist() == null) {
-            throw new ParamValidationException("One of Blacklist/Whitelist is required.");
-        }
-        routeService.createAccess(accessDTO);
+    String application = accessDTO.getApplication();
+    if (StringUtils.isNotEmpty(application)
+        && OLD_DUBBO_VERSION.equals(providerService.findVersionInApplication(application))) {
+      throw new VersionValidationException(
+          "dubbo 2.6 does not support application scope blackWhite list config");
     }
-
-    @RequestMapping(value = "/{id}", method = RequestMethod.PUT)
-    public void updateAccess(
-            @PathVariable String id, @RequestBody AccessDTO accessDTO, @PathVariable String env) {
-
-        id = id.replace(Constants.ANY_VALUE, Constants.PATH_SEPARATOR);
-        ConditionRouteDTO route = routeService.findConditionRoute(id);
-        if (Objects.isNull(route)) {
-            throw new ResourceNotFoundException("Unknown ID!");
-        }
-        routeService.updateAccess(accessDTO);
+    if (accessDTO.getBlacklist() == null && accessDTO.getWhitelist() == null) {
+      throw new ParamValidationException("One of Blacklist/Whitelist is required.");
     }
+    routeService.createAccess(accessDTO);
+  }
+
+  @PutMapping(value = "/{id}")
+  public void updateAccess(@PathVariable String id, @RequestBody AccessDTO accessDTO) {
+    ConditionRouteDTO route =
+        routeService.findConditionRoute(id.replace(Constants.ANY_VALUE, Constants.PATH_SEPARATOR));
+    if (Objects.isNull(route)) {
+      throw new ResourceNotFoundException("Unknown ID!");
+    }
+    routeService.updateAccess(accessDTO);
+  }
 }

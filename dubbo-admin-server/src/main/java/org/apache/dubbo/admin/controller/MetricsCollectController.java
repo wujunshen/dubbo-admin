@@ -30,103 +30,92 @@ import org.apache.dubbo.admin.service.ProviderService;
 import org.apache.dubbo.admin.service.impl.MetricsCollectServiceImpl;
 import org.apache.dubbo.metadata.definition.model.FullServiceDefinition;
 import org.apache.dubbo.metadata.identifier.MetadataIdentifier;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-/**
- * @author wujunshen
- */
+/** @author wujunshen */
 @Authority(needLogin = true)
 @RestController
 @RequestMapping("/api/{env}/metrics")
 public class MetricsCollectController {
+  @Resource private ProviderService providerService;
 
-    @Resource
-    private ProviderService providerService;
+  @Resource private ConsumerService consumerService;
 
-    @Resource
-    private ConsumerService consumerService;
+  @PostMapping
+  public String metricsCollect(@RequestParam String group) {
+    MetricsCollectServiceImpl service = new MetricsCollectServiceImpl();
+    service.setUrl("dubbo://127.0.0.1:20880?scope=remote&cache=true");
 
-    @RequestMapping(method = RequestMethod.POST)
-    public String metricsCollect(@RequestParam String group, @PathVariable String env) {
-        MetricsCollectServiceImpl service = new MetricsCollectServiceImpl();
-        service.setUrl("dubbo://127.0.0.1:20880?scope=remote&cache=true");
+    return service.invoke(group).toString();
+  }
 
-        return service.invoke(group).toString();
+  private String getOnePortMessage(String group, String ip, String port, String protocol) {
+    MetricsCollectServiceImpl metricsCollectService = new MetricsCollectServiceImpl();
+    metricsCollectService.setUrl(protocol + "://" + ip + ":" + port + "?scope=remote&cache=true");
+    return metricsCollectService.invoke(group).toString();
+  }
+
+  @GetMapping(value = "/ipAddr")
+  public List<MetricDTO> searchService(@RequestParam String ip, @RequestParam String group) {
+    Map<String, String> configMap = new ConcurrentHashMap<>(8);
+    addMetricsConfigToMap(configMap, ip);
+
+    // default value
+    if (configMap.size() <= 0) {
+      configMap.put("20880", "dubbo");
+    }
+    List<MetricDTO> metricDtoList = new ArrayList<>();
+    for (String port : configMap.keySet()) {
+      String protocol = configMap.get(port);
+      String res = getOnePortMessage(group, ip, port, protocol);
+      metricDtoList.addAll(new Gson().fromJson(res, new TypeToken<List<MetricDTO>>() {}.getType()));
     }
 
-    private String getOnePortMessage(String group, String ip, String port, String protocol) {
-        MetricsCollectServiceImpl metrcisCollectService = new MetricsCollectServiceImpl();
-        metrcisCollectService.setUrl(protocol + "://" + ip + ":" + port + "?scope=remote&cache=true");
-        String res = metrcisCollectService.invoke(group).toString();
-        return res;
+    return metricDtoList;
+  }
+
+  protected void addMetricsConfigToMap(Map<String, String> configMap, String ip) {
+    List<Provider> providers = providerService.findByAddress(ip);
+    if (!providers.isEmpty()) {
+      Provider provider = providers.get(0);
+      String service = provider.getService();
+      MetadataIdentifier providerIdentifier =
+          new MetadataIdentifier(
+              Tool.getInterface(service),
+              Tool.getVersion(service),
+              Tool.getGroup(service),
+              Constants.PROVIDER_SIDE,
+              provider.getApplication());
+      String metaData = providerService.getProviderMetaData(providerIdentifier);
+      FullServiceDefinition providerServiceDefinition =
+          new Gson().fromJson(metaData, FullServiceDefinition.class);
+      Map<String, String> parameters = providerServiceDefinition.getParameters();
+      configMap.put(
+          parameters.get(Constants.METRICS_PORT), parameters.get(Constants.METRICS_PROTOCOL));
+    } else {
+      List<Consumer> consumers = consumerService.findByAddress(ip);
+      if (!consumers.isEmpty()) {
+        Consumer consumer = consumers.get(0);
+        String service = consumer.getService();
+        MetadataIdentifier consumerIdentifier =
+            new MetadataIdentifier(
+                Tool.getInterface(service),
+                Tool.getVersion(service),
+                Tool.getGroup(service),
+                Constants.CONSUMER_SIDE,
+                consumer.getApplication());
+        String metaData = consumerService.getConsumerMetadata(consumerIdentifier);
+        Map<String, String> consumerParameters = new Gson().fromJson(metaData, Map.class);
+        configMap.put(
+            consumerParameters.get(Constants.METRICS_PORT),
+            consumerParameters.get(Constants.METRICS_PROTOCOL));
+      }
     }
-
-    @RequestMapping(value = "/ipAddr", method = RequestMethod.GET)
-    public List<MetricDTO> searchService(
-            @RequestParam String ip, @RequestParam String group, @PathVariable String env) {
-
-        Map<String, String> configMap = new ConcurrentHashMap<>(8);
-        addMetricsConfigToMap(configMap, ip);
-
-        //         default value
-        if (configMap.size() <= 0) {
-            configMap.put("20880", "dubbo");
-        }
-        List<MetricDTO> metricDtoList = new ArrayList<>();
-        for (String port : configMap.keySet()) {
-            String protocol = configMap.get(port);
-            String res = getOnePortMessage(group, ip, port, protocol);
-            metricDtoList.addAll(new Gson().fromJson(res, new TypeToken<List<MetricDTO>>() {
-            }.getType()));
-        }
-
-        return metricDtoList;
-    }
-
-    protected void addMetricsConfigToMap(Map<String, String> configMap, String ip) {
-        List<Provider> providers = providerService.findByAddress(ip);
-        if (providers.size() > 0) {
-            Provider provider = providers.get(0);
-            String service = provider.getService();
-            MetadataIdentifier providerIdentifier =
-                    new MetadataIdentifier(
-                            Tool.getInterface(service),
-                            Tool.getVersion(service),
-                            Tool.getGroup(service),
-                            Constants.PROVIDER_SIDE,
-                            provider.getApplication());
-            String metaData = providerService.getProviderMetaData(providerIdentifier);
-            FullServiceDefinition providerServiceDefinition =
-                    new Gson().fromJson(metaData, FullServiceDefinition.class);
-            Map<String, String> parameters = providerServiceDefinition.getParameters();
-            configMap.put(
-                    parameters.get(Constants.METRICS_PORT), parameters.get(Constants.METRICS_PROTOCOL));
-        } else {
-            List<Consumer> consumers = consumerService.findByAddress(ip);
-            if (consumers.size() > 0) {
-                Consumer consumer = consumers.get(0);
-                String service = consumer.getService();
-                MetadataIdentifier consumerIdentifier =
-                        new MetadataIdentifier(
-                                Tool.getInterface(service),
-                                Tool.getVersion(service),
-                                Tool.getGroup(service),
-                                Constants.CONSUMER_SIDE,
-                                consumer.getApplication());
-                String metaData = consumerService.getConsumerMetadata(consumerIdentifier);
-                Map<String, String> consumerParameters = new Gson().fromJson(metaData, Map.class);
-                configMap.put(
-                        consumerParameters.get(Constants.METRICS_PORT),
-                        consumerParameters.get(Constants.METRICS_PROTOCOL));
-            }
-        }
-    }
+  }
 }

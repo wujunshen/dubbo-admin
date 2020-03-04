@@ -37,6 +37,8 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import static org.apache.dubbo.admin.common.utils.Constants.NEW_DUBBO_VERSION;
+import static org.apache.dubbo.admin.common.utils.Constants.OLD_DUBBO_VERSION;
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.when;
@@ -65,7 +67,7 @@ public class ConditionRoutesControllerTest extends AbstractSpringIntegrationTest
     assertThat(responseEntity.getBody(), containsString("serviceName and app is Empty!"));
 
     dto.setApplication("application" + uuid);
-    when(providerService.findVersionInApplication(dto.getApplication())).thenReturn("2.6");
+    when(providerService.findVersionInApplication(dto.getApplication())).thenReturn(OLD_DUBBO_VERSION);
     responseEntity =
         restTemplate.postForEntity(
             url("/dubbo-admin/api/{env}/rules/route/condition"), dto, String.class, env);
@@ -92,7 +94,7 @@ public class ConditionRoutesControllerTest extends AbstractSpringIntegrationTest
     assertThat(responseEntity.getStatusCode(), is(HttpStatus.CREATED));
 
     dto.setApplication(application);
-    when(providerService.findVersionInApplication(dto.getApplication())).thenReturn("2.7");
+    when(providerService.findVersionInApplication(dto.getApplication())).thenReturn(NEW_DUBBO_VERSION);
 
     responseEntity =
         restTemplate.postForEntity(

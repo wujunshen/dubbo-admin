@@ -20,9 +20,7 @@ package org.apache.dubbo.admin.common.utils;
 import java.util.HashSet;
 import java.util.Set;
 
-/**
- * @author wujunshen
- */
+/** @author wujunshen */
 public class Constants {
   public static final String REGISTRY_ADDRESS = "dubbo.registry.address";
   public static final String METADATA_ADDRESS = "dubbo.metadata-report.address";
@@ -76,6 +74,8 @@ public class Constants {
   public static final String GLOBAL_CONFIG_PATH = "config/dubbo/dubbo.properties";
   public static final String METRICS_PORT = "metrics.port";
   public static final String METRICS_PROTOCOL = "metrics.protocol";
+  public static final String OLD_DUBBO_VERSION = "2.6";
+  public static final String NEW_DUBBO_VERSION = "2.7";
   public static final Set<String> CONFIGS = new HashSet<>();
 
   static {

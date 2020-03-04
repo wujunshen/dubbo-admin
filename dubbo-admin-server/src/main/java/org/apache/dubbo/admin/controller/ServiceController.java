@@ -29,12 +29,12 @@ import org.apache.dubbo.admin.service.ConsumerService;
 import org.apache.dubbo.admin.service.ProviderService;
 import org.apache.dubbo.metadata.definition.model.FullServiceDefinition;
 import org.apache.dubbo.metadata.identifier.MetadataIdentifier;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
 
+import javax.annotation.Resource;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -45,19 +45,11 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping("/api/{env}")
 public class ServiceController {
+  @Resource private ProviderService providerService;
+  @Resource private ConsumerService consumerService;
+  private Gson gson;
 
-  private final ProviderService providerService;
-  private final ConsumerService consumerService;
-  private final Gson gson;
-
-  @Autowired
-  public ServiceController(ProviderService providerService, ConsumerService consumerService) {
-    this.providerService = providerService;
-    this.consumerService = consumerService;
-    this.gson = new Gson();
-  }
-
-  @RequestMapping(value = "/service", method = RequestMethod.GET)
+  @GetMapping(value = "/service")
   public Page<ServiceDTO> searchService(
       @RequestParam String pattern,
       @RequestParam String filter,
@@ -72,12 +64,11 @@ public class ServiceController {
             .limit(pageable.getPageSize())
             .collect(Collectors.toList());
 
-    final Page<ServiceDTO> page = new PageImpl<>(content, pageable, total);
-    return page;
+    return new PageImpl<>(content, pageable, total);
   }
 
-  @RequestMapping(value = "/service/{service}", method = RequestMethod.GET)
-  public ServiceDetailDTO serviceDetail(@PathVariable String service, @PathVariable String env) {
+  @GetMapping(value = "/service/{service}")
+  public ServiceDetailDTO serviceDetail(@PathVariable String service) {
     service = service.replace(Constants.ANY_VALUE, Constants.PATH_SEPARATOR);
     String group = Tool.getGroup(service);
     String version = Tool.getVersion(service);
@@ -87,7 +78,7 @@ public class ServiceController {
     List<Consumer> consumers = consumerService.findByService(service);
 
     String application = null;
-    if (providers != null && providers.size() > 0) {
+    if (providers != null && !providers.isEmpty()) {
       application = providers.get(0).getApplication();
     }
     MetadataIdentifier identifier =
@@ -108,13 +99,13 @@ public class ServiceController {
     return serviceDetailDTO;
   }
 
-  @RequestMapping(value = "/services", method = RequestMethod.GET)
-  public Set<String> allServices(@PathVariable String env) {
+  @GetMapping(value = "/services")
+  public Set<String> allServices() {
     return new HashSet<>(providerService.findServices());
   }
 
-  @RequestMapping(value = "/applications", method = RequestMethod.GET)
-  public Set<String> allApplications(@PathVariable String env) {
+  @GetMapping(value = "/applications")
+  public Set<String> allApplications() {
     return providerService.findApplications();
   }
 }
