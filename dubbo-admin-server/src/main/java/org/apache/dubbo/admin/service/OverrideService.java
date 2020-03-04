@@ -20,37 +20,34 @@ import org.apache.dubbo.admin.model.dto.BalancingDTO;
 import org.apache.dubbo.admin.model.dto.DynamicConfigDTO;
 import org.apache.dubbo.admin.model.dto.WeightDTO;
 
-/**
- * @author wujunshen
- */
+/** @author wujunshen */
 public interface OverrideService {
 
-    void saveOverride(DynamicConfigDTO override);
+  void saveOverride(DynamicConfigDTO override);
 
-    void updateOverride(DynamicConfigDTO override);
+  void updateOverride(DynamicConfigDTO override);
 
-    void deleteOverride(String id);
+  void deleteOverride(String id);
 
-    void enableOverride(String id);
+  void enableOverride(String id);
 
-    void disableOverride(String id);
+  void disableOverride(String id);
 
-    DynamicConfigDTO findOverride(String id);
+  DynamicConfigDTO findOverride(String id);
 
-    void saveWeight(WeightDTO weightDTO);
+  void saveWeight(WeightDTO weightDTO);
 
-    void updateWeight(WeightDTO weightDTO);
+  void updateWeight(WeightDTO weightDTO);
 
-    void deleteWeight(String id);
+  void deleteWeight(String id);
 
-    WeightDTO findWeight(String id);
+  WeightDTO findWeight(String id);
 
-    void saveBalance(BalancingDTO balancingDTO);
+  void saveBalance(BalancingDTO balancingDTO);
 
-    void updateBalance(BalancingDTO balancingDTO);
+  void updateBalance(BalancingDTO balancingDTO);
 
-    void deleteBalance(String id);
+  void deleteBalance(String id);
 
-    BalancingDTO findBalance(String id);
-
+  BalancingDTO findBalance(String id);
 }

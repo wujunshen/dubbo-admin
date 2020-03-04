@@ -153,11 +153,15 @@ public class RegistryServerSync implements InitializingBean, DisposableBean, Not
         } else {
           for (Map.Entry<String, Map<String, URL>> serviceEntry : services.entrySet()) {
             String service = serviceEntry.getKey();
-            if (Tool.getInterface(service).equals(url.getServiceInterface())
-                && (Constants.ANY_VALUE.equals(group)
-                    || StringUtils.isEquals(group, Tool.getGroup(service)))
-                && (Constants.ANY_VALUE.equals(version)
-                    || StringUtils.isEquals(version, Tool.getVersion(service)))) {
+            boolean isServiceInterface =
+                Tool.getInterface(service).equals(url.getServiceInterface());
+            boolean isGroup =
+                Constants.ANY_VALUE.equals(group)
+                    || StringUtils.isEquals(group, Tool.getGroup(service));
+            boolean isVersion =
+                Constants.ANY_VALUE.equals(version)
+                    || StringUtils.isEquals(version, Tool.getVersion(service));
+            if (isServiceInterface && isGroup && isVersion) {
               services.remove(service);
             }
           }

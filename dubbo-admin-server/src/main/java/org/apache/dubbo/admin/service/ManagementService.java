@@ -19,19 +19,16 @@ package org.apache.dubbo.admin.service;
 
 import org.apache.dubbo.admin.model.dto.ConfigDTO;
 
-/**
- * @author wujunshen
- */
+/** @author wujunshen */
 public interface ManagementService {
 
+  void setConfig(ConfigDTO config);
 
-    void setConfig(ConfigDTO config);
+  String getConfig(String key);
 
-    String getConfig(String key);
+  String getConfigPath(String key);
 
-    String getConfigPath(String key);
+  boolean updateConfig(ConfigDTO configDTO);
 
-    boolean updateConfig(ConfigDTO configDTO);
-
-    boolean deleteConfig(String key);
+  boolean deleteConfig(String key);
 }

@@ -21,33 +21,27 @@ import org.apache.dubbo.admin.registry.metadata.MetaDataCollector;
 import org.apache.dubbo.common.URL;
 import org.apache.dubbo.metadata.identifier.MetadataIdentifier;
 
-/**
- * @author wujunshen
- */
+/** @author wujunshen */
 public class NoOpMetadataCollector implements MetaDataCollector {
 
-    @Override
-    public URL getUrl() {
-        return null;
-    }
+  @Override
+  public URL getUrl() {
+    return null;
+  }
 
-    @Override
-    public void setUrl(URL url) {
+  @Override
+  public void setUrl(URL url) {}
 
-    }
+  @Override
+  public void init() {}
 
-    @Override
-    public void init() {
+  @Override
+  public String getProviderMetaData(MetadataIdentifier key) {
+    return null;
+  }
 
-    }
-
-    @Override
-    public String getProviderMetaData(MetadataIdentifier key) {
-        return null;
-    }
-
-    @Override
-    public String getConsumerMetaData(MetadataIdentifier key) {
-        return null;
-    }
+  @Override
+  public String getConsumerMetaData(MetadataIdentifier key) {
+    return null;
+  }
 }

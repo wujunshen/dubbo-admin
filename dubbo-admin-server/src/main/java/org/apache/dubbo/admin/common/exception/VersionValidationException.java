@@ -17,17 +17,14 @@
 
 package org.apache.dubbo.admin.common.exception;
 
-
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
-/**
- * @author wujunshen
- */
+/** @author wujunshen */
 @ResponseStatus(value = HttpStatus.BAD_REQUEST)
 public class VersionValidationException extends SystemException {
 
-    public VersionValidationException(String message) {
-        super(message);
-    }
+  public VersionValidationException(String message) {
+    super(message);
+  }
 }

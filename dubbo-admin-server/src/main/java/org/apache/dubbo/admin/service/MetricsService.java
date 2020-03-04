@@ -18,10 +18,8 @@ package org.apache.dubbo.admin.service;
 
 import org.apache.dubbo.admin.model.dto.RelationDTO;
 
-/**
- * @author wujunshen
- */
+/** @author wujunshen */
 public interface MetricsService {
 
-    RelationDTO getApplicationRelation();
+  RelationDTO getApplicationRelation();
 }

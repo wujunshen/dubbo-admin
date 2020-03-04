@@ -118,9 +118,6 @@ public class NacosConfiguration implements GovernanceConfiguration {
   @Override
   public String getConfig(String group, String key) {
     String[] groupAndDataId = parseGroupAndDataId(key, group);
-    if (null == groupAndDataId) {
-      return null;
-    }
     try {
       return configService.getConfig(groupAndDataId[1], groupAndDataId[0], 1000 * 10);
     } catch (NacosException e) {
@@ -157,14 +154,14 @@ public class NacosConfiguration implements GovernanceConfiguration {
     if (StringUtils.isBlank(key) || StringUtils.isBlank(group)) {
       if (log.isWarnEnabled()) {
         log.warn("key or group is blank");
-        return null;
+        return new String[] {};
       }
     }
 
     String[] groupAndDataId = new String[2];
     String[] split = key.split("/");
     if (split.length != 3) {
-      return null;
+      return new String[] {};
     }
     if (Constants.DUBBO_PROPERTY.equals(split[2])) {
 

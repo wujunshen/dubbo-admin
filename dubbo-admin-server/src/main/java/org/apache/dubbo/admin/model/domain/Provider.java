@@ -28,6 +28,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+import static org.apache.dubbo.admin.common.utils.Constants.ENABLED;
+
 /**
  * Provider
  *
@@ -39,6 +41,7 @@ import java.util.Map;
 @AllArgsConstructor
 public class Provider extends AbstractEntity {
   private static final long serialVersionUID = 5981342400350878171L;
+
   /** The name of the service provided by the provider */
   private String service;
   /** Provider's address for service */
@@ -85,11 +88,11 @@ public class Provider extends AbstractEntity {
       url = url.addParameter(Constants.DYNAMIC_KEY, false);
     }
     boolean enabled = getEnabled();
-    if (enabled != url.getParameter("enabled", true)) {
+    if (enabled != url.getParameter(ENABLED, true)) {
       if (enabled) {
-        url = url.removeParameter("enabled");
+        url = url.removeParameter(ENABLED);
       } else {
-        url = url.addParameter("enabled", false);
+        url = url.addParameter(ENABLED, false);
       }
     }
 

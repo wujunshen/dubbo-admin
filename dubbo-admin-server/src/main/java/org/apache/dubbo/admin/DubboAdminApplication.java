@@ -22,15 +22,12 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration;
 
-/**
- * @author wujunshen
- */
-@SpringBootApplication(exclude = {
-        DataSourceAutoConfiguration.class, HibernateJpaAutoConfiguration.class
-})
+/** @author wujunshen */
+@SpringBootApplication(
+    exclude = {DataSourceAutoConfiguration.class, HibernateJpaAutoConfiguration.class})
 public class DubboAdminApplication {
 
-    public static void main(String[] args) {
-        SpringApplication.run(DubboAdminApplication.class, args);
-    }
+  public static void main(String[] args) {
+    SpringApplication.run(DubboAdminApplication.class, args);
+  }
 }

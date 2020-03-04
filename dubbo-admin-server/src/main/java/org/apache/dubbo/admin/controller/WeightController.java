@@ -34,6 +34,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.apache.dubbo.admin.common.utils.Constants.OLD_DUBBO_VERSION;
+import static org.apache.dubbo.admin.common.utils.Constants.UNKNOWN_ID;
 
 /** @author wujunshen */
 @Authority(needLogin = true)
@@ -63,12 +64,12 @@ public class WeightController {
   @PutMapping(value = "/{id}")
   public boolean updateWeight(@PathVariable String id, @RequestBody WeightDTO weightDTO) {
     if (id == null) {
-      throw new ParamValidationException("Unknown ID!");
+      throw new ParamValidationException(UNKNOWN_ID);
     }
     WeightDTO weight =
         overrideService.findWeight(id.replace(Constants.ANY_VALUE, Constants.PATH_SEPARATOR));
     if (weight == null) {
-      throw new ResourceNotFoundException("Unknown ID!");
+      throw new ResourceNotFoundException(UNKNOWN_ID);
     }
     overrideService.updateWeight(weightDTO);
     return true;
@@ -100,7 +101,7 @@ public class WeightController {
     WeightDTO weightDTO =
         overrideService.findWeight(id.replace(Constants.ANY_VALUE, Constants.PATH_SEPARATOR));
     if (weightDTO == null) {
-      throw new ResourceNotFoundException("Unknown ID!");
+      throw new ResourceNotFoundException(UNKNOWN_ID);
     }
     return weightDTO;
   }

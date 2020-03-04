@@ -97,7 +97,7 @@ public class NacosMetaDataCollector implements MetaDataCollector {
   private String getMetaData(MetadataIdentifier identifier) {
     try {
       return configService.getConfig(
-          identifier.getUniqueKey(MetadataIdentifier.KeyTypeEnum.UNIQUE_KEY), group, 1000 * 10);
+          identifier.getUniqueKey(MetadataIdentifier.KeyTypeEnum.UNIQUE_KEY), group, 1000 * 10L);
     } catch (NacosException e) {
       log.warn("Failed to get " + identifier + " from nacos, cause: " + e.getMessage(), e);
     }

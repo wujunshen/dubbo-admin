@@ -20,12 +20,13 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import static org.apache.dubbo.admin.common.utils.Constants.DOLLAR;
 
 /**
  * String parsing tools related to interpolation, including Glob mode, Query string, Service URL
@@ -48,12 +49,12 @@ public class ParseUtils {
    * @return After the completion of the interpolation string. Such as: <code> <pre> xxx $ {name} zzz -> xxxjerryzzz </ pre> </ code> (where the variable name = "jerry")
    * @throws IllegalStateException The variables used in the expression string are not in the variable set
    */
-  // FIXME Is it reasonable to throw an IllegalStateException??
   public static String interpolate(String expression, Map<String, String> params) {
+    // FIXME Is it reasonable to throw an IllegalStateException??
     if (expression == null || expression.length() == 0) {
       throw new IllegalArgumentException("glob pattern is empty!");
     }
-    if (expression.indexOf('$') < 0) {
+    if (expression.indexOf(DOLLAR) < 0) {
       return expression;
     }
     Matcher matcher = VARIABLE_PATTERN.matcher(expression);
@@ -93,17 +94,17 @@ public class ParseUtils {
    * @return When Query String is <code>key1=value1&key2=value2</code>, and prefix is <code>pre.
    *     </code>, then <code>Map{pre.key1=value1, pre.key=value2}</code> will be returned.
    */
-  // FIXME Is it reasonable to throw an IllegalStateException??
   public static Map<String, String> parseQuery(String keyPrefix, String query) {
+    // FIXME Is it reasonable to throw an IllegalStateException??
     if (query == null) {
-      return  new ConcurrentHashMap<>(8);
+      return new ConcurrentHashMap<>(8);
     }
     if (keyPrefix == null) {
       keyPrefix = "";
     }
 
     Matcher matcher = QUERY_PATTERN.matcher(query);
-    Map<String, String> routeQuery =  new ConcurrentHashMap<>(8);
+    Map<String, String> routeQuery = new ConcurrentHashMap<>(8);
     String key = null;
     // Match one by one
     while (matcher.find()) {

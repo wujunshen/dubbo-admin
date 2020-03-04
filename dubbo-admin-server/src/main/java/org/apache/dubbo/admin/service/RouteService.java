@@ -22,46 +22,40 @@ import org.apache.dubbo.admin.model.dto.TagRouteDTO;
 
 /**
  * RouteService
+ *
  * @author wujunshen
  */
 public interface RouteService {
 
-    void createConditionRoute(ConditionRouteDTO conditionRoute);
+  void createConditionRoute(ConditionRouteDTO conditionRoute);
 
-    void updateConditionRoute(ConditionRouteDTO newConditionRoute);
+  void updateConditionRoute(ConditionRouteDTO newConditionRoute);
 
-    void deleteConditionRoute(String id);
+  void deleteConditionRoute(String id);
 
-    void deleteAccess(String id);
+  void deleteAccess(String id);
 
-    void createAccess(AccessDTO accessDTO);
+  void createAccess(AccessDTO accessDTO);
 
-    AccessDTO findAccess(String id);
+  AccessDTO findAccess(String id);
 
-    void updateAccess(AccessDTO accessDTO);
+  void updateAccess(AccessDTO accessDTO);
 
-    void enableConditionRoute(String id);
+  void enableConditionRoute(String id);
 
+  void disableConditionRoute(String id);
 
-    void disableConditionRoute(String id);
+  ConditionRouteDTO findConditionRoute(String id);
 
+  void createTagRoute(TagRouteDTO tagRoute);
 
-    ConditionRouteDTO findConditionRoute(String id);
+  void updateTagRoute(TagRouteDTO tagRoute);
 
-    void createTagRoute(TagRouteDTO tagRoute);
+  void deleteTagRoute(String id);
 
-    void updateTagRoute(TagRouteDTO tagRoute);
+  void enableTagRoute(String id);
 
-    void deleteTagRoute(String id);
+  void disableTagRoute(String id);
 
-
-    void enableTagRoute(String id);
-
-
-    void disableTagRoute(String id);
-
-
-    TagRouteDTO findTagRoute(String id);
-
-
+  TagRouteDTO findTagRoute(String id);
 }

@@ -21,9 +21,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-/**
- * @author wujunshen
- */
+/** @author wujunshen */
 @Data
 @NoArgsConstructor
 @AllArgsConstructor

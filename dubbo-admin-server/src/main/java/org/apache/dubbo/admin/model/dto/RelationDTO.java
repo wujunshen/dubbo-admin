@@ -25,8 +25,11 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
-/** relation about node for relation graph
- * @author wujunshen*/
+/**
+ * relation about node for relation graph
+ *
+ * @author wujunshen
+ */
 @Data
 @Builder
 @NoArgsConstructor
@@ -36,7 +39,7 @@ public class RelationDTO {
   public static final Categories PROVIDER_CATEGORIES = new Categories(1, "provider", "provider");
   public static final Categories CONSUMER_AND_PROVIDER_CATEGORIES =
       new Categories(2, "consumer and provider", "consumer and provider");
-  public static final List<Categories> CATEGORIES_LIST =
+  protected static final List<Categories> CATEGORIES_LIST =
       Arrays.asList(CONSUMER_CATEGORIES, PROVIDER_CATEGORIES, CONSUMER_AND_PROVIDER_CATEGORIES);
   private List<Categories> categories;
   private List<Node> nodes;

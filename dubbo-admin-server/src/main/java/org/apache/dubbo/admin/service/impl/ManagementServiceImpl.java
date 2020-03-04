@@ -24,60 +24,60 @@ import org.springframework.stereotype.Component;
 
 import static org.apache.dubbo.admin.common.utils.Constants.GLOBAL_CONFIG_PATH;
 
-/**
- * @author wujunshen
- */
+/** @author wujunshen */
 @Component
 public class ManagementServiceImpl extends AbstractService implements ManagementService {
-    @Override
-    public void setConfig(ConfigDTO config) {
-        if (Constants.GLOBAL_CONFIG.equals(config.getKey())) {
-            dynamicConfiguration.setConfig(GLOBAL_CONFIG_PATH, config.getConfig());
-        } else {
-            dynamicConfiguration.setConfig(getPath(config.getKey()), config.getConfig());
-        }
+  @Override
+  public void setConfig(ConfigDTO config) {
+    if (Constants.GLOBAL_CONFIG.equals(config.getKey())) {
+      dynamicConfiguration.setConfig(GLOBAL_CONFIG_PATH, config.getConfig());
+    } else {
+      dynamicConfiguration.setConfig(getPath(config.getKey()), config.getConfig());
     }
+  }
 
-    @Override
-    public String getConfig(String key) {
-        if (Constants.GLOBAL_CONFIG.equals(key)) {
-            return dynamicConfiguration.getConfig(GLOBAL_CONFIG_PATH);
-        }
-        return dynamicConfiguration.getConfig(getPath(key));
+  @Override
+  public String getConfig(String key) {
+    if (Constants.GLOBAL_CONFIG.equals(key)) {
+      return dynamicConfiguration.getConfig(GLOBAL_CONFIG_PATH);
     }
+    return dynamicConfiguration.getConfig(getPath(key));
+  }
 
-    @Override
-    public String getConfigPath(String key) {
-        if (Constants.GLOBAL_CONFIG.equals(key)) {
-            return dynamicConfiguration.getPath(GLOBAL_CONFIG_PATH);
-        }
-        return dynamicConfiguration.getPath(getPath(key));
+  @Override
+  public String getConfigPath(String key) {
+    if (Constants.GLOBAL_CONFIG.equals(key)) {
+      return dynamicConfiguration.getPath(GLOBAL_CONFIG_PATH);
     }
+    return dynamicConfiguration.getPath(getPath(key));
+  }
 
-    @Override
-    public boolean updateConfig(ConfigDTO configDTO) {
-        String key = configDTO.getKey();
-        if (Constants.GLOBAL_CONFIG.equals(key)) {
-            dynamicConfiguration.setConfig(GLOBAL_CONFIG_PATH, configDTO.getConfig());
-        } else {
-            dynamicConfiguration.setConfig(getPath(key), configDTO.getConfig());
-        }
-        return true;
+  @Override
+  public boolean updateConfig(ConfigDTO configDTO) {
+    String key = configDTO.getKey();
+    if (Constants.GLOBAL_CONFIG.equals(key)) {
+      dynamicConfiguration.setConfig(GLOBAL_CONFIG_PATH, configDTO.getConfig());
+    } else {
+      dynamicConfiguration.setConfig(getPath(key), configDTO.getConfig());
     }
+    return true;
+  }
 
-    @Override
-    public boolean deleteConfig(String key) {
-        if (Constants.GLOBAL_CONFIG.equals(key)) {
-            dynamicConfiguration.deleteConfig(GLOBAL_CONFIG_PATH);
-        } else {
-            dynamicConfiguration.deleteConfig(getPath(key));
-        }
-        return true;
+  @Override
+  public boolean deleteConfig(String key) {
+    if (Constants.GLOBAL_CONFIG.equals(key)) {
+      dynamicConfiguration.deleteConfig(GLOBAL_CONFIG_PATH);
+    } else {
+      dynamicConfiguration.deleteConfig(getPath(key));
     }
+    return true;
+  }
 
-    private String getPath(String key) {
-        return Constants.CONFIG_KEY + Constants.PATH_SEPARATOR + key + Constants.PATH_SEPARATOR
-                + Constants.DUBBO_PROPERTY;
-    }
-
+  private String getPath(String key) {
+    return Constants.CONFIG_KEY
+        + Constants.PATH_SEPARATOR
+        + key
+        + Constants.PATH_SEPARATOR
+        + Constants.DUBBO_PROPERTY;
+  }
 }

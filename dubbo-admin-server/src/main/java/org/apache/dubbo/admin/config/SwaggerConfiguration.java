@@ -27,27 +27,26 @@ import springfox.documentation.spi.DocumentationType;
 import springfox.documentation.spring.web.plugins.Docket;
 import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
-/**
- * @author wujunshen
- */
+/** @author wujunshen */
 @Configuration
 @EnableSwagger2
 public class SwaggerConfiguration {
-    @Bean
-    public Docket createRestApi() {
-        return new Docket(DocumentationType.SWAGGER_2)
-                .apiInfo(apiInfo())
-                .select()
-                .apis(RequestHandlerSelectors.basePackage("org.apache.dubbo.admin.controller"))
-                .paths(PathSelectors.any())
-                .build();
-    }
+  @Bean
+  public Docket createRestApi() {
+    return new Docket(DocumentationType.SWAGGER_2)
+        .apiInfo(apiInfo())
+        .select()
+        .apis(RequestHandlerSelectors.basePackage("org.apache.dubbo.admin.controller"))
+        .paths(PathSelectors.any())
+        .build();
+  }
 
-    private ApiInfo apiInfo() {
-        return new ApiInfoBuilder()
-                .title("dubbo admin swagger api")
-                .description("for more information please visit github page: https://github.com/apache/incubator-dubbo-admin")
-                .version("1.0")
-                .build();
-    }
+  private ApiInfo apiInfo() {
+    return new ApiInfoBuilder()
+        .title("dubbo admin swagger api")
+        .description(
+            "for more information please visit github page: https://github.com/apache/incubator-dubbo-admin")
+        .version("1.0")
+        .build();
+  }
 }

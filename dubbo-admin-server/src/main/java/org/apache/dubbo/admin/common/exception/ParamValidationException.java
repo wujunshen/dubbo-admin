@@ -21,12 +21,13 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 
 /**
  * Parameter validation failure exception
+ *
  * @author wujunshen
  */
 @ResponseStatus(value = HttpStatus.BAD_REQUEST)
 public class ParamValidationException extends SystemException {
 
-    public ParamValidationException(String message) {
-        super(message);
-    }
+  public ParamValidationException(String message) {
+    super(message);
+  }
 }

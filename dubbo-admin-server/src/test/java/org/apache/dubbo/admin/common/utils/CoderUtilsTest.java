@@ -25,45 +25,45 @@ import static org.junit.Assert.assertNull;
 
 public class CoderUtilsTest {
 
-    @Test
-    public void MD516Bit() {
-        assertNull(CoderUtils.md516Bit(null));
+  @Test
+  public void MD516Bit() {
+    assertNull(CoderUtils.md516Bit(null));
 
-        String input = "dubbo";
-        String output = "2CC9DEED96FE012E";
-        assertEquals(output, CoderUtils.md516Bit(input));
+    String input = "dubbo";
+    String output = "2CC9DEED96FE012E";
+    assertEquals(output, CoderUtils.md516Bit(input));
+  }
+
+  @Test
+  public void MD532Bit() {
+    String input = null;
+    assertNull(CoderUtils.md532Bit(input));
+
+    input = "dubbo";
+    String output = "AA4E1B8C2CC9DEED96FE012EF2E0752A";
+    assertEquals(output, CoderUtils.md532Bit(input));
+  }
+
+  @Test
+  public void MD532Bit1() {
+    byte[] input = null;
+    assertNull(CoderUtils.md532Bit(input));
+
+    input = "dubbo".getBytes();
+    String output = "AA4E1B8C2CC9DEED96FE012EF2E0752A";
+    assertEquals(output, CoderUtils.md532Bit(input));
+  }
+
+  @Test
+  public void decodeBase64() {
+    try {
+      CoderUtils.decodeBase64(null);
+      fail("when param is null, this should throw exception");
+    } catch (Exception e) {
     }
 
-    @Test
-    public void MD532Bit() {
-        String input = null;
-        assertNull(CoderUtils.md532Bit(input));
-
-        input = "dubbo";
-        String output = "AA4E1B8C2CC9DEED96FE012EF2E0752A";
-        assertEquals(output, CoderUtils.md532Bit(input));
-    }
-
-    @Test
-    public void MD532Bit1() {
-        byte[] input = null;
-        assertNull(CoderUtils.md532Bit(input));
-
-        input = "dubbo".getBytes();
-        String output = "AA4E1B8C2CC9DEED96FE012EF2E0752A";
-        assertEquals(output, CoderUtils.md532Bit(input));
-    }
-
-    @Test
-    public void decodeBase64() {
-        try {
-            CoderUtils.decodeBase64(null);
-            fail("when param is null, this should throw exception");
-        } catch (Exception e) {
-        }
-
-        String input = "ZHViYm8=";
-        String output = "dubbo";
-        assertEquals(output, CoderUtils.decodeBase64(input));
-    }
+    String input = "ZHViYm8=";
+    String output = "dubbo";
+    assertEquals(output, CoderUtils.decodeBase64(input));
+  }
 }

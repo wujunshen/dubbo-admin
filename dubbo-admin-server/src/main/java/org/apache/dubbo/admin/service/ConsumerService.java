@@ -21,8 +21,11 @@ import org.apache.dubbo.metadata.identifier.MetadataIdentifier;
 
 import java.util.List;
 
-/** Query service for consumer info
- * @author wujunshen*/
+/**
+ * Query service for consumer info
+ *
+ * @author wujunshen
+ */
 public interface ConsumerService {
 
   List<Consumer> findByService(String serviceName);

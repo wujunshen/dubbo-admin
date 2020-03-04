@@ -190,7 +190,7 @@ public class ManagementControllerTest extends AbstractSpringIntegrationTest {
             new ParameterizedTypeReference<List<ConfigDTO>>() {},
             env,
             "*");
-    assertEquals(responseEntity.getStatusCode(), HttpStatus.OK);
+    assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
     assertThat(responseEntity.getBody(), hasSize(num - 1));
 
     restTemplate.delete(
@@ -203,7 +203,7 @@ public class ManagementControllerTest extends AbstractSpringIntegrationTest {
             new ParameterizedTypeReference<List<ConfigDTO>>() {},
             env,
             "*");
-    assertEquals(responseEntity.getStatusCode(), HttpStatus.OK);
+    assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
     assertThat(responseEntity.getBody(), hasSize(num - 2));
   }
 

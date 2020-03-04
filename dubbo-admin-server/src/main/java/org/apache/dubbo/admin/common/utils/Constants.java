@@ -76,7 +76,12 @@ public class Constants {
   public static final String METRICS_PROTOCOL = "metrics.protocol";
   public static final String OLD_DUBBO_VERSION = "2.6";
   public static final String NEW_DUBBO_VERSION = "2.7";
+  public static final String UNKNOWN_ID = "Unknown ID!";
+  public static final String ENABLED = "enabled";
+  public static final String STAR = "*";
+  public static final Long EXPIRED_TIME = 1000L * 60L * 15L;
   public static final Set<String> CONFIGS = new HashSet<>();
+  public static final char DOLLAR = '$';
 
   static {
     CONFIGS.add(WEIGHT);

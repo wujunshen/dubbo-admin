@@ -21,62 +21,60 @@ import org.apache.dubbo.admin.model.domain.Tag;
 
 import java.util.List;
 
-/**
- * @author wujunshen
- */
+/** @author wujunshen */
 public class TagRoute {
-    private Integer priority;
-    private Boolean enabled;
-    private Boolean force;
-    private Boolean runtime;
-    private String key;
-    private List<Tag> tags;
+  private Integer priority;
+  private Boolean enabled;
+  private Boolean force;
+  private Boolean runtime;
+  private String key;
+  private List<Tag> tags;
 
-    public int getPriority() {
-        return priority;
-    }
+  public int getPriority() {
+    return priority;
+  }
 
-    public void setPriority(int priority) {
-        this.priority = priority;
-    }
+  public void setPriority(int priority) {
+    this.priority = priority;
+  }
 
-    public boolean isEnabled() {
-        return enabled;
-    }
+  public boolean isEnabled() {
+    return enabled;
+  }
 
-    public void setEnabled(boolean enabled) {
-        this.enabled = enabled;
-    }
+  public void setEnabled(boolean enabled) {
+    this.enabled = enabled;
+  }
 
-    public boolean isForce() {
-        return force;
-    }
+  public boolean isForce() {
+    return force;
+  }
 
-    public void setForce(boolean force) {
-        this.force = force;
-    }
+  public void setForce(boolean force) {
+    this.force = force;
+  }
 
-    public boolean isRuntime() {
-        return runtime;
-    }
+  public boolean isRuntime() {
+    return runtime;
+  }
 
-    public void setRuntime(boolean runtime) {
-        this.runtime = runtime;
-    }
+  public void setRuntime(boolean runtime) {
+    this.runtime = runtime;
+  }
 
-    public String getKey() {
-        return key;
-    }
+  public String getKey() {
+    return key;
+  }
 
-    public void setKey(String key) {
-        this.key = key;
-    }
+  public void setKey(String key) {
+    this.key = key;
+  }
 
-    public List<Tag> getTags() {
-        return tags;
-    }
+  public List<Tag> getTags() {
+    return tags;
+  }
 
-    public void setTags(List<Tag> tags) {
-        this.tags = tags;
-    }
+  public void setTags(List<Tag> tags) {
+    this.tags = tags;
+  }
 }

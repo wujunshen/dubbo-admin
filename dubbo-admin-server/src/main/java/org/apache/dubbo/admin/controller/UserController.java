@@ -31,6 +31,8 @@ import java.util.Objects;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
+import static org.apache.dubbo.admin.common.utils.Constants.EXPIRED_TIME;
+
 /** @author wujunshen */
 @RestController
 @RequestMapping("/api/{env}/user")
@@ -78,7 +80,7 @@ public class UserController {
             entry ->
                 entry.getValue() == null
                     || System.currentTimeMillis() - entry.getValue().getLastUpdateTime()
-                        > 1000 * 60 * 15);
+                        > EXPIRED_TIME);
   }
 
   @Data

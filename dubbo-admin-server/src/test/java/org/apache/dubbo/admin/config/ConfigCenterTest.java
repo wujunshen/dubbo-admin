@@ -66,7 +66,7 @@ public class ConfigCenterTest {
   @Test
   public void testGetDynamicConfiguration() throws Exception {
     // mock @value inject
-    ReflectionTestUtils.setField(configCenter, "configCenter", zkAddress);
+    ReflectionTestUtils.setField(configCenter, "configAddress", zkAddress);
     ReflectionTestUtils.setField(configCenter, "configCenterGroup", "dubbo");
     ReflectionTestUtils.setField(configCenter, "username", "username");
     ReflectionTestUtils.setField(configCenter, "password", "password");
@@ -106,7 +106,7 @@ public class ConfigCenterTest {
     assertNull(ReflectionTestUtils.getField(configCenter, "metadataUrl"));
 
     // configCenter is null
-    ReflectionTestUtils.setField(configCenter, "configCenter", null);
+    ReflectionTestUtils.setField(configCenter, "configAddress", null);
     // registryAddress is not null
     ReflectionTestUtils.setField(configCenter, "registryAddress", zkAddress);
     configCenter.getDynamicConfiguration();
@@ -116,7 +116,7 @@ public class ConfigCenterTest {
 
     // configCenter & registryAddress are null
     try {
-      ReflectionTestUtils.setField(configCenter, "configCenter", null);
+      ReflectionTestUtils.setField(configCenter, "configAddress", null);
       ReflectionTestUtils.setField(configCenter, "registryAddress", null);
       configCenter.getDynamicConfiguration();
       fail("should throw exception when configCenter, registryAddress are all null");

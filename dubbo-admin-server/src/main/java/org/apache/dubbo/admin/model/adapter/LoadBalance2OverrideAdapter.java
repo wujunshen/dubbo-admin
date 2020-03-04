@@ -20,21 +20,21 @@ import org.apache.dubbo.admin.model.domain.LoadBalance;
 import org.apache.dubbo.admin.model.domain.Override;
 import org.apache.dubbo.common.utils.StringUtils;
 
-/**
- * @author wujunshen
- */
+import static org.apache.dubbo.admin.common.utils.Constants.STAR;
+
+/** @author wujunshen */
 public class LoadBalance2OverrideAdapter extends Override {
-    public LoadBalance2OverrideAdapter(final LoadBalance loadBalance) {
-        setId(loadBalance.getId());
-        setHash(loadBalance.getHash());
-        setService(loadBalance.getService());
-        setEnabled(true);
-        String method = loadBalance.getMethod();
-        String strategy = loadBalance.getStrategy();
-        if (StringUtils.isEmpty(method) || method.equals("*")) {
-            setParams("loadbalance=" + strategy);
-        } else {
-            setParams(method + ".loadbalance=" + strategy);
-        }
+  public LoadBalance2OverrideAdapter(final LoadBalance loadBalance) {
+    setId(loadBalance.getId());
+    setHash(loadBalance.getHash());
+    setService(loadBalance.getService());
+    setEnabled(true);
+    String method = loadBalance.getMethod();
+    String strategy = loadBalance.getStrategy();
+    if (StringUtils.isEmpty(method) || method.equals(STAR)) {
+      setParams("loadbalance=" + strategy);
+    } else {
+      setParams(method + ".loadbalance=" + strategy);
     }
+  }
 }

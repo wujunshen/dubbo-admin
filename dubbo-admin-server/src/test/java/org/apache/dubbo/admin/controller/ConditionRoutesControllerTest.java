@@ -67,7 +67,8 @@ public class ConditionRoutesControllerTest extends AbstractSpringIntegrationTest
     assertThat(responseEntity.getBody(), containsString("serviceName and app is Empty!"));
 
     dto.setApplication("application" + uuid);
-    when(providerService.findVersionInApplication(dto.getApplication())).thenReturn(OLD_DUBBO_VERSION);
+    when(providerService.findVersionInApplication(dto.getApplication()))
+        .thenReturn(OLD_DUBBO_VERSION);
     responseEntity =
         restTemplate.postForEntity(
             url("/dubbo-admin/api/{env}/rules/route/condition"), dto, String.class, env);
@@ -94,7 +95,8 @@ public class ConditionRoutesControllerTest extends AbstractSpringIntegrationTest
     assertThat(responseEntity.getStatusCode(), is(HttpStatus.CREATED));
 
     dto.setApplication(application);
-    when(providerService.findVersionInApplication(dto.getApplication())).thenReturn(NEW_DUBBO_VERSION);
+    when(providerService.findVersionInApplication(dto.getApplication()))
+        .thenReturn(NEW_DUBBO_VERSION);
 
     responseEntity =
         restTemplate.postForEntity(

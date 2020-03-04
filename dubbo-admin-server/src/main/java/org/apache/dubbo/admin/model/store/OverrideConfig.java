@@ -20,81 +20,79 @@ package org.apache.dubbo.admin.model.store;
 import java.util.List;
 import java.util.Map;
 
-/**
- * @author wujunshen
- */
+/** @author wujunshen */
 public class OverrideConfig {
 
-    private String side;
-    private List<String> addresses;
-    private List<String> providerAddresses;
-    private Map<String, Object> parameters;
-    private List<String> applications;
-    private List<String> services;
-    private String type;
-    private boolean enabled;
+  private String side;
+  private List<String> addresses;
+  private List<String> providerAddresses;
+  private Map<String, Object> parameters;
+  private List<String> applications;
+  private List<String> services;
+  private String type;
+  private boolean enabled;
 
-    public String getSide() {
-        return side;
-    }
+  public String getSide() {
+    return side;
+  }
 
-    public void setSide(String side) {
-        this.side = side;
-    }
+  public void setSide(String side) {
+    this.side = side;
+  }
 
-    public List<String> getAddresses() {
-        return addresses;
-    }
+  public List<String> getAddresses() {
+    return addresses;
+  }
 
-    public void setAddresses(List<String> addresses) {
-        this.addresses = addresses;
-    }
+  public void setAddresses(List<String> addresses) {
+    this.addresses = addresses;
+  }
 
-    public List<String> getProviderAddresses() {
-        return providerAddresses;
-    }
+  public List<String> getProviderAddresses() {
+    return providerAddresses;
+  }
 
-    public void setProviderAddresses(List<String> providerAddresses) {
-        this.providerAddresses = providerAddresses;
-    }
+  public void setProviderAddresses(List<String> providerAddresses) {
+    this.providerAddresses = providerAddresses;
+  }
 
-    public Map<String, Object> getParameters() {
-        return parameters;
-    }
+  public Map<String, Object> getParameters() {
+    return parameters;
+  }
 
-    public void setParameters(Map<String, Object> parameters) {
-        this.parameters = parameters;
-    }
+  public void setParameters(Map<String, Object> parameters) {
+    this.parameters = parameters;
+  }
 
-    public List<String> getApplications() {
-        return applications;
-    }
+  public List<String> getApplications() {
+    return applications;
+  }
 
-    public void setApplications(List<String> applications) {
-        this.applications = applications;
-    }
+  public void setApplications(List<String> applications) {
+    this.applications = applications;
+  }
 
-    public List<String> getServices() {
-        return services;
-    }
+  public List<String> getServices() {
+    return services;
+  }
 
-    public void setServices(List<String> services) {
-        this.services = services;
-    }
+  public void setServices(List<String> services) {
+    this.services = services;
+  }
 
-    public String getType() {
-        return type;
-    }
+  public String getType() {
+    return type;
+  }
 
-    public void setType(String type) {
-        this.type = type;
-    }
+  public void setType(String type) {
+    this.type = type;
+  }
 
-    public boolean isEnabled() {
-        return enabled;
-    }
+  public boolean isEnabled() {
+    return enabled;
+  }
 
-    public void setEnabled(boolean enabled) {
-        this.enabled = enabled;
-    }
+  public void setEnabled(boolean enabled) {
+    this.enabled = enabled;
+  }
 }

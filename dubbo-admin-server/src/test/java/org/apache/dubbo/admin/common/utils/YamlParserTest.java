@@ -30,37 +30,36 @@ import static org.junit.Assert.assertEquals;
 
 public class YamlParserTest {
 
-    private String streamToString(InputStream stream) throws IOException {
-        byte[] bytes = new byte[stream.available()];
-        stream.read(bytes);
-        return new String(bytes);
+  private String streamToString(InputStream stream) throws IOException {
+    byte[] bytes = new byte[stream.available()];
+    stream.read(bytes);
+    return new String(bytes);
+  }
+
+  @Test
+  public void parseLoadBalanceTest() throws IOException {
+    try (InputStream yamlStream = this.getClass().getResourceAsStream("/LoadBalance.yml")) {
+      DynamicConfigDTO overrideDTO =
+          YamlParser.loadObject(streamToString(yamlStream), DynamicConfigDTO.class);
+      assertEquals("v2.7", overrideDTO.getConfigVersion());
+      assertEquals(false, overrideDTO.getEnabled());
+      List<OverrideConfig> configs = overrideDTO.getConfigs();
+      assertEquals(2, configs.size());
+
+      OverrideConfig first = configs.get(0);
+      assertEquals("0.0.0.0:20880", first.getAddresses().get(0));
+      assertEquals("provider", first.getSide());
+      Map<String, Object> parameters = first.getParameters();
+      assertEquals(1, parameters.size());
+      assertEquals(2000, parameters.get("timeout"));
+
+      OverrideConfig second = configs.get(1);
+      assertEquals("balancing", second.getType());
+      assertEquals(true, second.isEnabled());
+      parameters = second.getParameters();
+      assertEquals(2, parameters.size());
+      assertEquals("*", parameters.get("method"));
+      assertEquals("random", parameters.get("strategy"));
     }
-
-    @Test
-    public void parseLoadBalanceTest() throws IOException {
-        try (InputStream yamlStream = this.getClass().getResourceAsStream("/LoadBalance.yml")) {
-            DynamicConfigDTO overrideDTO = YamlParser.loadObject(streamToString(yamlStream), DynamicConfigDTO.class);
-            assertEquals("v2.7", overrideDTO.getConfigVersion());
-            assertEquals(false, overrideDTO.getEnabled());
-            List<OverrideConfig> configs = overrideDTO.getConfigs();
-            assertEquals(2, configs.size());
-
-            OverrideConfig first = configs.get(0);
-            assertEquals("0.0.0.0:20880", first.getAddresses().get(0));
-            assertEquals("provider", first.getSide());
-            Map<String, Object> parameters = first.getParameters();
-            assertEquals(1, parameters.size());
-            assertEquals(2000, parameters.get("timeout"));
-
-            OverrideConfig second = configs.get(1);
-            assertEquals("balancing", second.getType());
-            assertEquals(true, second.isEnabled());
-            parameters = second.getParameters();
-            assertEquals(2, parameters.size());
-            assertEquals("*", parameters.get("method"));
-            assertEquals("random", parameters.get("strategy"));
-        }
-    }
-
-
+  }
 }

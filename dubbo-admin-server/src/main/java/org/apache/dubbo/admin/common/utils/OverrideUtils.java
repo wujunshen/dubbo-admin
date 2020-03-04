@@ -23,13 +23,15 @@ import org.apache.dubbo.admin.model.store.OverrideConfig;
 import org.apache.dubbo.admin.model.store.OverrideDTO;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-/** OverrideUtils.java
- * @author wujunshen*/
+/**
+ * OverrideUtils.java
+ *
+ * @author wujunshen
+ */
 public class OverrideUtils {
   public static OverrideConfig weightDto2Config(WeightDTO weightDTO) {
     OverrideConfig overrideConfig = new OverrideConfig();
@@ -37,7 +39,7 @@ public class OverrideUtils {
     overrideConfig.setEnabled(true);
     overrideConfig.setSide(Constants.PROVIDER_SIDE);
     overrideConfig.setAddresses(weightDTO.getAddresses());
-    Map<String, Object> parameters =  new ConcurrentHashMap<>(8);
+    Map<String, Object> parameters = new ConcurrentHashMap<>(8);
     parameters.put(Constants.WEIGHT, weightDTO.getWeight());
     overrideConfig.setParameters(parameters);
     return overrideConfig;
@@ -48,7 +50,7 @@ public class OverrideUtils {
     overrideConfig.setType(Constants.BALANCING);
     overrideConfig.setEnabled(true);
     overrideConfig.setSide(Constants.CONSUMER_SIDE);
-    Map<String, Object> parameters =  new ConcurrentHashMap<>(8);
+    Map<String, Object> parameters = new ConcurrentHashMap<>(8);
     if (balancingDTO.getMethodName().equals("*")) {
       parameters.put("loadbalance", balancingDTO.getStrategy());
     } else {

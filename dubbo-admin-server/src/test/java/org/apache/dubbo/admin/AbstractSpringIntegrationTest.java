@@ -22,7 +22,6 @@ import org.apache.curator.framework.CuratorFrameworkFactory;
 import org.apache.curator.retry.RetryOneTime;
 import org.apache.curator.test.TestingServer;
 import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.web.server.LocalServerPort;
@@ -53,8 +52,7 @@ public abstract class AbstractSpringIntegrationTest {
     }
   }
 
-  @Resource
-  protected TestRestTemplate restTemplate;
+  @Resource protected TestRestTemplate restTemplate;
   @LocalServerPort protected int port;
 
   protected String url(final String path) {

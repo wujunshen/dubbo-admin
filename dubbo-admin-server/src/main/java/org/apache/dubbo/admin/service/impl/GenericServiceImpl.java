@@ -27,61 +27,60 @@ import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
 
-/**
- * @author wujunshen
- */
+/** @author wujunshen */
 @Component
 public class GenericServiceImpl {
-    private final Registry registry;
-    private ApplicationConfig applicationConfig;
+  private final Registry registry;
+  private ApplicationConfig applicationConfig;
 
-    public GenericServiceImpl(Registry registry) {
-        this.registry = registry;
+  public GenericServiceImpl(Registry registry) {
+    this.registry = registry;
+  }
+
+  @PostConstruct
+  public void init() {
+    RegistryConfig registryConfig = new RegistryConfig();
+    registryConfig.setAddress(
+        registry.getUrl().getProtocol() + "://" + registry.getUrl().getAddress());
+    registryConfig.setGroup(registry.getUrl().getParameter("group"));
+
+    applicationConfig = new ApplicationConfig();
+    applicationConfig.setName("dubbo-admin");
+    applicationConfig.setRegistry(registryConfig);
+  }
+
+  public Object invoke(String service, String method, String[] parameterTypes, Object[] params) {
+
+    ReferenceConfig<GenericService> reference = new ReferenceConfig<>();
+    String group = Tool.getGroup(service);
+    String version = Tool.getVersion(service);
+    String intf = Tool.getInterface(service);
+    reference.setGeneric(true);
+    reference.setApplication(applicationConfig);
+    reference.setInterface(intf);
+    reference.setVersion(version);
+    reference.setGroup(group);
+
+    try {
+      removeGenericSymbol(parameterTypes);
+      GenericService genericService = reference.get();
+      return genericService.$invoke(method, parameterTypes, params);
+    } finally {
+      reference.destroy();
     }
+  }
 
-    @PostConstruct
-    public void init() {
-        RegistryConfig registryConfig = new RegistryConfig();
-        registryConfig.setAddress(registry.getUrl().getProtocol() + "://" + registry.getUrl().getAddress());
-        registryConfig.setGroup(registry.getUrl().getParameter("group"));
-
-        applicationConfig = new ApplicationConfig();
-        applicationConfig.setName("dubbo-admin");
-        applicationConfig.setRegistry(registryConfig);
+  /**
+   * remove generic from parameterTypes
+   *
+   * @param parameterTypes
+   */
+  private void removeGenericSymbol(String[] parameterTypes) {
+    for (int i = 0; i < parameterTypes.length; i++) {
+      int index = parameterTypes[i].indexOf('<');
+      if (index > -1) {
+        parameterTypes[i] = parameterTypes[i].substring(0, index);
+      }
     }
-
-    public Object invoke(String service, String method, String[] parameterTypes, Object[] params) {
-
-        ReferenceConfig<GenericService> reference = new ReferenceConfig<>();
-        String group = Tool.getGroup(service);
-        String version = Tool.getVersion(service);
-        String intf = Tool.getInterface(service);
-        reference.setGeneric(true);
-        reference.setApplication(applicationConfig);
-        reference.setInterface(intf);
-        reference.setVersion(version);
-        reference.setGroup(group);
-
-        try {
-            removeGenericSymbol(parameterTypes);
-            GenericService genericService = reference.get();
-            return genericService.$invoke(method, parameterTypes, params);
-        } finally {
-            reference.destroy();
-        }
-    }
-
-    /**
-     * remove generic from parameterTypes
-     *
-     * @param parameterTypes
-     */
-    private void removeGenericSymbol(String[] parameterTypes) {
-        for (int i = 0; i < parameterTypes.length; i++) {
-            int index = parameterTypes[i].indexOf("<");
-            if (index > -1) {
-                parameterTypes[i] = parameterTypes[i].substring(0, index);
-            }
-        }
-    }
+  }
 }

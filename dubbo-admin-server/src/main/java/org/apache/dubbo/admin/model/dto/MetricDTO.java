@@ -38,7 +38,7 @@ public class MetricDTO {
   private MetricType metricType;
   private Map<String, String> tags = new HashMap<>();
   private MetricLevel metricLevel;
-  private transient String meterName;
+  private String meterName;
   /** 分桶统计时间间隔，目前针对Meter/Timer/Compass有效，-1表示此项无效 */
   private Integer interval = -1;
 

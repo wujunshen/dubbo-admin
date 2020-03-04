@@ -21,19 +21,17 @@ import org.apache.dubbo.common.URL;
 import org.apache.dubbo.common.extension.SPI;
 import org.apache.dubbo.metadata.identifier.MetadataIdentifier;
 
-/**
- * @author wujunshen
- */
+/** @author wujunshen */
 @SPI("zookeeper")
 public interface MetaDataCollector {
 
-    URL getUrl();
+  URL getUrl();
 
-    void setUrl(URL url);
+  void setUrl(URL url);
 
-    void init();
+  void init();
 
-    String getProviderMetaData(MetadataIdentifier key);
+  String getProviderMetaData(MetadataIdentifier key);
 
-    String getConsumerMetaData(MetadataIdentifier key);
+  String getConsumerMetaData(MetadataIdentifier key);
 }

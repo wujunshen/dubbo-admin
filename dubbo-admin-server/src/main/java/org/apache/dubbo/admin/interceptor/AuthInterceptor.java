@@ -28,37 +28,37 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.lang.reflect.Method;
 
-/**
- * @author wujunshen
- */
+import static org.apache.dubbo.admin.common.utils.Constants.EXPIRED_TIME;
+
+/** @author wujunshen */
 @Component
 public class AuthInterceptor extends HandlerInterceptorAdapter {
-    @Value("${admin.check.authority:true}")
-    private boolean checkAuthority;
+  @Value("${admin.check.authority:true}")
+  private boolean checkAuthority;
 
-    @Override
-    public boolean preHandle(
-            HttpServletRequest request, HttpServletResponse response, Object handler) {
-        if (!(handler instanceof HandlerMethod) || !checkAuthority) {
-            return true;
-        }
-        HandlerMethod handlerMethod = (HandlerMethod) handler;
-        Method method = handlerMethod.getMethod();
-        Authority authority = method.getDeclaredAnnotation(Authority.class);
-        if (null == authority) {
-            authority = method.getDeclaringClass().getDeclaredAnnotation(Authority.class);
-        }
-        if (null != authority && authority.needLogin()) {
-            String authorization = request.getHeader("Authorization");
-            UserController.User user = UserController.tokenMap.get(authorization);
-            if (null != user && System.currentTimeMillis() - user.getLastUpdateTime() <= 1000 * 60 * 15) {
-                user.setLastUpdateTime(System.currentTimeMillis());
-                return true;
-            }
-            response.setStatus(HttpStatus.UNAUTHORIZED.value());
-            return false;
-        } else {
-            return true;
-        }
+  @Override
+  public boolean preHandle(
+      HttpServletRequest request, HttpServletResponse response, Object handler) {
+    if (!(handler instanceof HandlerMethod) || !checkAuthority) {
+      return true;
     }
+    HandlerMethod handlerMethod = (HandlerMethod) handler;
+    Method method = handlerMethod.getMethod();
+    Authority authority = method.getDeclaredAnnotation(Authority.class);
+    if (null == authority) {
+      authority = method.getDeclaringClass().getDeclaredAnnotation(Authority.class);
+    }
+    if (null != authority && authority.needLogin()) {
+      String authorization = request.getHeader("Authorization");
+      UserController.User user = UserController.tokenMap.get(authorization);
+      if (null != user && System.currentTimeMillis() - user.getLastUpdateTime() <= EXPIRED_TIME) {
+        user.setLastUpdateTime(System.currentTimeMillis());
+        return true;
+      }
+      response.setStatus(HttpStatus.UNAUTHORIZED.value());
+      return false;
+    } else {
+      return true;
+    }
+  }
 }

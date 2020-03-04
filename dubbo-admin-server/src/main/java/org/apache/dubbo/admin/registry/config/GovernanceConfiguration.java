@@ -20,32 +20,28 @@ package org.apache.dubbo.admin.registry.config;
 import org.apache.dubbo.common.URL;
 import org.apache.dubbo.common.extension.SPI;
 
-
-/**
- * @author wujunshen
- */
+/** @author wujunshen */
 @SPI("zookeeper")
 public interface GovernanceConfiguration {
-    void init();
+  void init();
 
-    URL getUrl();
+  URL getUrl();
 
-    void setUrl(URL url);
+  void setUrl(URL url);
 
-    String setConfig(String key, String value);
+  String setConfig(String key, String value);
 
-    String getConfig(String key);
+  String getConfig(String key);
 
-    boolean deleteConfig(String key);
+  boolean deleteConfig(String key);
 
-    String setConfig(String group, String key, String value);
+  String setConfig(String group, String key, String value);
 
-    String getConfig(String group, String key);
+  String getConfig(String group, String key);
 
-    boolean deleteConfig(String group, String key);
+  boolean deleteConfig(String group, String key);
 
-    String getPath(String key);
+  String getPath(String key);
 
-    String getPath(String group, String key);
-
+  String getPath(String group, String key);
 }

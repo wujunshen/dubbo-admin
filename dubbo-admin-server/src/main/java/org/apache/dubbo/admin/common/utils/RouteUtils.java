@@ -16,6 +16,10 @@
  */
 package org.apache.dubbo.admin.common.utils;
 
+import lombok.AllArgsConstructor;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 import org.apache.dubbo.admin.model.domain.Route;
 import org.apache.dubbo.admin.model.dto.AccessDTO;
 import org.apache.dubbo.admin.model.dto.ConditionRouteDTO;
@@ -54,15 +58,16 @@ import java.util.regex.Pattern;
  *
  * @author wujunshen
  */
+@EqualsAndHashCode
 public class RouteUtils {
-  private static Pattern ROUTE_PATTERN = Pattern.compile("([&!=,]*)\\s*([^&!=,\\s]+)");
-  private static Pattern CONDITION_SEPRATOR = Pattern.compile("(.*)=>(.*)");
+  private static Pattern routePattern = Pattern.compile("([&!=,]*)\\s*([^&!=,\\s]+)");
+  private static Pattern conditionSeparator = Pattern.compile("(.*)=>(.*)");
   final Map<String, MatchPair> whenCondition;
   final Map<String, MatchPair> thenCondition;
   private volatile String tostring = null;
 
-  // FIXME
   private RouteUtils(Map<String, MatchPair> when, Map<String, MatchPair> then) {
+    // FIXME
     for (Entry<String, MatchPair> entry : when.entrySet()) {
       entry.getValue().freeze();
     }
@@ -84,7 +89,7 @@ public class RouteUtils {
     MatchPair pair = null;
     // V part has multiple values
     Set<String> values = null;
-    final Matcher matcher = ROUTE_PATTERN.matcher(rule);
+    final Matcher matcher = routePattern.matcher(rule);
     // match one by one
     while (matcher.find()) {
       String separator = matcher.group(1);
@@ -98,26 +103,13 @@ public class RouteUtils {
       else if ("&".equals(separator)) {
         if (condition.get(content) == null) {
           pair = new MatchPair();
-          condition.put(content, pair);
-        } else {
-          condition.put(content, pair);
         }
-
+        condition.put(content, pair);
       }
       // The Value part of KV starts
       else if ("=".equals(separator)) {
         if (pair == null) {
-          throw new ParseException(
-              "Illegal route rule \""
-                  + rule
-                  + "\", The error char '"
-                  + separator
-                  + "' at index "
-                  + matcher.start()
-                  + " before \""
-                  + content
-                  + "\".",
-              matcher.start());
+          throwParseException(rule, matcher, separator, content);
         }
 
         values = pair.matches;
@@ -126,17 +118,7 @@ public class RouteUtils {
       // The Value part of KV starts
       else if ("!=".equals(separator)) {
         if (pair == null) {
-          throw new ParseException(
-              "Illegal route rule \""
-                  + rule
-                  + "\", The error char '"
-                  + separator
-                  + "' at index "
-                  + matcher.start()
-                  + " before \""
-                  + content
-                  + "\".",
-              matcher.start());
+          throwParseException(rule, matcher, separator, content);
         }
 
         values = pair.unmatches;
@@ -145,35 +127,30 @@ public class RouteUtils {
       // The Value part of KV has multiple values, separated by ','
       else if (",".equals(separator)) {
         // separated by ','
-        if (values == null || values.size() == 0) {
-          throw new ParseException(
-              "Illegal route rule \""
-                  + rule
-                  + "\", The error char '"
-                  + separator
-                  + "' at index "
-                  + matcher.start()
-                  + " before \""
-                  + content
-                  + "\".",
-              matcher.start());
+        if (values == null || values.isEmpty()) {
+          throwParseException(rule, matcher, separator, content);
         }
         values.add(content);
       } else {
-        throw new ParseException(
-            "Illegal route rule \""
-                + rule
-                + "\", The error char '"
-                + separator
-                + "' at index "
-                + matcher.start()
-                + " before \""
-                + content
-                + "\".",
-            matcher.start());
+        throwParseException(rule, matcher, separator, content);
       }
     }
     return condition;
+  }
+
+  private static void throwParseException(
+      String rule, Matcher matcher, String separator, String content) throws ParseException {
+    throw new ParseException(
+        "Illegal route rule \""
+            + rule
+            + "\", The error char '"
+            + separator
+            + "' at index "
+            + matcher.start()
+            + " before \""
+            + content
+            + "\".",
+        matcher.start());
   }
 
   public static RouteUtils parse(String whenRule, String thenRule) throws ParseException {
@@ -190,7 +167,7 @@ public class RouteUtils {
       throw new ParseException("Illegal blank route rule", 0);
     }
 
-    final Matcher matcher = CONDITION_SEPRATOR.matcher(rule);
+    final Matcher matcher = conditionSeparator.matcher(rule);
     if (!matcher.matches()) {
       throw new ParseException("condition seperator => not found!", 0);
     }
@@ -242,7 +219,7 @@ public class RouteUtils {
 
   public static List<String> convertToBlackWhiteList(AccessDTO accessDTO) {
     if (accessDTO == null) {
-      return null;
+      return new ArrayList<>();
     }
 
     Set<String> whiteList = accessDTO.getWhitelist();
@@ -310,22 +287,20 @@ public class RouteUtils {
     } else {
       accessDTO.setService(key);
     }
-    if (blackWhiteList != null) {
-      for (String condition : blackWhiteList) {
-        if (condition.contains("host != ")) {
-          // white list
-          condition =
-              org.apache.commons.lang3.StringUtils.substringBetween(condition, "host !=", " =>")
-                  .trim();
-          accessDTO.setWhitelist(new HashSet<>(Arrays.asList(condition.split(","))));
-        }
-        if (condition.contains("host = ")) {
-          // black list
-          condition =
-              org.apache.commons.lang3.StringUtils.substringBetween(condition, "host =", " =>")
-                  .trim();
-          accessDTO.setBlacklist(new HashSet<>(Arrays.asList(condition.split(","))));
-        }
+    for (String condition : blackWhiteList) {
+      if (condition.contains("host != ")) {
+        // white list
+        condition =
+            org.apache.commons.lang3.StringUtils.substringBetween(condition, "host !=", " =>")
+                .trim();
+        accessDTO.setWhitelist(new HashSet<>(Arrays.asList(condition.split(","))));
+      }
+      if (condition.contains("host = ")) {
+        // black list
+        condition =
+            org.apache.commons.lang3.StringUtils.substringBetween(condition, "host =", " =>")
+                .trim();
+        accessDTO.setBlacklist(new HashSet<>(Arrays.asList(condition.split(","))));
       }
     }
     return accessDTO;
@@ -377,8 +352,8 @@ public class RouteUtils {
     return convertAccessDto2Route(accessDTO);
   }
 
-  // TODO ToString out of the current list is out of order, should we sort?
   static void join(StringBuilder sb, Set<String> valueSet) {
+    // TODO ToString out of the current list is out of order, should we sort?
     boolean isFirst = true;
     for (String s : valueSet) {
       if (isFirst) {
@@ -391,15 +366,15 @@ public class RouteUtils {
     }
   }
 
-  // FIXME Remove such method calls
   public static String join(Set<String> valueSet) {
+    // FIXME Remove such method calls
     StringBuilder sb = new StringBuilder(128);
     join(sb, valueSet);
     return sb.toString();
   }
 
-  // TODO At present, the multiple Key of Condition is in disorder. Should we sort it?
   public static void condition2String(StringBuilder sb, Map<String, MatchPair> condition) {
+    // TODO At present, the multiple Key of Condition is in disorder. Should we sort it?
     boolean isFirst = true;
     for (Entry<String, MatchPair> entry : condition.entrySet()) {
       String keyName = entry.getKey();
@@ -446,65 +421,13 @@ public class RouteUtils {
     return tostring = sb.toString();
   }
 
-  // Automatic generation with Eclipse
-  @Override
-  public int hashCode() {
-    final int prime = 31;
-    int result = 1;
-    result = prime * result + ((thenCondition == null) ? 0 : thenCondition.hashCode());
-    result = prime * result + ((whenCondition == null) ? 0 : whenCondition.hashCode());
-    return result;
-  }
-
-  // Automatic generation with Eclipse
-  @Override
-  public boolean equals(Object obj) {
-    if (this == obj) {
-      return true;
-    }
-    if (obj == null) {
-      return false;
-    }
-    if (getClass() != obj.getClass()) {
-      return false;
-    }
-    RouteUtils other = (RouteUtils) obj;
-    if (thenCondition == null) {
-      if (other.thenCondition != null) {
-        return false;
-      }
-    } else if (!thenCondition.equals(other.thenCondition)) {
-      return false;
-    }
-    if (whenCondition == null) {
-      return other.whenCondition == null;
-    } else {
-      return whenCondition.equals(other.whenCondition);
-    }
-  }
-
+  @Getter
+  @EqualsAndHashCode
+  @NoArgsConstructor
+  @AllArgsConstructor
   public static class MatchPair {
     Set<String> matches = new HashSet<>();
     Set<String> unmatches = new HashSet<>();
-
-    public MatchPair() {}
-
-    public MatchPair(Set<String> matches, Set<String> unmatches) {
-      if (matches == null || unmatches == null) {
-        throw new IllegalArgumentException("argument of MatchPair is null!");
-      }
-
-      this.matches = matches;
-      this.unmatches = unmatches;
-    }
-
-    public Set<String> getMatches() {
-      return matches;
-    }
-
-    public Set<String> getUnmatches() {
-      return unmatches;
-    }
 
     public MatchPair copy() {
       MatchPair ret = new MatchPair();
@@ -550,43 +473,6 @@ public class RouteUtils {
     @Override
     public String toString() {
       return String.format("{matches=%s,unmatches=%s}", matches.toString(), unmatches.toString());
-    }
-
-    // Automatic generation with Eclipse
-    @Override
-    public int hashCode() {
-      final int prime = 31;
-      int result = 1;
-      result = prime * result + ((matches == null) ? 0 : matches.hashCode());
-      result = prime * result + ((unmatches == null) ? 0 : unmatches.hashCode());
-      return result;
-    }
-
-    // Automatic generation with Eclipse
-    @Override
-    public boolean equals(Object obj) {
-      if (this == obj) {
-        return true;
-      }
-      if (obj == null) {
-        return false;
-      }
-      if (getClass() != obj.getClass()) {
-        return false;
-      }
-      MatchPair other = (MatchPair) obj;
-      if (matches == null) {
-        if (other.matches != null) {
-          return false;
-        }
-      } else if (!matches.equals(other.matches)) {
-        return false;
-      }
-      if (unmatches == null) {
-        return other.unmatches == null;
-      } else {
-        return unmatches.equals(other.unmatches);
-      }
     }
   }
 }

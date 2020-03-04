@@ -25,96 +25,88 @@ import java.util.Set;
 
 /**
  * ProviderService
+ *
  * @author wujunshen
  */
 public interface ProviderService {
 
-    void create(Provider provider);
+  void create(Provider provider);
 
-//    void enableProvider(String id);
+  void deleteStaticProvider(String id);
 
-//    void disableProvider(String id);
+  void updateProvider(Provider provider);
 
-//    void doublingProvider(String id);
+  Provider findProvider(String id);
 
-//    void halvingProvider(String id);
+  String getProviderMetaData(MetadataIdentifier providerIdentifier);
 
-    void deleteStaticProvider(String id);
+  /**
+   * Get all provider's service name
+   *
+   * @return list of all provider's service name
+   */
+  Set<String> findServices();
 
-    void updateProvider(Provider provider);
+  String findServiceVersion(String serviceName, String application);
 
-    Provider findProvider(String id);
+  String findVersionInApplication(String application);
 
-    String getProviderMetaData(MetadataIdentifier providerIdentifier);
+  List<String> findAddresses();
 
-    /**
-     * Get all provider's service name
-     *
-     * @return list of all provider's service name
-     */
-    Set<String> findServices();
+  List<String> findAddressesByApplication(String application);
 
-    String findServiceVersion(String serviceName, String application);
+  List<String> findAddressesByService(String serviceName);
 
-    String findVersionInApplication(String application);
+  List<String> findApplicationsByServiceName(String serviceName);
 
-    List<String> findAddresses();
+  /**
+   * Get provider list with specific service name.
+   *
+   * @param serviceName specific service name, cannot be fuzzy string
+   * @return list of provider object
+   */
+  List<Provider> findByService(String serviceName);
 
-    List<String> findAddressesByApplication(String application);
+  List<Provider> findByAppAndService(String app, String serviceName);
 
-    List<String> findAddressesByService(String serviceName);
+  List<Provider> findAll();
 
-    List<String> findApplicationsByServiceName(String serviceName);
+  /**
+   * Get provider list with specific ip address.
+   *
+   * @param providerAddress provider's ip address
+   * @return list of provider object
+   */
+  List<Provider> findByAddress(String providerAddress);
 
-    /**
-     * Get provider list with specific service name.
-     *
-     * @param serviceName specific service name, cannot be fuzzy string
-     * @return list of provider object
-     */
-    List<Provider> findByService(String serviceName);
+  List<String> findServicesByAddress(String providerAddress);
 
-    List<Provider> findByAppAndService(String app, String serviceName);
+  Set<String> findApplications();
 
-    List<Provider> findAll();
+  /**
+   * Get provider list with specific application name.
+   *
+   * @param application specific application name
+   * @return list of provider object
+   */
+  List<Provider> findByApplication(String application);
 
-    /**
-     * Get provider list with specific ip address.
-     *
-     * @param providerAddress provider's ip address
-     * @return list of provider object
-     */
-    List<Provider> findByAddress(String providerAddress);
+  List<String> findServicesByApplication(String application);
 
-    List<String> findServicesByAddress(String providerAddress);
+  List<String> findMethodsByService(String serviceName);
 
-    Set<String> findApplications();
+  Provider findByServiceAndAddress(String service, String address);
 
-    /**
-     * Get provider list with specific application name.
-     *
-     * @param application specific application name
-     * @return list of provider object
-     */
-    List<Provider> findByApplication(String application);
-
-    List<String> findServicesByApplication(String application);
-
-    List<String> findMethodsByService(String serviceName);
-
-    Provider findByServiceAndAddress(String service, String address);
-
-    /**
-     * Get a set of service data object.
-     * <p>
-     * ServiceDTO object contains base information include
-     * service name , application, group and version.
-     *
-     * @param pattern {@code String} type of search
-     * @param filter  {@code String} input filter string
-     * @param env     {@code String}the environment of front end
-     * @return a set of services for fore-end page
-     */
-    Set<ServiceDTO> getServiceDtoList(String pattern, String filter, String env);
-
+  /**
+   * Get a set of service data object.
+   *
+   * <p>ServiceDTO object contains base information include service name , application, group and
+   * version.
+   *
+   * @param pattern {@code String} type of search
+   * @param filter {@code String} input filter string
+   * @param env {@code String}the environment of front end
+   * @return a set of services for fore-end page
+   */
+  Set<ServiceDTO> getServiceDtoList(String pattern, String filter, String env);
 }

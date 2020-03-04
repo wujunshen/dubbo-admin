@@ -34,6 +34,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.apache.dubbo.admin.common.utils.Constants.OLD_DUBBO_VERSION;
+import static org.apache.dubbo.admin.common.utils.Constants.UNKNOWN_ID;
 
 /** @author wujunshen */
 @Authority(needLogin = true)
@@ -65,12 +66,12 @@ public class LoadBalanceController {
   public boolean updateLoadBalance(@PathVariable String id, @RequestBody BalancingDTO balancingDTO)
       throws ParamValidationException {
     if (id == null) {
-      throw new ParamValidationException("Unknown ID!");
+      throw new ParamValidationException(UNKNOWN_ID);
     }
     BalancingDTO balancing =
         overrideService.findBalance(id.replace(Constants.ANY_VALUE, Constants.PATH_SEPARATOR));
     if (balancing == null) {
-      throw new ResourceNotFoundException("Unknown ID!");
+      throw new ResourceNotFoundException(UNKNOWN_ID);
     }
 
     overrideService.saveBalance(balancingDTO);

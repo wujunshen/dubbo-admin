@@ -66,11 +66,10 @@ public class ConsulConfiguration implements GovernanceConfiguration {
 
   @Override
   public String setConfig(String group, String key, String value) {
-    if (group == null) {
-      client.setKVValue(key, value);
-      return value;
+    if (group != null) {
+      key = group + SLASH + key;
     }
-    client.setKVValue(group + SLASH + key, value);
+    client.setKVValue(key, value);
     return value;
   }
 

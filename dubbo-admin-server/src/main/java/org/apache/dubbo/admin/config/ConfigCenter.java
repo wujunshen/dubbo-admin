@@ -43,7 +43,7 @@ import static org.apache.dubbo.common.constants.CommonConstants.CLUSTER_KEY;
 public class ConfigCenter {
   /** centers in dubbo 2.7 */
   @Value("${admin.config-center:}")
-  private String configCenter;
+  private String configAddress;
 
   @Value("${admin.registry.address:}")
   private String registryAddress;
@@ -69,7 +69,6 @@ public class ConfigCenter {
   @Value("${admin.config-center.password:}")
   private String password;
 
-  private URL configCenterUrl;
   private URL registryUrl;
   private URL metadataUrl;
 
@@ -82,8 +81,8 @@ public class ConfigCenter {
   GovernanceConfiguration getDynamicConfiguration() {
     GovernanceConfiguration dynamicConfiguration = null;
 
-    if (StringUtils.isNotEmpty(configCenter)) {
-      configCenterUrl = formUrl(configCenter, configCenterGroup, username, password);
+    if (StringUtils.isNotEmpty(configAddress)) {
+      URL configCenterUrl = formUrl(configAddress, configCenterGroup, username, password);
       dynamicConfiguration =
           ExtensionLoader.getExtensionLoader(GovernanceConfiguration.class)
               .getExtension(configCenterUrl.getProtocol());
@@ -96,8 +95,8 @@ public class ConfigCenter {
             .forEach(
                 s -> {
                   if (s.startsWith(Constants.REGISTRY_ADDRESS)) {
-                    String registryAddress = s.split("=")[1].trim();
-                    registryUrl = formUrl(registryAddress, configCenterGroup, username, password);
+                    registryUrl =
+                        formUrl(s.split("=")[1].trim(), configCenterGroup, username, password);
                   } else if (s.startsWith(Constants.METADATA_ADDRESS)) {
                     metadataUrl =
                         formUrl(s.split("=")[1].trim(), configCenterGroup, username, password);
@@ -128,7 +127,7 @@ public class ConfigCenter {
   @Bean
   @DependsOn("governanceConfiguration")
   Registry getRegistry() {
-    Registry registry = null;
+    Registry registry;
     if (registryUrl == null) {
       if (StringUtils.isBlank(registryAddress)) {
         throw new ConfigurationException(
