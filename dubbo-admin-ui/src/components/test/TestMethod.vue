@@ -21,7 +21,7 @@
       <v-flex lg12>
         <breadcrumb title="testMethod" :items="breads"></breadcrumb>
       </v-flex>
-    <v-flex class="test-form" lg12 xl6>
+      <v-flex class="test-form" lg12 xl6>
         <v-card>
           <v-card-title class="headline">{{$t('testMethod') + ': ' + method.signature}}</v-card-title>
           <v-card-text>
@@ -60,8 +60,9 @@
       JsonEditor,
       Breadcrumb
     },
-    data () {
+    data() {
       return {
+        baseURL: '/dubbo-admin/api/dev',
         success: null,
         breads: [
           {
@@ -87,7 +88,7 @@
       }
     },
     methods: {
-      executeMethod () {
+      executeMethod() {
         this.convertType(this.method.json, this.method.jsonTypes)
         let serviceTestDTO = {
           service: this.service,
@@ -108,7 +109,7 @@
           })
       },
 
-      convertType (params, types) {
+      convertType(params, types) {
         const p = util.flattenObject(params)
         const t = util.flattenObject(types)
         Object.keys(p).forEach(key => {
@@ -118,7 +119,7 @@
         })
       }
     },
-    mounted () {
+    mounted() {
       const query = this.$route.query
       const method = query['method']
 
@@ -133,7 +134,7 @@
       }
 
       let url = '/test/method?' + 'application=' + this.application +
-                '&service=' + this.service + '&method=' + method
+        '&service=' + this.service + '&method=' + method
       this.$axios.get(encodeURI(url))
         .then(response => {
           this.method.json = response.data.parameterTypes

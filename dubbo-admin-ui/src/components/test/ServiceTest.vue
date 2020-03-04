@@ -219,7 +219,7 @@
         })
       },
       getHref (application, service, method) {
-        return `/#/testMethod?application=${application}&service=${service}&method=${method}`
+        return `#/testMethod?application=${application}&service=${service}&method=${method}`
       }
     },
     computed: {
