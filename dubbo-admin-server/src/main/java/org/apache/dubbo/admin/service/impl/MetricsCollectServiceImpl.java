@@ -21,25 +21,22 @@ import org.apache.dubbo.config.ApplicationConfig;
 import org.apache.dubbo.config.ReferenceConfig;
 import org.apache.dubbo.monitor.MetricsService;
 
-/**
- * @author wujunshen
- */
+/** @author wujunshen */
 public class MetricsCollectServiceImpl {
+  private ReferenceConfig<MetricsService> referenceConfig;
 
-    private ReferenceConfig<MetricsService> referenceConfig;
+  public MetricsCollectServiceImpl() {
+    referenceConfig = new ReferenceConfig<>();
+    referenceConfig.setApplication(new ApplicationConfig("dubbo-admin"));
+    referenceConfig.setInterface(MetricsService.class);
+  }
 
-    public MetricsCollectServiceImpl() {
-        referenceConfig = new ReferenceConfig<>();
-        referenceConfig.setApplication(new ApplicationConfig("dubbo-admin"));
-        referenceConfig.setInterface(MetricsService.class);
-    }
+  public void setUrl(String url) {
+    referenceConfig.setUrl(url);
+  }
 
-    public void setUrl(String url) {
-        referenceConfig.setUrl(url);
-    }
-
-    public Object invoke(String group) {
-        MetricsService metricsService = referenceConfig.get();
-        return metricsService.getMetricsByGroup(group);
-    }
+  public Object invoke(String group) {
+    MetricsService metricsService = referenceConfig.get();
+    return metricsService.getMetricsByGroup(group);
+  }
 }

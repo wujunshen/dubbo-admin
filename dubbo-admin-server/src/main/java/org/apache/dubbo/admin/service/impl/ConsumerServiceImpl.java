@@ -31,7 +31,6 @@ import java.util.concurrent.ConcurrentHashMap;
 /** @author wujunshen */
 @Component
 public class ConsumerServiceImpl extends AbstractService implements ConsumerService {
-
   @Override
   public List<Consumer> findByService(String service) {
     return SyncUtils.url2ConsumerList(findConsumerUrlByService(service));

@@ -22,6 +22,7 @@ import org.apache.dubbo.admin.model.domain.Provider;
 import org.apache.dubbo.admin.model.dto.ServiceDTO;
 import org.apache.dubbo.admin.service.ProviderService;
 import org.apache.dubbo.common.URL;
+import org.apache.dubbo.common.utils.CollectionUtils;
 import org.apache.dubbo.metadata.identifier.MetadataIdentifier;
 import org.springframework.stereotype.Component;
 
@@ -35,7 +36,6 @@ import java.util.regex.Pattern;
 /** @author wujunshen */
 @Component
 public class ProviderServiceImpl extends AbstractService implements ProviderService {
-
   @Override
   public void create(Provider provider) {
     URL url = provider.toUrl();
@@ -279,7 +279,7 @@ public class ProviderServiceImpl extends AbstractService implements ProviderServ
   @Override
   public String findVersionInApplication(String application) {
     List<String> services = findServicesByApplication(application);
-    if (services == null || services.size() == 0) {
+    if (CollectionUtils.isEmpty(services)) {
       throw new ParamValidationException("there is no service for application: " + application);
     }
     return findServiceVersion(services.get(0), application);
@@ -289,13 +289,17 @@ public class ProviderServiceImpl extends AbstractService implements ProviderServ
   public String findServiceVersion(String serviceName, String application) {
     String version = "2.6";
     Map<String, URL> result = findProviderUrlByAppAndService(application, serviceName);
-    if (result.size() > 0) {
-      URL url = result.values().stream().findFirst().get();
-      if (url.getParameter(Constants.SPECIFICATION_VERSION_KEY) != null) {
-        version = url.getParameter(Constants.SPECIFICATION_VERSION_KEY);
-      }
+    if (result.isEmpty()) {
+      return version;
     }
-    return version;
+
+    Optional<URL> op = Optional.of(result.values().stream().findFirst()).get();
+    URL url = op.orElse(null);
+
+    if (Objects.requireNonNull(url).getParameter(Constants.SPECIFICATION_VERSION_KEY) == null) {
+      return version;
+    }
+    return url.getParameter(Constants.SPECIFICATION_VERSION_KEY);
   }
 
   private Map<String, URL> findProviderUrlByAppAndService(String app, String service) {
@@ -315,12 +319,12 @@ public class ProviderServiceImpl extends AbstractService implements ProviderServ
 
   @Override
   public List<String> findServicesByApplication(String application) {
-    List<String> ret = new ArrayList<>();
+    List<String> result = new ArrayList<>();
 
     ConcurrentMap<String, Map<String, URL>> providerUrls =
         getRegistryCache().get(Constants.PROVIDERS_CATEGORY);
     if (providerUrls == null || application == null || application.length() == 0) {
-      return ret;
+      return result;
     }
 
     for (Entry<String, Map<String, URL>> e1 : providerUrls.entrySet()) {
@@ -328,13 +332,13 @@ public class ProviderServiceImpl extends AbstractService implements ProviderServ
       for (Entry<String, URL> e2 : value.entrySet()) {
         URL u = e2.getValue();
         if (application.equals(u.getParameter(Constants.APPLICATION))) {
-          ret.add(e1.getKey());
+          result.add(e1.getKey());
           break;
         }
       }
     }
 
-    return ret;
+    return result;
   }
 
   @Override

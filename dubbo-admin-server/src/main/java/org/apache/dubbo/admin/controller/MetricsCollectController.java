@@ -33,6 +33,7 @@ import org.apache.dubbo.metadata.identifier.MetadataIdentifier;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -47,10 +48,10 @@ import java.util.concurrent.ConcurrentHashMap;
 @RequestMapping("/api/{env}/metrics")
 public class MetricsCollectController {
 
-    @Autowired
+    @Resource
     private ProviderService providerService;
 
-    @Autowired
+    @Resource
     private ConsumerService consumerService;
 
     @RequestMapping(method = RequestMethod.POST)

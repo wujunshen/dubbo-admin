@@ -30,6 +30,8 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import javax.annotation.Resource;
+
 @ActiveProfiles("test")
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest(
@@ -51,7 +53,8 @@ public abstract class AbstractSpringIntegrationTest {
     }
   }
 
-  @Autowired protected TestRestTemplate restTemplate;
+  @Resource
+  protected TestRestTemplate restTemplate;
   @LocalServerPort protected int port;
 
   protected String url(final String path) {

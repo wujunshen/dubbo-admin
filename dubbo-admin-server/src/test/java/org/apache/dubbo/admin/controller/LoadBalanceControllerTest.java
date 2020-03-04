@@ -24,13 +24,13 @@ import org.apache.dubbo.admin.service.OverrideService;
 import org.apache.dubbo.admin.service.ProviderService;
 import org.junit.After;
 import org.junit.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
+import javax.annotation.Resource;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
@@ -45,7 +45,7 @@ public class LoadBalanceControllerTest extends AbstractSpringIntegrationTest {
 
   @MockBean private OverrideService overrideService;
   @MockBean private ProviderService providerService;
-  @Autowired private ObjectMapper objectMapper;
+  @Resource private ObjectMapper objectMapper;
 
   @After
   public void tearDown() throws Exception {

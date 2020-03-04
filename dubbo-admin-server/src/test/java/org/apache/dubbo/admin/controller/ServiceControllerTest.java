@@ -26,12 +26,12 @@ import org.apache.dubbo.registry.support.AbstractRegistry;
 import org.junit.After;
 import org.junit.Ignore;
 import org.junit.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
+import javax.annotation.Resource;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
@@ -40,7 +40,7 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 
 public class ServiceControllerTest extends AbstractSpringIntegrationTest {
-  @Autowired private Registry registry;
+  @Resource private Registry registry;
 
   @After
   public void tearDown() throws Exception {

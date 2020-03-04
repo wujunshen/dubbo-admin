@@ -20,34 +20,23 @@ import org.apache.dubbo.admin.registry.config.GovernanceConfiguration;
 import org.apache.dubbo.admin.registry.metadata.MetaDataCollector;
 import org.apache.dubbo.admin.service.RegistryServerSync;
 import org.apache.dubbo.common.URL;
-import org.apache.dubbo.common.logger.Logger;
-import org.apache.dubbo.common.logger.LoggerFactory;
 import org.apache.dubbo.registry.Registry;
-import org.springframework.beans.factory.annotation.Autowired;
 
+import javax.annotation.Resource;
 import java.util.Map;
 import java.util.concurrent.ConcurrentMap;
 
-/**
- * @author wujunshen
- */
+/** @author wujunshen */
 public class AbstractService {
+  @Resource protected Registry registry;
 
+  @Resource protected GovernanceConfiguration dynamicConfiguration;
 
-    @Autowired
-    protected Registry registry;
+  @Resource protected MetaDataCollector metaDataCollector;
 
-    @Autowired
-    protected GovernanceConfiguration dynamicConfiguration;
+  @Resource private RegistryServerSync sync;
 
-    @Autowired
-    protected MetaDataCollector metaDataCollector;
-
-    @Autowired
-    private RegistryServerSync sync;
-
-    public ConcurrentMap<String, ConcurrentMap<String, Map<String, URL>>> getRegistryCache() {
-        return sync.getRegistryCache();
-    }
-
+  public ConcurrentMap<String, ConcurrentMap<String, Map<String, URL>>> getRegistryCache() {
+    return sync.getRegistryCache();
+  }
 }

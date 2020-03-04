@@ -40,83 +40,81 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-/**
- * @author wujunshen
- */
+/** @author wujunshen */
 @Authority(needLogin = true)
 @RestController
 @RequestMapping("/api/{env}")
 public class ServiceController {
 
-    private final ProviderService providerService;
-    private final ConsumerService consumerService;
-    private final Gson gson;
+  private final ProviderService providerService;
+  private final ConsumerService consumerService;
+  private final Gson gson;
 
-    @Autowired
-    public ServiceController(ProviderService providerService, ConsumerService consumerService) {
-        this.providerService = providerService;
-        this.consumerService = consumerService;
-        this.gson = new Gson();
+  @Autowired
+  public ServiceController(ProviderService providerService, ConsumerService consumerService) {
+    this.providerService = providerService;
+    this.consumerService = consumerService;
+    this.gson = new Gson();
+  }
+
+  @RequestMapping(value = "/service", method = RequestMethod.GET)
+  public Page<ServiceDTO> searchService(
+      @RequestParam String pattern,
+      @RequestParam String filter,
+      @PathVariable String env,
+      Pageable pageable) {
+    final Set<ServiceDTO> serviceDtoList = providerService.getServiceDtoList(pattern, filter, env);
+
+    final int total = serviceDtoList.size();
+    final List<ServiceDTO> content =
+        serviceDtoList.stream()
+            .skip(pageable.getOffset())
+            .limit(pageable.getPageSize())
+            .collect(Collectors.toList());
+
+    final Page<ServiceDTO> page = new PageImpl<>(content, pageable, total);
+    return page;
+  }
+
+  @RequestMapping(value = "/service/{service}", method = RequestMethod.GET)
+  public ServiceDetailDTO serviceDetail(@PathVariable String service, @PathVariable String env) {
+    service = service.replace(Constants.ANY_VALUE, Constants.PATH_SEPARATOR);
+    String group = Tool.getGroup(service);
+    String version = Tool.getVersion(service);
+    String interfaze = Tool.getInterface(service);
+    List<Provider> providers = providerService.findByService(service);
+
+    List<Consumer> consumers = consumerService.findByService(service);
+
+    String application = null;
+    if (providers != null && providers.size() > 0) {
+      application = providers.get(0).getApplication();
     }
-
-    @RequestMapping(value = "/service", method = RequestMethod.GET)
-    public Page<ServiceDTO> searchService(
-            @RequestParam String pattern,
-            @RequestParam String filter,
-            @PathVariable String env,
-            Pageable pageable) {
-        final Set<ServiceDTO> serviceDtoList = providerService.getServiceDtoList(pattern, filter, env);
-
-        final int total = serviceDtoList.size();
-        final List<ServiceDTO> content =
-                serviceDtoList.stream()
-                        .skip(pageable.getOffset())
-                        .limit(pageable.getPageSize())
-                        .collect(Collectors.toList());
-
-        final Page<ServiceDTO> page = new PageImpl<>(content, pageable, total);
-        return page;
+    MetadataIdentifier identifier =
+        new MetadataIdentifier(interfaze, version, group, Constants.PROVIDER_SIDE, application);
+    String metadata = providerService.getProviderMetaData(identifier);
+    ServiceDetailDTO serviceDetailDTO = new ServiceDetailDTO();
+    serviceDetailDTO.setConsumers(consumers);
+    serviceDetailDTO.setProviders(providers);
+    if (metadata != null) {
+      FullServiceDefinition serviceDefinition =
+          gson.fromJson(metadata, FullServiceDefinition.class);
+      serviceDetailDTO.setMetadata(serviceDefinition);
     }
+    serviceDetailDTO.setConsumers(consumers);
+    serviceDetailDTO.setProviders(providers);
+    serviceDetailDTO.setService(service);
+    serviceDetailDTO.setApplication(application);
+    return serviceDetailDTO;
+  }
 
-    @RequestMapping(value = "/service/{service}", method = RequestMethod.GET)
-    public ServiceDetailDTO serviceDetail(@PathVariable String service, @PathVariable String env) {
-        service = service.replace(Constants.ANY_VALUE, Constants.PATH_SEPARATOR);
-        String group = Tool.getGroup(service);
-        String version = Tool.getVersion(service);
-        String interfaze = Tool.getInterface(service);
-        List<Provider> providers = providerService.findByService(service);
+  @RequestMapping(value = "/services", method = RequestMethod.GET)
+  public Set<String> allServices(@PathVariable String env) {
+    return new HashSet<>(providerService.findServices());
+  }
 
-        List<Consumer> consumers = consumerService.findByService(service);
-
-        String application = null;
-        if (providers != null && providers.size() > 0) {
-            application = providers.get(0).getApplication();
-        }
-        MetadataIdentifier identifier =
-                new MetadataIdentifier(interfaze, version, group, Constants.PROVIDER_SIDE, application);
-        String metadata = providerService.getProviderMetaData(identifier);
-        ServiceDetailDTO serviceDetailDTO = new ServiceDetailDTO();
-        serviceDetailDTO.setConsumers(consumers);
-        serviceDetailDTO.setProviders(providers);
-        if (metadata != null) {
-            FullServiceDefinition serviceDefinition =
-                    gson.fromJson(metadata, FullServiceDefinition.class);
-            serviceDetailDTO.setMetadata(serviceDefinition);
-        }
-        serviceDetailDTO.setConsumers(consumers);
-        serviceDetailDTO.setProviders(providers);
-        serviceDetailDTO.setService(service);
-        serviceDetailDTO.setApplication(application);
-        return serviceDetailDTO;
-    }
-
-    @RequestMapping(value = "/services", method = RequestMethod.GET)
-    public Set<String> allServices(@PathVariable String env) {
-        return new HashSet<>(providerService.findServices());
-    }
-
-    @RequestMapping(value = "/applications", method = RequestMethod.GET)
-    public Set<String> allApplications(@PathVariable String env) {
-        return providerService.findApplications();
-    }
+  @RequestMapping(value = "/applications", method = RequestMethod.GET)
+  public Set<String> allApplications(@PathVariable String env) {
+    return providerService.findApplications();
+  }
 }
